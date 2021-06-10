@@ -1,0 +1,3 @@
+Level:0|X:304|Y:190|Map:metin2_map_c1
+Level:22|X:846|Y:805|Map:metin2_map_c3
+Level:15|X:843|Y:172|Map:metin2_map_c3
