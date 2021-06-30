@@ -6,7 +6,7 @@ Hooking module.
 """
 
 #The current phase.
-CURRENT_PHASE = 2
+CURRENT_PHASE = 5
 
 class Hook():
 	"""

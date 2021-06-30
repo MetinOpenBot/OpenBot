@@ -10,3 +10,4 @@ file.py
 *.pdb
 dMetinWx.dll
 Log.txt
+.vscode

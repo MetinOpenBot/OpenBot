@@ -15,6 +15,7 @@ A Bot/Mod that adds complex functionality to the metin2 client. It needs be used
 - Inventory Manager
 - Teleport
 - Auto buy/sell
+- SpeedBoost
 
 ## Preview
 ![image info](https://i.gyazo.com/b1fa500eeaadabc1be91cc7b89782647.jpg)
@@ -56,5 +57,10 @@ Load eXLib.dll into process while in character select mode or while choosing the
 - init.py needs to be changed in case the server changes critical modules or functions
 
 
-# Problems
-- Path finding might be slow on complex maps like red forest
+# Updates
+v1.1:
+- Updated to use the latest version of eXLib
+- Added SpeedBoost (can be found under settings, general tab)
+- Changed installation method (now you are not required to add files to the game folder)
+- Now teleports reloads the environment after each teleport
+- Minor bug fixes

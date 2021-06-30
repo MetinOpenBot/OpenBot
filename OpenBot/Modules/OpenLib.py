@@ -302,8 +302,8 @@ def GetCurrentPhase():
 	Returns:
 		[int]: Return the current phase of the game.
 	"""
-	return eXLib.GetCurrentPhase()
-	#return Hooks.GetCurrentPhase()
+	#return eXLib.GetCurrentPhase()
+	return Hooks.GetCurrentPhase()
 
 def IsInGamePhase():
 	"""

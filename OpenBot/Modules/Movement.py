@@ -303,6 +303,9 @@ def TeleportToPosition(dst_x,dst_y,max_packets=MAX_TELEPORT_PACKETS):
     #chat.AppendChat(3,str(counter) + " packets sent.")
     
     chr.SetPixelPosition(pos[0],pos[1])
+    #Reload mobs
+    eXLib.SendStatePacket(pos[0]-100,pos[1]-100,0.0,1,0)
+    eXLib.SendStatePacket(pos[0]+100,pos[1]+100,0.0,1,0)
     return counter
 
 Movement = MovementDialog()

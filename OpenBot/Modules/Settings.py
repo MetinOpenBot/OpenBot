@@ -15,8 +15,10 @@ class SettingsDialog(ui.ScriptWindow):
 		self.restartHere = False
 		self.bluePotions = True
 		self.redPotions = True
+		self.speedHack = True
 		self.minMana = 95
 		self.minHealth = 80
+		self.speedMultiplier = 0.9
 
 		self.pickUp = False
 		self.pickUpRange = 290
@@ -70,12 +72,13 @@ class SettingsDialog(ui.ScriptWindow):
 		self.TwoHandedButton = self.comp.Button(self.attackTab, '', 'Two-Handed', 200, 150, self.SetTwoHand, 'OpenBot/Images/General/twohand_0.tga', 'OpenBot/Images/General/twohand_1.tga', 'OpenBot/Images/General/twohand_0.tga')
 
 		##GENERAL
-		self.loginBtn = self.comp.OnOffButton(self.generalTab, '\t\t\t\t\t\tAuto Login', '', 20, 150,funcState=self.AutoLoginOnOff,defaultValue=int(self.autoLogin))
-		self.reviveBtn = self.comp.OnOffButton(self.generalTab, '\t\t\t\t\t\tAuto Restart Here', '', 20, 130,funcState=self.ReviveOnOff,defaultValue=int(self.restartHere))
-		self.WallHackBtn = self.comp.OnOffButton(self.generalTab, '', 'WallHack', 200, 130, image='OpenBot/Images/General/wall.tga',funcState=self.WallHackSwich,defaultValue=int(self.wallHack))
+		self.loginBtn = self.comp.OnOffButton(self.generalTab, '\t\t\t\t\t\tAuto Login', '', 20, 160,funcState=self.AutoLoginOnOff,defaultValue=int(self.autoLogin))
+		self.reviveBtn = self.comp.OnOffButton(self.generalTab, '\t\t\t\t\t\tAuto Restart Here', '', 20, 140,funcState=self.ReviveOnOff,defaultValue=int(self.restartHere))
+		self.WallHackBtn = self.comp.OnOffButton(self.generalTab, '', 'WallHack', 200, 140, image='OpenBot/Images/General/wall.tga',funcState=self.WallHackSwich,defaultValue=int(self.wallHack))
 
-		self.redPotButton,self.SlideRedPot,self.redPotLabel = UIComponents.GetSliderButtonLabel(self.generalTab,self.SlideRedMove, '', 'Use Red Potions', 30, 18,image="icon/item/27002.tga",funcState=self.OnRedOnOff,defaultValue=int(self.redPotions),defaultSlider=float(self.minHealth/100.0))
-		self.bluePotButton,self.SlideBluePot,self.bluePotLabel = UIComponents.GetSliderButtonLabel(self.generalTab,self.SlideBlueMove, '', 'Use Blue Potions', 30, 50,image="icon/item/27005.tga",funcState=self.OnBlueOnOff,defaultValue=int(self.bluePotions),defaultSlider=float(self.minMana/100.0))
+		self.redPotButton,self.SlideRedPot,self.redPotLabel = UIComponents.GetSliderButtonLabel(self.generalTab,self.SlideRedMove, '', 'Use Red Potions', 28, 18,image="icon/item/27002.tga",funcState=self.OnRedOnOff,defaultValue=int(self.redPotions),defaultSlider=float(self.minHealth/100.0))
+		self.bluePotButton,self.SlideBluePot,self.bluePotLabel = UIComponents.GetSliderButtonLabel(self.generalTab,self.SlideBlueMove, '', 'Use Blue Potions', 28, 50,image="icon/item/27005.tga",funcState=self.OnBlueOnOff,defaultValue=int(self.bluePotions),defaultSlider=float(self.minMana/100.0))
+		self.speedHackButton,self.SlideSpeedHack,self.speedHackLabel = UIComponents.GetSliderButtonLabel(self.generalTab,self.SlideSpeedMove, '', 'Use Speed Boost', 28, 82,image="icon/item/27104.tga",funcState=self.OnSpeedHackOnOff,defaultValue=int(self.speedHack),defaultSlider=float(self.speedMultiplier/10))
 		
 		
 		##PICKUP
@@ -106,6 +109,7 @@ class SettingsDialog(ui.ScriptWindow):
 		self.pickupRangeSlide()
 		self.SlideRedMove()
 		self.SlideBlueMove()
+		self.SlideSpeedMove()
 
 	def LoadSettings(self):
 		#OpenLog.DebugPrint("Loading Settings")
@@ -113,6 +117,8 @@ class SettingsDialog(ui.ScriptWindow):
 		self.restartHere = boolean(FileManager.ReadConfig("AutoRestart"))
 		self.bluePotions = boolean(FileManager.ReadConfig("UseBluePots"))
 		self.redPotions = boolean(FileManager.ReadConfig("UseRedPots"))
+		self.speedHack = boolean(FileManager.ReadConfig("SpeedHack"))
+		self.speedMultiplier = int(FileManager.ReadConfig("SpeedHackMultiplier"))
 		self.minMana = int(FileManager.ReadConfig("MinMana"))
 		self.minHealth = int(FileManager.ReadConfig("MinHealth"))
 		self.pickUp = boolean(FileManager.ReadConfig("PickupUse"))
@@ -131,6 +137,8 @@ class SettingsDialog(ui.ScriptWindow):
 		FileManager.WriteConfig("AutoRestart", str(self.restartHere))
 		FileManager.WriteConfig("UseBluePots", str(self.bluePotions))
 		FileManager.WriteConfig("UseRedPots", str(self.redPotions))
+		FileManager.WriteConfig("SpeedHack", str(self.speedHack))
+		FileManager.WriteConfig("SpeedHackMultiplier", str(self.speedMultiplier))
 		FileManager.WriteConfig("MinMana", str(self.minMana))
 		FileManager.WriteConfig("MinHealth", str(self.minHealth))
 		FileManager.WriteConfig("PickupUse", str(self.pickUp))
@@ -228,12 +236,24 @@ class SettingsDialog(ui.ScriptWindow):
 		self.minMana = int(self.SlideBluePot.GetSliderPos()*100)
 		self.bluePotLabel.SetText(str(self.minMana))
 
+	def SlideSpeedMove(self):
+		self.speedMultiplier = int(self.SlideSpeedHack.GetSliderPos()*10)
+		self.speedHackLabel.SetText(str(self.speedMultiplier))
+		if self.speedHack:
+			eXLib.SetMoveSpeedMultiplier(self.speedMultiplier)
 
 	def OnRedOnOff(self,val):
 		self.redPotions = bool(val)
 
 	def OnBlueOnOff(self,val):
 		self.bluePotions = bool(val)
+
+	def OnSpeedHackOnOff(self,val):
+		chat.AppendChat(3,str(val))
+		if val :
+			eXLib.SetMoveSpeedMultiplier(self.speedMultiplier)
+		else:
+			eXLib.SetMoveSpeedMultiplier(0.0)
 			
 		
 	#Attack

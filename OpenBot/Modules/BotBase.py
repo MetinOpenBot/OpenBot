@@ -18,7 +18,7 @@ class BotBase(ui.ScriptWindow):
 	STATE_WATING = 3
 
 
-	def __init__(self,time_wait=0.06,shopOnFullInv = False):
+	def __init__(self,time_wait=0.1,shopOnFullInv = False):
 		"""Constructor
 
 		Args:
