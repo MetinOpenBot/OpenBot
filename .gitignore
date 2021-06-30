@@ -8,6 +8,6 @@ file.py
 /OpenBot/Modules/MiningBot.py
 /OpenBot/Modules/Filter.py
 *.pdb
-dMetinWx.dll
+MetinWx.dll
 Log.txt
 .vscode
