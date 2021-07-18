@@ -1,7 +1,9 @@
 import ui,app,chat,chr,net,player,item,skill,time,game,shop,chrmgr,OpenLib,eXLib
-import background,constInfo,miniMap,wndMgr,math,uiCommon,grp,FileManager,UIComponents,Movement,OpenLog
+import background,constInfo,miniMap,wndMgr,math,uiCommon,grp,FileManager,UIComponents,Movement,OpenLog, Hooks
 import DmgHacks as Dmg
+import ChannelSwitcher
 from FileManager import boolean
+import ChannelSwitcher
 import UIComponents
 
 class SettingsDialog(ui.ScriptWindow):
@@ -15,17 +17,23 @@ class SettingsDialog(ui.ScriptWindow):
 		self.restartHere = False
 		self.bluePotions = True
 		self.redPotions = True
-		self.speedHack = True
+		self.speedHack = False
+		self.antiExpTimerSleep = 0
+		self.antiExp = False
 		self.minMana = 95
 		self.minHealth = 80
-		self.speedMultiplier = 0.9
+		self.speedMultiplier = 0.0
 
 		self.pickUp = False
-		self.pickUpRange = 290
+		self.pickUpRange = 290.0
 		self.pickUpSpeed = 0.5
 		self.pickFilter = set()
 		self.excludeInFilter = True
 		self.useRangePickup = False
+
+		self.useOnClickDmg = False
+		self.onClickDmgSpeed = 0.0
+		self.timerDmg = OpenLib.GetTime()
 
 		self.wallHack = False
 
@@ -50,35 +58,27 @@ class SettingsDialog(ui.ScriptWindow):
 		
 		self.comp = UIComponents.Component()
 
-		self.TabWidget = UIComponents.TabWindow(10,30,300-20,370-40,self.Board,['General','Pickup','Attack','Shop'])
+		self.TabWidget = UIComponents.TabWindow(10,30,300-20,370-40,self.Board,['General','Pickup','Attack','Shop', 'Channels'])
 		self.generalTab = self.TabWidget.GetTab(0)
 		self.pickupTab = self.TabWidget.GetTab(1)
 		self.attackTab = self.TabWidget.GetTab(2)
 		self.shopTab = self.TabWidget.GetTab(3)
+		self.channelsTab = self.TabWidget.GetTab(4)
 
-
-		#self.MovespeedLabel = self.comp.TextLine(self.generalTab, '300', 256, 68, self.comp.RGB(255, 255, 255))
-		#self.AttackspeedLabel = self.comp.TextLine(self.attackTab, '200', 256, 108, self.comp.RGB(255, 255, 255))
-		#self.SlideMovespeed = self.comp.SliderBar(self.generalTab, 0.6, self.SlideMove, 66, 70)
-		#self.SlideAttackspeed = self.comp.SliderBar(self.attackTab, 0.4, self.SlideAttack, 66, 110)
-		
-		#self.AttackSpeedButton = self.comp.Button(self.attackTab, '', 'Attack-Speed', 25, 60, self.SetAttackSpeed, 'OpenBot/Images/Shortcuts/attack_0.tga', 'OpenBot/Images/Shortcuts/attack_1.tga', 'OpenBot/Images/Shortcuts/attack_0.tga')
-		#self.MoveSpeedButton = self.comp.Button(self.generalTab, '', 'Move-Speed', 25, 110, self.SetMoveSpeed, 'OpenBot/Images/Shortcuts/move_0.tga', 'OpenBot/Images/Shortcuts/move_1.tga', 'OpenBot/Images/Shortcuts/move_0.tga')
-		#self.DayButton = self.comp.Button(self.Board, '', 'Day', 25, 120, self.SetDay, 'OpenBot/Images/General/sun_0.tga', 'OpenBot/Images/General/sun_1.tga', 'OpenBot/Images/General/sun_0.tga')
-		#self.NightButton = self.comp.Button(self.Board, '', 'Night', 80, 120, self.SetNight, 'OpenBot/Images/General/moon_0.tga', 'OpenBot/Images/General/moon_1.tga', 'OpenBot/Images/General/moon_0.tga')
-		
 		self.DmgMenuButton = self.comp.Button(self.attackTab, '', 'Damage Hacks', 120, 150, self.OpenDmgMenu,  'OpenBot/Images/General/dmg_0.tga', 'OpenBot/Images/General/dmg_1.tga', 'OpenBot/Images/General/dmg_0.tga')
   		self.OneHandedButton = self.comp.Button(self.attackTab, '', 'One-Handed', 40, 150, self.SetOneHand, 'OpenBot/Images/General/onehand_0.tga', 'OpenBot/Images/General/onehand_1.tga', 'OpenBot/Images/General/onehand_0.tga')
 		self.TwoHandedButton = self.comp.Button(self.attackTab, '', 'Two-Handed', 200, 150, self.SetTwoHand, 'OpenBot/Images/General/twohand_0.tga', 'OpenBot/Images/General/twohand_1.tga', 'OpenBot/Images/General/twohand_0.tga')
-
+		self.dmgButton,self.dmgSlider,self.dmgLabel = UIComponents.GetSliderButtonLabel(self.attackTab,self.OnDmgSpeedMove, '', 'Dmg on selected target (defaults to cloud damage on dagger ninja)', 28, 18,image='OpenBot/Images/General/monster_1.tga',funcState=self.OnDmgOnOff,defaultValue=int(self.useOnClickDmg),defaultSlider=float(self.onClickDmgSpeed))
+		
 		##GENERAL
 		self.loginBtn = self.comp.OnOffButton(self.generalTab, '\t\t\t\t\t\tAuto Login', '', 20, 160,funcState=self.AutoLoginOnOff,defaultValue=int(self.autoLogin))
 		self.reviveBtn = self.comp.OnOffButton(self.generalTab, '\t\t\t\t\t\tAuto Restart Here', '', 20, 140,funcState=self.ReviveOnOff,defaultValue=int(self.restartHere))
 		self.WallHackBtn = self.comp.OnOffButton(self.generalTab, '', 'WallHack', 200, 140, image='OpenBot/Images/General/wall.tga',funcState=self.WallHackSwich,defaultValue=int(self.wallHack))
-
+		self.antiExpBtn =self.comp.OnOffButton(self.generalTab, '\t\t\t\t\t\tAntiExp', '', 20, 180,funcState=self.startAntiExp,defaultValue=int(self.antiExp))
+		
 		self.redPotButton,self.SlideRedPot,self.redPotLabel = UIComponents.GetSliderButtonLabel(self.generalTab,self.SlideRedMove, '', 'Use Red Potions', 28, 18,image="icon/item/27002.tga",funcState=self.OnRedOnOff,defaultValue=int(self.redPotions),defaultSlider=float(self.minHealth/100.0))
 		self.bluePotButton,self.SlideBluePot,self.bluePotLabel = UIComponents.GetSliderButtonLabel(self.generalTab,self.SlideBlueMove, '', 'Use Blue Potions', 28, 50,image="icon/item/27005.tga",funcState=self.OnBlueOnOff,defaultValue=int(self.bluePotions),defaultSlider=float(self.minMana/100.0))
-		self.speedHackButton,self.SlideSpeedHack,self.speedHackLabel = UIComponents.GetSliderButtonLabel(self.generalTab,self.SlideSpeedMove, '', 'Use Speed Boost', 28, 82,image="icon/item/27104.tga",funcState=self.OnSpeedHackOnOff,defaultValue=int(self.speedHack),defaultSlider=float(self.speedMultiplier/10))
+		self.speedHackButton,self.SlideSpeedHack,self.speedHackLabel = UIComponents.GetSliderButtonLabel(self.generalTab,self.SlideMovSpeedMove, '', 'Use Speed Boost', 28, 82,image="icon/item/27104.tga",funcState=self.OnSpeedHackOnOff,defaultValue=int(self.speedHack),defaultSlider=float(self.speedMultiplier/10))
 		
 		
 		##PICKUP
@@ -101,6 +101,13 @@ class SettingsDialog(ui.ScriptWindow):
 		self.SellRemoveBtn = self.comp.Button(self.shopTab, 'Remove', '', 140, 185, self.UISellRemoveFilterItem, 'd:/ymir work/ui/public/Middle_Button_01.sub', 'd:/ymir work/ui/public/Middle_Button_02.sub', 'd:/ymir work/ui/public/Middle_Button_03.sub')
 		#self.BtnRedBuy = self.comp.OnOffButton(self.generalTab, '', 'Buy Red Pots', 200, 130, image='icon/item/27002.tga',funcState=self.OnRedBuy,defaultValue=int(self.wallHack))
 
+		## CHANNELS
+		self.ChannelSwitcher = ChannelSwitcher.instance
+		self.ChannelSwitcher.BuildWindow(self.channelsTab)
+		self.ChannelSwitcher.OnRefreshButton()
+		for id in sorted(self.ChannelSwitcher.channels):
+			setattr(self, 'channel_' + str(id), self.ChannelSwitcher.channels[id]['btn'])
+
 
 		##Init labels
 		self.UpdatePickFilterList()
@@ -109,7 +116,8 @@ class SettingsDialog(ui.ScriptWindow):
 		self.pickupRangeSlide()
 		self.SlideRedMove()
 		self.SlideBlueMove()
-		self.SlideSpeedMove()
+		self.SlideMovSpeedMove()
+		self.OnDmgSpeedMove()
 
 	def LoadSettings(self):
 		#OpenLog.DebugPrint("Loading Settings")
@@ -118,15 +126,17 @@ class SettingsDialog(ui.ScriptWindow):
 		self.bluePotions = boolean(FileManager.ReadConfig("UseBluePots"))
 		self.redPotions = boolean(FileManager.ReadConfig("UseRedPots"))
 		self.speedHack = boolean(FileManager.ReadConfig("SpeedHack"))
-		self.speedMultiplier = int(FileManager.ReadConfig("SpeedHackMultiplier"))
+		self.speedMultiplier = float(FileManager.ReadConfig("SpeedHackMultiplier"))
 		self.minMana = int(FileManager.ReadConfig("MinMana"))
 		self.minHealth = int(FileManager.ReadConfig("MinHealth"))
 		self.pickUp = boolean(FileManager.ReadConfig("PickupUse"))
-		self.pickUpRange = int(FileManager.ReadConfig("PickupRange"))
+		self.pickUpRange = float(FileManager.ReadConfig("PickupRange"))
 		self.pickUpSpeed = float(FileManager.ReadConfig("PickupSpeed"))
 		self.excludeInFilter = boolean(FileManager.ReadConfig("FilterMode"))
 		self.useRangePickup = boolean(FileManager.ReadConfig("UseRangePickup"))
 		self.wallHack = boolean(FileManager.ReadConfig("WallHack"))
+		self.onClickDmgSpeed  = boolean(FileManager.ReadConfig("OnClickDamageSpeed"))
+		self.antiExp = boolean(FileManager.ReadConfig("antiExp"))
 		for i in FileManager.LoadListFile(FileManager.CONFIG_PICKUP_FILTER):
 			self.addPickFilterItem(int(i))
 		self.sellItems = {int(i) for i in FileManager.LoadListFile(FileManager.CONFIG_SELL_INVENTORY)}
@@ -147,6 +157,8 @@ class SettingsDialog(ui.ScriptWindow):
 		FileManager.WriteConfig("FilterMode", str(self.excludeInFilter))
 		FileManager.WriteConfig("UseRangePickup", str(self.useRangePickup))
 		FileManager.WriteConfig("WallHack", str(self.wallHack))
+		FileManager.WriteConfig("OnClickDamageSpeed", str(self.onClickDmgSpeed))
+		FileManager.WriteConfig("antiExp", str(self.antiExp))
 		#chat.AppendChat(3,str(self.pickUp))
 		FileManager.SaveListFile(FileManager.CONFIG_PICKUP_FILTER,self.pickFilter)
 		FileManager.SaveListFile(FileManager.CONFIG_SELL_INVENTORY,self.sellItems)
@@ -212,8 +224,8 @@ class SettingsDialog(ui.ScriptWindow):
 		self.speedPickupLabel.SetText(str('{:,.2f} s'.format(self.pickUpSpeed)))
 
 	def pickupRangeSlide(self):
-		self.pickUpRange = int(self.SliderangePickup.GetSliderPos()*10000)
-		self.rangePickupLabel.SetText(str(self.pickUpRange))
+		self.pickUpRange = float(self.SliderangePickup.GetSliderPos()*10000)
+		self.rangePickupLabel.SetText(str('{:,.0f}'.format(self.pickUpRange)))
 
 	def OnRangePickupOnOff(self,val):
 		self.useRangePickup = val
@@ -236,9 +248,9 @@ class SettingsDialog(ui.ScriptWindow):
 		self.minMana = int(self.SlideBluePot.GetSliderPos()*100)
 		self.bluePotLabel.SetText(str(self.minMana))
 
-	def SlideSpeedMove(self):
-		self.speedMultiplier = int(self.SlideSpeedHack.GetSliderPos()*10)
-		self.speedHackLabel.SetText(str(self.speedMultiplier))
+	def SlideMovSpeedMove(self):
+		self.speedMultiplier = float(self.SlideSpeedHack.GetSliderPos()*10)
+		self.speedHackLabel.SetText(str('{:,.2f}'.format(self.speedMultiplier)))
 		if self.speedHack:
 			eXLib.SetMoveSpeedMultiplier(self.speedMultiplier)
 
@@ -248,12 +260,19 @@ class SettingsDialog(ui.ScriptWindow):
 	def OnBlueOnOff(self,val):
 		self.bluePotions = bool(val)
 
-	def OnSpeedHackOnOff(self,val):
-		chat.AppendChat(3,str(val))
-		if val :
+	def OnSpeedHackOnOff(self, val):
+		self.speedHack = val
+		if val:
 			eXLib.SetMoveSpeedMultiplier(self.speedMultiplier)
 		else:
 			eXLib.SetMoveSpeedMultiplier(0.0)
+
+	def OnDmgOnOff(self,val):
+		self.useOnClickDmg = val
+
+	def OnDmgSpeedMove(self):
+		self.onClickDmgSpeed = float(self.dmgSlider.GetSliderPos())
+		self.dmgLabel.SetText(str(int(self.onClickDmgSpeed*1000)))
 			
 		
 	#Attack
@@ -262,11 +281,43 @@ class SettingsDialog(ui.ScriptWindow):
 
 	def SetTwoHand(self): 
 		chr.SetMotionMode(chr.MOTION_MODE_TWOHAND_SWORD)
-  
+
 	def OpenDmgMenu(self):
 		Dmg.switch_state()
 	
-	#General
+	def UseOnClickDamage(self):
+		if not self.useOnClickDmg or OpenLib.GetClass() != OpenLib.SKILL_SET_DAGGER_NINJA:
+			return
+		val, self.timerDmg = OpenLib.timeSleep(self.timerDmg,self.onClickDmgSpeed)
+		if not val:
+			return
+		vid = player.GetTargetVID()
+		x,y,z = player.GetMainCharacterPosition()
+		if vid == 0 or vid == net.GetMainActorVID() or eXLib.IsDead(vid):
+			return
+		typ = chr.GetInstanceType(vid)
+		#if typ != OpenLib.MONSTER_TYPE and typ != OpenLib.METIN_TYPE:
+			#return
+		
+		mob_x, mob_y, mob_z = chr.GetPixelPosition(vid)
+		is_remote = False
+		if OpenLib.dist(x,y,mob_x,mob_y) > OpenLib.ATTACK_MAX_DIST_NO_TELEPORT:
+			is_remote = True
+			Movement.TeleportStraightLine(x,y,mob_x,mob_y)
+		_class =  OpenLib.GetClass()
+		if _class == OpenLib.SKILL_SET_DAGGER_NINJA:
+			if not player.IsSkillCoolTime(5):
+				eXLib.SendUseSkillPacketBySlot(5,vid)
+			eXLib.SendAddFlyTarget(vid,mob_x,mob_y)
+			eXLib.SendShoot(35)
+		else:
+			eXLib.SendAttackPacket(vid,0)
+
+		if is_remote:
+			Movement.TeleportStraightLine(mob_x,mob_y,x,y)
+
+
+	# General
 	def CheckUsePotions(self):
 		val, self.timerPots = OpenLib.timeSleep(self.timerPots,self.TIME_POTS)
 		if val:
@@ -287,6 +338,7 @@ class SettingsDialog(ui.ScriptWindow):
 		
 		if self.autoLogin and OpenLib.GetCurrentPhase() == OpenLib.PHASE_LOGIN:
 			net.DirectEnter(0,0)
+			#ChannelSwitcher.instance.ConnectToChannel()
 	
 	def WallHackSwich(self,val):
 		if bool(val):
@@ -324,10 +376,11 @@ class SettingsDialog(ui.ScriptWindow):
 			if vid == 0:
 				return
 			dst = OpenLib.dist(x,y,itemX,itemY)
-			allowedRange = max(self.pickUpRange,OpenLib.MAX_PICKUP_DIST) 
+			allowedRange = max(self.pickUpRange,float(OpenLib.MAX_PICKUP_DIST)) 
 			if dst <= allowedRange:
 				#Teleport to item
 				if dst >= OpenLib.MAX_PICKUP_DIST:
+					#return
 					if not self.useRangePickup:
 						return
 					Movement.TeleportStraightLine(x,y,itemX,itemY)
@@ -340,11 +393,28 @@ class SettingsDialog(ui.ScriptWindow):
 		self.Board.Hide()
 		self.SaveSettings()
 
+	def startAntiExp(self, val):
+		self.antiExp = val
+
+	def antiExpFunc(self):
+		if self.antiExp:
+			status = OpenLib.getAllStatusOfMainActor()
+			exp = status['EXP']
+			if exp > 0:
+				val, self.antiExpTimerSleep = OpenLib.timeSleep(self.antiExpTimerSleep, 3)
+				if val:
+					if exp < 1000000:
+						net.SendGuildOfferPacket(exp)
+					else:
+						net.SendGuildOfferPacket(1000000)
 
 	def OnUpdate(self):
 		self.CheckUsePotions()
 		self.checkReviveAndLogin()
 		self.PickUp()
+		self.antiExpFunc()
+		self.UseOnClickDamage()
+
 
 	def switch_state(self):
 		if self.Board.IsShow():
@@ -402,7 +472,7 @@ class ItemListDialog(ui.Window):
 		try:
 			lines = open(app.GetLocalePath()+"/item_list.txt", "r").readlines()
 		except IOError:
-			OpenLog.DebugPrint("Load Itemlist Error, you have so set the IDs manually")
+			OpenLog.DebugPrint("Load Itemlist Error, you have to set the IDs manually")
 			self.Close()
 		for line in lines:
 			tokens = str(line).split("\t")

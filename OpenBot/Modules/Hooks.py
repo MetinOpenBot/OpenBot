@@ -1,5 +1,6 @@
 import game,sys,chat,net
 import functools
+import OpenLog
 
 """
 Hooking module.
@@ -7,6 +8,7 @@ Hooking module.
 
 #The current phase.
 CURRENT_PHASE = 5
+phaseCallbacks = {}
 
 class Hook():
 	"""
@@ -79,8 +81,19 @@ def phaseIntercept(*args,**kwargs):
 	global CURRENT_PHASE
 	if len(args)>1 and args[1] != 0:
 		CURRENT_PHASE = args[0]
+	OpenLog.DebugPrint("PHASE: "+ str(CURRENT_PHASE))
+	for callback_id in phaseCallbacks:
+		callback = phaseCallbacks[callback_id]
+		if callable(callback):
+			callback(CURRENT_PHASE)
 	phaseHook.CallOriginalFunction(*args,**kwargs)
 
+def registerPhaseCallback(id,func):
+	phaseCallbacks[id] = func
+
+def deletePhaseCallback(id):
+	if id in phaseCallbacks:
+		del phaseCallbacks[id]
 
 class SkipHook(Hook):
 	def __init__(self,toHookFunc):

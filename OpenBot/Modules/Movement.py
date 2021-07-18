@@ -1,4 +1,4 @@
-import eXLib,ui,chr,player,chat,background,app
+import eXLib,ui,chr,player,chat,background,app,net
 import OpenLib,MapManager,OpenLog
 
 
@@ -136,7 +136,9 @@ class MovementDialog(ui.ScriptWindow):
         self.callback = callback
         if(round(x) != round(self.currDestinationX) or round(y) != round(self.currDestinationY)):
             my_x,my_y,z = player.GetMainCharacterPosition()
+            OpenLog.DebugPrint("[MOVEMENT] Finding Path from ("+str(my_x)+","+str(my_y)+") to " + "("+str(x)+","+str(y)+")")
             self.path = eXLib.FindPath(my_x,my_y,x,y)
+            OpenLog.DebugPrint("[MOVEMENT] Path Found with "+str(len(self.path)) +" points")
             if(len(self.path)>0):
                 self.currDestinationX = x
                 self.currDestinationY = y
@@ -264,6 +266,7 @@ def StopMovement():
 
 
 def TeleportToPosition(dst_x,dst_y,max_packets=MAX_TELEPORT_PACKETS):
+    import time
     """
     Teleport to a position by using pathfinding and telporting in multiple small steps.
     max_packets allows to avoid spamming the server and crash by putting a limit on maximum number of packets sent. 
@@ -291,9 +294,10 @@ def TeleportToPosition(dst_x,dst_y,max_packets=MAX_TELEPORT_PACKETS):
         counter_,pos = TeleportStraightLine(curr_x,curr_y,dest_last_x, dest_last_y,max_packets-counter)
         counter += counter_
         if counter >= max_packets:
+            chr.SelectInstance(net.GetMainActorVID())
             chr.SetPixelPosition(pos[0],pos[1])
             #chat.AppendChat(3,str(counter) + " packets sent.")
-            app.sleep(TELEPORT_WAIT_TIME)
+            time.sleep(TELEPORT_WAIT_TIME)
             return max_packets + TeleportToPosition(dst_x,dst_y,max_packets)
         curr_x,curr_y = (dest_last_x, dest_last_y)
         dest_last_x, dest_last_y = point
@@ -302,6 +306,7 @@ def TeleportToPosition(dst_x,dst_y,max_packets=MAX_TELEPORT_PACKETS):
     counter += counter_
     #chat.AppendChat(3,str(counter) + " packets sent.")
     
+    chr.SelectInstance(net.GetMainActorVID())
     chr.SetPixelPosition(pos[0],pos[1])
     #Reload mobs
     eXLib.SendStatePacket(pos[0]-100,pos[1]-100,0.0,1,0)

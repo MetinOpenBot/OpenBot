@@ -1,4 +1,4 @@
-import ui
+import ui,wndMgr
 
 def RGB(r, g, b):
 	return (r*255, g*255, b*255)
@@ -21,8 +21,8 @@ ui.ComboBox.GetSelectedIndex = GetSelectedIndex
 ui.ComboBox.OnSelectItem = OnSelectItem
 
 
-#func is a callback that give responsabilty to the caller for changing the state
-#funcState is a callback that automatically changes the sate and pass it (the new state) as argument
+# func is a callback that give responsabilty to the caller for changing the state
+# funcState is a callback that automatically changes the sate and pass it (the new state) as argument
 class OnOffButton(ui.Button):
 	def __init__(self,OffUpVisual, OffOverVisual, OffDownVisual,OnUpVisual, OnOverVisual, OnDownVisual, image=None,tooltip=None,funcState=None,defaultValue=0):
 		defaultValue = bool(defaultValue)
@@ -40,16 +40,16 @@ class OnOffButton(ui.Button):
 		self.OnChange()
 
 	def OnChange(self):
-		if self.isOn == True:
+		if self.isOn is True:
 			self.SetOff()
 		else:
 			self.SetOn()
 
-		if self.FuncState != None:
+		if self.FuncState is not None:
 			self.FuncState(self.isOn)
 
-	def SetValue(self,val):
-		if val == 1 or val == True:
+	def SetValue(self, val):
+		if val == 1 or val is True:
 			self.SetOn()
 		else:
 			self.SetOff()
@@ -65,14 +65,17 @@ class OnOffButton(ui.Button):
 		self.SetOverVisual(self.OffOverVisual)
 		self.SetDownVisual(self.OffDownVisual)
 		self.isOn = False
+
 	def __del__(self):
 		self.Hide()
-		if self.image != None:
+		if self.image is not None:
 			self.image.Hide()
 			self.image.__del__()
 		ui.Button.__del__(self)
-	
+
+
 class SlotWithToolTip(ui.SlotWindow):
+
 	def __init__(self,x,y,vnum,count,slotIndex,parent):
 		slot = ui.SlotWindow.__init__(self)
 		slot.SetParent(parent)
@@ -126,8 +129,7 @@ class Component:
 		button.SetToolTipText(tooltipText)
 		#button.SetEvent(func)
 		button.Show()
-		return button	
-
+		return button
 		
 	def HideButton(self, parent, buttonName, tooltipText, x, y, func, UpVisual, OverVisual, DownVisual):
 		button = ui.Button()
@@ -403,6 +405,7 @@ class TabWindow(ui.Window):
 		for btn,page in self.tabs:
 			page.Hide()
 		self.GetCurTab().Show()
+
 
 
 #Return a button,slider and label, all *args and **kwargs are used on button

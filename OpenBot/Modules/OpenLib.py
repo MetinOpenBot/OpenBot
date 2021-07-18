@@ -5,31 +5,43 @@ import ui,chr,time,app, net, player,wndMgr,math,snd,eXLib,uiToolTip,item,FileMan
 from datetime import datetime
 #import pack
 
-CONFIG_BOSSES_ID = eXLib.PATH + 'OpenBot/Saves/boss_ids.txt'
-
 #Range of player attack
 ATTACK_RANGE = 270
 
 #Types
+NONE_TYPE = -99
 METIN_TYPE = 2
 MONSTER_TYPE = 0
 PLAYER_TYPE = 6
 BOSS_TYPE = -1
+ORE_TYPE = -2
 
 BOSS_IDS = dict()
+ORES_IDS = dict()
 #SEARCH_ITEMS_MAX_PRICE = dict()
+
+WARRIOR_MALE_ID = 1
+WARRIOR_FEMALE_ID = 4
+SURA_MALE_ID = 2
+SURA_FEMALE_ID = 6
+NINJA_MALE_ID = 1
+NINJA_FEMALE_ID = 5
+SHAMAN_MALE_ID = 3
+SHAMAN_FEMALE_ID = 7
 
 MAX_INVENTORY_SIZE = 90
 
-#Max telport sitance before resync by server
+# Max teleport distance before resync by server
 MAX_TELEPORT_DIST = 2400
+ATTACK_MAX_DIST_NO_TELEPORT = 290
 
 MIN_RACE_SHOP = 30000
 MAX_RACE_SHOP = 30008
 
 #Possible game phases
-PHASE_GAME = 5
 PHASE_LOGIN = 1
+PHASE_SELECT = 2
+PHASE_GAME = 5
 
 
 #Minumum number of empty slots for the inventory to be considered full
@@ -37,7 +49,7 @@ INV_FULL_MIN_EMPTY = 10
 MAX_ITEM_COUNT = 200
 
 #Maximum distance to pickup before telport
-MAX_PICKUP_DIST = 290
+MAX_PICKUP_DIST = 290.0
 
 
 #State of a player
@@ -45,22 +57,36 @@ MOVING_TO_TARGET = 1
 ATTACKING_TARGET = 0
 TARGET_IS_DEAD = -1
 
-			
-def isBoss(vnum):
-	"""
-	Check if instance is boss.
+#SkillSet
+SKILL_SET_NONE = 0
+SKILL_SET_BODY_WARRIOR = 1
+SKILL_SET_MENTAL_WARRIOR = 2
+SKILL_SET_DAGGER_NINJA = 3
+SKILL_SET_ARCHER_NINJA = 4
+SKILL_SET_WEAPONS_SURA = 5
+SKILL_SET_MAGIC_SURA = 6
+SKILL_SET_DRAGON_SHAMAN = 7
+SKILL_SET_HEAL_SHAMAN = 8
+SKILL_SET_1_LYCAN = 9
 
-	Args:
-		vnum ([int]): Virtual number of the instance.
+skillSet_map = {
+	SKILL_SET_NONE : ["NONE",0],
+	SKILL_SET_BODY_WARRIOR : ["warrior",1],
+	SKILL_SET_MENTAL_WARRIOR : ["warrior",16],
+	SKILL_SET_DAGGER_NINJA : ["assassin",31],
+	SKILL_SET_ARCHER_NINJA : ["assassin",46],
+	SKILL_SET_WEAPONS_SURA : ["sura",61],
+	SKILL_SET_MAGIC_SURA : ["sura",76],
+	SKILL_SET_DRAGON_SHAMAN : ["shaman",91],
+	SKILL_SET_HEAL_SHAMAN : ["shaman",106],
+	SKILL_SET_1_LYCAN : ["wolfman",170]
+}
 
-	Returns:
-		[bool]: Returns True if is boss and False otherwise.
-	"""
-	if chr.GetVirtualNumber(vnum) in BOSS_IDS:
-		return True
-	else:
-		return False
-		
+#Contains the following information about the skills
+#"CLASS"
+#"NAME"
+#"ICON"
+SKILL_INFORMATION = FileManager.parseSkillDesc()
 
 def Revive():
 	"""
@@ -93,23 +119,69 @@ def ConvertPrice(price_str,item_num=1):
 
 	return (wons,rest_yang)
 
+def GetSkillIconPath(id,grade=1):
+	"""
+	Returns the icon path of a skill image.
+	Args:
+		id(int) : Id of the skill.
+		grade(int) : Grade of the skill 1-3.
+	"""
+	skill = SKILL_INFORMATION[id]
+	skill_class = skill["class"]
+	skill_icon_name = skill["icon"]
+	return "d:/ymir work/ui/skill/" + skill_class + "/" + skill_icon_name + "_0"+str(grade)+".sub"
 
+def GetClassSkillIDs(_class):
+	"""
+	Returns all skill ids of each class.
+	Args:
+		_class(int) : The SkillSet of the class.
+	"""
+	startIndex = skillSet_map[_class][1]
+	return [ i for i in range(skillSet_map[_class][1],startIndex+6)]
+
+
+def GetServerInfo(channel):
+	"""
+	Returns the channel info
+	"""
+	import serverInfo
+	for serverNum in serverInfo.REGION_DICT[0].keys():
+	    if serverInfo.REGION_DICT[0][serverNum]['name'] == net.GetServerInfo().split(',')[0]:
+	        serverName = serverInfo.REGION_DICT[0][serverNum]['name']
+	        channelName = serverInfo.REGION_DICT[0][serverNum]['channel'][channel]['name']
+	        account_addr_new = serverInfo.REGION_AUTH_SERVER_DICT[0][serverNum]['ip']
+	        account_port_new = serverInfo.REGION_AUTH_SERVER_DICT[0][serverNum]['port']
+	        addr_new = serverInfo.REGION_DICT[0][serverNum]['channel'][channel]['ip']
+	        port_new = serverInfo.REGION_DICT[0][serverNum]['channel'][channel]['tcp_port']
+	        return (serverName,
+	         channelName,
+	         account_addr_new,
+	         account_port_new,
+	         addr_new,
+	         port_new)
+
+
+def GetClass():
+	"""
+	Returns the a distinct number associated with the skillgroup
+	The possible values are on the beginning of this file under skillset
+
+	Returns:
+		[(int,int)]: Returns a distinct number ofr each skill group or SKILL_SET_NONE if player has no skillset. 
+	"""
+	race = net.GetMainActorRace()
+	group = net.GetMainActorSkillGroup()
+
+	race = race % 4
+	if(group!= 0):
+		return (2*race)+group
 	
-#def GetClass():
-#	race = net.GetMainActorRace()
-#	group = net.GetMainActorSkillGroup()
-#	if race == 0 or race == 4:
-#		return "Warrior" + "/" + str(group)
-#	elif race == 1 or race == 5:
-#		return "Assassin" + "/" + str(group)
-#	elif race == 2 or race == 6:
-#		return "Sura" + "/" + str(group)
-#	elif race == 3 or race == 7:
-#		return "Shaman" + "/" + str(group)
+	return 0
 		
 
 #Skip python select answers
-def skipAnswers(event_answers,hook=False):
+def skipAnswers(event_answers, hook=False):
 	"""
 	Selects the event to be answers.
 	if hook=True will avoid quest answers from showing on screen, the caller is then resposible for removing the hook afterwards by calling showAnswers.
@@ -123,14 +195,17 @@ def skipAnswers(event_answers,hook=False):
 	for index,answer in enumerate(event_answers,start=1):
 		event.SelectAnswer(index,answer)
 
+
 def showAnswers():
 	"""
 	Removes the quest hook, in order for quest answers to be displayed.
 	"""
 	Hook.questHook.UnhookFunction()
-		
+
+
 def GetCurrentText(self):
 	return self.textLine.GetText()
+
 
 def OnSelectItem(self, index, name):
 	self.SetCurrentItem(name)
@@ -140,7 +215,36 @@ def OnSelectItem(self, index, name):
 def GetSelectedIndex(self):
 	return self.listBox.GetSelectedItem()
 
+def IsThisPlayer(vid):
+	if chr.GetInstanceType(vid) == PLAYER_TYPE:
+		return True
+	return False
 
+def IsThisMetin(vid):
+	if chr.GetInstanceType(vid) == METIN_TYPE:
+		return True
+	return False
+
+def IsThisBoss(vid):
+	"""
+	Check if instance is boss.
+
+	Args:
+		vnum ([int]): Virtual number of the instance.
+
+	Returns:
+		[bool]: Returns True if is boss and False otherwise.
+	"""
+	chr.SelectInstance(vid)
+	if chr.GetRace() in BOSS_IDS.keys():
+		return True
+	return False
+
+def IsThisOre(vid):
+	chr.SelectInstance(vid)
+	if chr.GetRace() in ORES_IDS.keys():
+		return True
+	return False
 
 #Checks if inventory is full by checking empty spaces
 def isInventoryFull():
@@ -293,8 +397,13 @@ def RotateMainCharacter(x,y):
 	chr.SelectInstance(player.GetMainCharacterIndex())
 	rot = GetRotation(my_x,my_y,x,y)
 	chr.SetRotation(rot)
-	
-	
+
+def RotateMainCharacterByVid(vid):
+	chr.SelectInstance(vid)
+	x, y, z = chr.GetPixelPosition()
+	RotateMainCharacter(x, y)
+
+
 def GetCurrentPhase():
 	"""
 	Returns the current phase of the game.
@@ -314,6 +423,44 @@ def IsInGamePhase():
 	"""
 	return GetCurrentPhase() == PHASE_GAME
 
+
+def getAllStatusOfMainActor():
+	"""
+	Returns the currents stats of main character.
+
+	Returns:
+		dict
+
+	"""
+	character_status = {
+		'NAME': player.GetName(),
+		'MONEY': player.GetMoney(),
+		'MOVING_SPEED': player.MOVING_SPEED,
+		'RACE': player.GetRace(),
+		'LEVEL': player.LEVEL,
+		'EXP': player.GetEXP(),
+		'NEXT_EXP': player.NEXT_EXP,
+		'GUILD_ID': player.GetGuildID(),
+		'GUILD_NAME': player.GetGuildName(),
+		'DEF_BONUS': player.DEF_BONUS,
+		'ATT_BONUS': player.ATT_BONUS,
+		'ATT_POWER': player.ATT_POWER,
+		'ATT_SPEED': player.ATT_SPEED,
+		'STATUS': player.GetStatus(),
+		'MAX_HP': player.MAX_HP,
+		'HP': player.HP,
+		'HP_RECOVERY':  player.HP_RECOVERY,
+		'MAX_SP': player.MAX_SP,
+		'SP': player.SP,
+		'SP_RECOVERY': player.SP_RECOVERY,
+		'STAMINA': player.STAMINA,
+		'STAT': player.STAT
+
+	}
+
+	return character_status
+
+
 def isPlayerCloseToInstance(vid_target):
 	"""
 	Check if an instance is close to another instance.
@@ -324,16 +471,15 @@ def isPlayerCloseToInstance(vid_target):
 	Returns:
 		[type]: [description]
 	"""
-	my_vid = net.GetMainActorVID()
-	target_x,target_y,zz = chr.GetPixelPosition(vid_target) 
-	for vid in eXLib.InstancesList:
-		if not chr.HasInstance(vid):
-			continue
-		if chr.GetInstanceType(vid) == PLAYER_TYPE and vid != my_vid:
-			curr_x,curr_y,z = chr.GetPixelPosition(vid)
-			distance = dist(target_x,target_y,curr_x,curr_y)
-			if(distance < 300):
-				return True
+	if vid_target not in eXLib.InstancesList:
+		return False
+
+	player_x, player_y, player_z = chr.GetPixelPosition(PLAYER_VID)
+	target_x, target_y, target_z = chr.GetPixelPosition(vid_target)
+	distance = dist(target_x, target_y, player_x, player_y)
+
+	if distance < 300:
+		return True
 	
 	return False
 		
@@ -506,6 +652,25 @@ def GetCurrentChannel():
 		OpenLog.DebugPrint("Exception raised when trying to obtain current channel.")
 		return 0
 
+def GetCurrentServer():
+	try:
+		return net.GetServerInfo().split(',')[0]
+	except:
+		OpenLog.DebugPrint("Exception raised when trying to obtain current channel.")
+		return 0
+
+
+def IsWeaponArch():
+	"""
+	Return true if weapon is arch
+	"""
+	idx = player.GetItemIndex(player.EQUIPMENT, item.EQUIPMENT_WEAPON)
+	if idx == 0:
+		return False
+	item.SelectItem(idx)
+	if item.GetItemType() == item.ITEM_TYPE_WEAPON and item.GetItemSubType() == item.WEAPON_BOW:
+		return True
+	return False
 
 class WaitingDialog(ui.ScriptWindow):
 
@@ -613,8 +778,6 @@ class EterPackOperator(object):
 
 		
 #LoadDictFile(CONFIG_PSHOP_AUTO_BUY,SEARCH_ITEMS_MAX_PRICE,float)
-
-
-
-FileManager.LoadDictFile(CONFIG_BOSSES_ID,BOSS_IDS,int)
+FileManager.LoadDictFile(FileManager.CONFIG_BOSSES_ID, BOSS_IDS, int)
+FileManager.LoadDictFile(FileManager.CONFIG_ORES_ID, ORES_IDS, int)
 import Movement

@@ -10,12 +10,19 @@ A Bot/Mod that adds complex functionality to the metin2 client. It needs be used
 - SearchBot
 - LevelBot (with change location)
 - FishBot
+- Farmbot
+- Skillbot
+- Radar
+- Mining bot
+- Channel Switcher
+- Cloud Exploit Damage
 - Auto-pot and auto-restart
 - Shop-creator
 - Inventory Manager
 - Teleport
 - Auto buy/sell
 - SpeedBoost
+- AntiExp
 
 ## Preview
 ![image info](https://i.gyazo.com/b1fa500eeaadabc1be91cc7b89782647.jpg)
@@ -64,3 +71,11 @@ v1.1:
 - Changed installation method (now you are not required to add files to the game folder)
 - Now teleports reloads the environment after each teleport
 - Minor bug fixes
+
+v2.0:
+- Add farmbot (Use this to farm metins or to mine ore)
+- Add Skillbot (Using active skills like aura or enchanted blade, is mounting and dismounting horse if needed)
+- Add Radar (List of interesting instances around with posibility to warp to them)
+- Add AntiExp (Automaticly donate exp do guild)
+- Add ChannelSwitcher (Instantly connecting to chosen channel)
+- Fix a lot of bugs, crashes are very rare now

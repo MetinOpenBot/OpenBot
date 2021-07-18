@@ -1,4 +1,4 @@
-import eXLib,ui,net,chr,player,chat,item
+import eXLib,ui,net,chr,player,chat,item,app
 import OpenLib,NPCInteraction,FileManager,Movement,UIComponents,Settings
 from FileManager import boolean
 
@@ -84,15 +84,15 @@ class FishingBotDialog(ui.Window):
   		#self.useFishBait = self.comp.OnOffButton(self.Board, '   Use fish as bait', '', 140, 380)
 		
   		self.waitNum = self.comp.TextLine(self.Board, '100', 330, 347, self.comp.RGB(255, 255, 255))
-		self.serverNum = self.comp.TextLine(self.Board, '100', 330, 367, self.comp.RGB(255, 255, 255))
+		#self.serverNum = self.comp.TextLine(self.Board, '100', 330, 367, self.comp.RGB(255, 255, 255))
 		self.startStopNum = self.comp.TextLine(self.Board, '100', 330, 387, self.comp.RGB(255, 255, 255))
 
 		self.l2 = self.comp.TextLine(self.Board, 'Wait after fish', 35, 347, self.comp.RGB(255, 255, 255))
-		self.l1 = self.comp.TextLine(self.Board, 'Time left fishing(server)', 35, 367, self.comp.RGB(255, 255, 255))
+		#self.l1 = self.comp.TextLine(self.Board, 'Time left fishing(server)', 35, 367, self.comp.RGB(255, 255, 255))
 		self.val = self.comp.TextLine(self.Board, 'Time fishing', 35, 387, self.comp.RGB(255, 255, 255))
 		
 		self.WaitDelaySlider = self.comp.SliderBar(self.Board, 0.0, self.WaitDelay_func, 140, 350)
-		self.ServerDelaySlider = self.comp.SliderBar(self.Board, 0.0, self.ServerDelay_func, 140, 370)
+		#self.ServerDelaySlider = self.comp.SliderBar(self.Board, 0.0, self.ServerDelay_func, 140, 370)
 		self.StartStopDelaySlider = self.comp.SliderBar(self.Board, 0.0, self.StartStopDelay_func, 140, 390)
 
 		#Grill button and image
@@ -157,7 +157,7 @@ class FishingBotDialog(ui.Window):
 		self.lastTimeFire = 0
 
 		self.WaitDelay_func()
-		self.ServerDelay_func()
+		#self.ServerDelay_func()
 		self.StartStopDelay_func()
 
 	def loadSettings(self):
@@ -165,7 +165,7 @@ class FishingBotDialog(ui.Window):
 			for fishButtonName in self.catches[fish_id].keys():
 				self.catches[fish_id][fishButtonName].SetValue(boolean(FileManager.ReadConfig("FishBot_" + str(fish_id) + "_" + fishButtonName)))
 		self.WaitDelaySlider.SetSliderPos(float(FileManager.ReadConfig("FishBot_WaitDelay")))
-		self.ServerDelaySlider.SetSliderPos(float(FileManager.ReadConfig("FishBot_ServerDelay")))
+		#self.ServerDelaySlider.SetSliderPos(float(FileManager.ReadConfig("FishBot_ServerDelay")))
 		self.StartStopDelaySlider.SetSliderPos(float(FileManager.ReadConfig("FishBot_StartStopDelay")))
 		self.hairBtn.SetValue(boolean(FileManager.ReadConfig("FishBot_HairDyes")))
 		self.buyWormsBtn.SetValue(boolean(FileManager.ReadConfig("FishBot_BuyWorms")))
@@ -189,7 +189,7 @@ class FishingBotDialog(ui.Window):
 				value = self.catches[fish_id][fishButtonName].isOn
 				FileManager.WriteConfig(name,str(value))
 		FileManager.WriteConfig("FishBot_WaitDelay", str(self.WaitDelaySlider.GetSliderPos()))
-		FileManager.WriteConfig("FishBot_ServerDelay", str(self.ServerDelaySlider.GetSliderPos()))
+		#FileManager.WriteConfig("FishBot_ServerDelay", str(self.ServerDelaySlider.GetSliderPos()))
 		FileManager.WriteConfig("FishBot_StartStopDelay", str(self.StartStopDelaySlider.GetSliderPos()))
 		FileManager.WriteConfig("FishBot_HairDyes", str(self.hairBtn.isOn))
 		FileManager.WriteConfig("FishBot_BuyWorms", str(self.buyWormsBtn.isOn))
@@ -305,9 +305,9 @@ class FishingBotDialog(ui.Window):
 		self.waitDelay = int(self.WaitDelaySlider.GetSliderPos()*10)
 		self.waitNum.SetText(str(self.waitDelay)+ ' s')
   
-	def ServerDelay_func(self):
-		self.serverDelay = int(self.ServerDelaySlider.GetSliderPos()*10)
-		self.serverNum.SetText(str(self.serverDelay) + ' s')
+	#def ServerDelay_func(self):
+		#self.serverDelay = int(self.ServerDelaySlider.GetSliderPos()*10)
+		#self.serverNum.SetText(str(self.serverDelay) + ' s')
 	
 	def StartStopDelay_func(self):
 		self.startStopDelay= float(self.StartStopDelaySlider.GetSliderPos())
@@ -443,7 +443,7 @@ class FishingBotDialog(ui.Window):
 				valFishState, self.lastTimeFishState = OpenLib.timeSleep(self.lastTimeFishState,self.StartStopDelaySlider.GetSliderPos()*10)
 				if valFishState:
 					chat.AppendChat(3,"[Fishing-Bot] Pulling Rod")
-					eXLib.SendStopFishing(eXLib.SUCCESS_FISHING,self.ServerDelaySlider.GetSliderPos()*10)
+					eXLib.SendStopFishing(eXLib.SUCCESS_FISHING,app.GetRandom(3,10))
 					self.lastTimeWaitState = OpenLib.GetTime()
 					self.SetState(self.STATE_WAITING)
 					self.isRodDown = False
