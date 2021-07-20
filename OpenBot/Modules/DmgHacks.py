@@ -25,7 +25,7 @@ class DmgHacks(ui.Window):
 		self.enableButton = self.comp.OnOffButton(self.Board, '', '', 130, 200, OffUpVisual='OpenBot/Images/start_0.tga', OffOverVisual='OpenBot/Images/start_1.tga', OffDownVisual='OpenBot/Images/start_2.tga',OnUpVisual='OpenBot/Images/stop_0.tga', OnOverVisual='OpenBot/Images/stop_1.tga', OnDownVisual='OpenBot/Images/stop_2.tga',funcState=self.OnOffBtnState )
   		self.playerClose = self.comp.OnOffButton(self.Board, '', '', 130, 50)
 		self.cloudBtn = self.comp.OnOffButton(self.Board, '\t\t\t\tCloud exploit', 'Only on dagger ninja', 170, 50)
-
+		self.attackPlayerBtn = self.comp.OnOffButton(self.Board, '\t\t\t\tAttack players', '', 170, 70)
 		self.RangeLabel = self.comp.TextLine(self.Board, 'Range', 13, 92, self.comp.RGB(255, 255, 255))
 		self.SpeedLabel = self.comp.TextLine(self.Board, 'Speed', 13, 126, self.comp.RGB(255, 255, 255))
 		self.MonsterLabel = self.comp.TextLine(self.Board, 'Monsters', 13, 160, self.comp.RGB(255, 255, 255))
@@ -53,19 +53,21 @@ class DmgHacks(ui.Window):
 		self.SpeedSlider.SetSliderPos(float(FileManager.ReadConfig("WaitHack_Speed")))
 		self.RangeSlider.SetSliderPos(float(FileManager.ReadConfig("WaitHack_Range")))
 		self.cloudBtn.SetValue(boolean(FileManager.ReadConfig("WaitHack_CloudExploit")))
+		self.attackPlayerBtn.SetValue(boolean(FileManager.ReadConfig('WaitHack_attackPlayer')))
 		self.playerClose.SetValue(boolean(FileManager.ReadConfig("WaitHack_PlayerClose")))
 	def saveSettings(self):
 		FileManager.WriteConfig("WaitHack_MaxMonsters", str(self.MonsterSlider.GetSliderPos()))
 		FileManager.WriteConfig("WaitHack_Speed", str(self.SpeedSlider.GetSliderPos()))
 		FileManager.WriteConfig("WaitHack_Range", str(self.RangeSlider.GetSliderPos()))
 		FileManager.WriteConfig("WaitHack_PlayerClose", str(self.playerClose.isOn))
+		FileManager.WriteConfig("WaitHack_attackPlayer", str(self.attackPlayerBtn.isOn))
 		FileManager.WriteConfig("WaitHack_CloudExploit", str(self.cloudBtn.isOn))
 
 		FileManager.Save()
 	
 	
 	def Monster_func(self):
-		self.maxMonster = int(self.MonsterSlider.GetSliderPos()*1000)
+		self.maxMonster = int(self.MonsterSlider.GetSliderPos()*100)
 		self.monsterNum.SetText(str(self.maxMonster))
   
 	def Range_func(self):
@@ -155,8 +157,14 @@ class DmgHacks(ui.Window):
 					continue
 				if self.playerClose.isOn and chr.GetInstanceType(vid) == OpenLib.PLAYER_TYPE and vid != net.GetMainActorVID():
 					return
-				if player.GetCharacterDistance(vid) < self.range and not eXLib.IsDead(vid):	
-					lst.append(vid)
+				if player.GetCharacterDistance(vid) < self.range and not eXLib.IsDead(vid):
+					if self.attackPlayerBtn.isOn:	
+						lst.append(vid)
+					else:
+						if not OpenLib.IsThisPlayer(vid):
+							lst.append(vid)
+						
+
 			hit_counter = 0
 			i = 0
 			#chat.AppendChat(3,str(len(lst)))
@@ -190,6 +198,9 @@ def Resume():
 	Resumes damage hack.
 	"""
 	Dmg.enableButton.SetOn()
+
+def IsOn():
+	return Dmg.enableButton.isOn
 
 def switch_state():
 	"""
