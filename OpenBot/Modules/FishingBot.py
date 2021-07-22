@@ -311,7 +311,7 @@ class FishingBotDialog(ui.Window):
 	
 	def StartStopDelay_func(self):
 		self.startStopDelay= float(self.StartStopDelaySlider.GetSliderPos())
-		self.startStopNum.SetText(str(round(self.startStopDelay*10), 3) + ' s')
+		self.startStopNum.SetText(str(round(self.startStopDelay*10, 3)) + ' s')
 
 	def PlaceFireAndGrillFish(self):
 		slot = OpenLib.GetItemByID(self.campFire)
