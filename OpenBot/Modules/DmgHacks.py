@@ -67,7 +67,7 @@ class DmgHacks(ui.Window):
 	
 	
 	def Monster_func(self):
-		self.maxMonster = int(self.MonsterSlider.GetSliderPos()*100)
+		self.maxMonster = int(self.MonsterSlider.GetSliderPos()*1000)
 		self.monsterNum.SetText(str(self.maxMonster))
   
 	def Range_func(self):
