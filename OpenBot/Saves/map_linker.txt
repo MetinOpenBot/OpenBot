@@ -1,7 +1,10 @@
 # x y orig_map_name map_dest vid event_answer	
 137 126 metin2_map_c1 metin2_map_c3 0
-125 1118 metin2_map_c1 map_a2 20009 0|0
-125 1118 metin2_map_c1 map_n_snowm_01 20009 0|1
+125 1118 metin2_map_c1 map_a2 20009 0|0|0
+125 1118 metin2_map_c1 map_n_snowm_01 20009 0|1|0
+432 685 metin2_map_c1 metin2_map_n_desert_01 9012 0|0|2|0
+432 685 metin2_map_c1 map_n_snowm_01 9012 0|0|3|0
+432 685 metin2_map_c1 metin2_map_n_flame_01 9012 0|0|4|0
 901 151 metin2_map_c3 metin2_map_c1 0
 914 907 metin2_map_c3 metin2_map_guild_03 0
 535 41 metin2_map_c3 metin2_map_monkeydungeon 0
@@ -9,8 +12,11 @@
 136 899 metin2_map_c3 metin2_map_n_flame_01 20009 0|0|1
 420 133 metin2_map_guild_03 metin2_map_c3 0
 876 1127 metin2_map_b1 metin2_map_b3 0
-908 87 metin2_map_b1 map_a2 20009 0|0
-908 87 metin2_map_b1 map_n_snowm_01 20009 0|1
+908 87 metin2_map_b1 map_a2 20009 0|0|0
+908 87 metin2_map_b1 map_n_snowm_01 20009 0|1|0
+519 512 metin2_map_b1 metin2_map_n_desert_01 9012 0|0|2|0
+519 512 metin2_map_b1 map_n_snowm_01 9012 0|0|3|0
+519 512 metin2_map_b1 metin2_map_n_flame_01 9012 0|0|4|0
 106 88 metin2_map_b3 metin2_map_b1 0
 138 879 metin2_map_b3 metin2_map_guild_02 0
 593 71 metin2_map_b3 metin2_map_monkeydungeon 0
@@ -20,6 +26,9 @@
 405 73 metin2_map_a1 metin2_map_a3 0
 76 601 metin2_map_a1 map_a2 20009 0|0
 76 601 metin2_map_a1 map_n_snowm_01 20009 0|1
+555 625 metin2_map_b1 metin2_map_n_desert_01 9012 0|0|2|0
+555 625 metin2_map_b1 map_n_snowm_01 9012 0|0|3|0
+555 625 metin2_map_b1 metin2_map_n_flame_01 9012 0|0|4|0
 948 804 metin2_map_a3 metin2_map_a1 0
 145 823 metin2_map_a3 metin2_map_guild_01 0
 1002 565 metin2_map_a3 metin2_map_monkeydungeon 0

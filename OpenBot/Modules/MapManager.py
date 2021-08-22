@@ -71,6 +71,7 @@ class Map:
 	def __init__(self,map_name):
 		self.map_name = map_name
 		self.npcs = FileManager.parseNpcList(map_name)
+		OpenLog.DebugPrint("[Map-Manager] Map "+map_name + " has npcs="+str(self.npcs))
 		self.links = dict()
 
 	def SetMapLink(self,link):
@@ -255,6 +256,7 @@ def GetMap(map_name=None):
 	if map_name in maps:
 		return maps[map_name]
 	else:
+		OpenLog.DebugPrint("[Map-Manager] Map " + map_name+" doesn't exist.")
 		return None
 
 #Returns a tupple containing a list of links, and the map name
@@ -293,5 +295,4 @@ def GetNpcFromMap(map_name,npc_race,position=None):
 
 setMaps()
 	
-
 

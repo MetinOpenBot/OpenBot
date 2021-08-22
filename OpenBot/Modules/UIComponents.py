@@ -250,12 +250,12 @@ class Component:
 		thin = ui.ThinBoard()
 		if parent != None:
 			thin.SetParent(parent)
-		if moveable == TRUE:
+		if moveable == True:
 			thin.AddFlag('movable')
 			thin.AddFlag('float')
 		thin.SetSize(width, heigh)
 		thin.SetPosition(x, y)
-		if center == TRUE:
+		if center == True:
 			thin.SetCenterPosition()
 		thin.Show()
 		return thin

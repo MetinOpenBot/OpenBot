@@ -23,6 +23,7 @@ CONFIG_LOCATION_CHANGER = eXLib.PATH + 'OpenBot/Saves/location_changer.txt'
 CONFIG_FARMBOT_SETTINGS = eXLib.PATH + 'OpenBot/Saves/farmbot.bot'
 SHOP_CREATOR_LOG = eXLib.PATH + 'OpenBot/Saves/shop_log.txt'
 FARMBOT_WAYPOINTS_LISTS = eXLib.PATH + 'OpenBot/Saves/Paths/'
+ACTIONS_LISTS = eXLib.PATH + 'OpenBot/Saves/Actions/'
 
 
 
@@ -158,6 +159,17 @@ def LoadListFile(file):
 	except:
 		return []
 	return lst
+
+def LoadActionsDict(file):
+	import _json
+	path_to_file = ACTIONS_LISTS + file
+	dumped_json = {}
+	try:
+		with open(path_to_file, 'r') as file:
+			dumped_json = _json.loads(file.read())
+	except:
+		return {}
+	return dumped_json
 
 def SaveListFile(file,lst):
 	"""Saves a list in a file, each element in a line. 

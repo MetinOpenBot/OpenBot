@@ -10,6 +10,8 @@ def _PlaceFireCallBack():
 	chat.AppendChat(3,"[Fishing-bot] Setting CampFire.")
 	instance.PlaceFireAndGrillFish()
 
+def _ReadyToPullRod():
+	instance.PullRod()
 
 GOLD_RING = 50002
 GOLD_PIECE = 80008
@@ -63,6 +65,7 @@ class FishingBotDialog(ui.Window):
 		self.isRodDown = False
 		self.startPosition = (0,0)
 		self.isMoving = False
+
 		self.BuildWindow()
 
 	def __del__(self):
@@ -83,6 +86,7 @@ class FishingBotDialog(ui.Window):
 		
   		#self.useFishBait = self.comp.OnOffButton(self.Board, '   Use fish as bait', '', 140, 380)
 		
+
   		self.waitNum = self.comp.TextLine(self.Board, '100', 330, 347, self.comp.RGB(255, 255, 255))
 		#self.serverNum = self.comp.TextLine(self.Board, '100', 330, 367, self.comp.RGB(255, 255, 255))
 		self.startStopNum = self.comp.TextLine(self.Board, '100', 330, 387, self.comp.RGB(255, 255, 255))
@@ -94,6 +98,8 @@ class FishingBotDialog(ui.Window):
 		self.WaitDelaySlider = self.comp.SliderBar(self.Board, 0.0, self.WaitDelay_func, 140, 350)
 		#self.ServerDelaySlider = self.comp.SliderBar(self.Board, 0.0, self.ServerDelay_func, 140, 370)
 		self.StartStopDelaySlider = self.comp.SliderBar(self.Board, 0.0, self.StartStopDelay_func, 140, 390)
+
+		self.instantBtn = self.comp.OnOffButton(self.Board, '', 'Instant fishing, it will ignore the delay', 345, 387)
 
 		#Grill button and image
 		item.SelectItem(self.campFire)
@@ -170,6 +176,7 @@ class FishingBotDialog(ui.Window):
 		self.hairBtn.SetValue(boolean(FileManager.ReadConfig("FishBot_HairDyes")))
 		self.buyWormsBtn.SetValue(boolean(FileManager.ReadConfig("FishBot_BuyWorms")))
 		self.rodBtn.SetValue(boolean(FileManager.ReadConfig("FishBot_rodUpgrade")))
+		self.instantBtn.SetValue(boolean(FileManager.ReadConfig("FishBot_instant")))
 
 
 	def StartStopEvent(self,val):
@@ -194,6 +201,7 @@ class FishingBotDialog(ui.Window):
 		FileManager.WriteConfig("FishBot_HairDyes", str(self.hairBtn.isOn))
 		FileManager.WriteConfig("FishBot_BuyWorms", str(self.buyWormsBtn.isOn))
 		FileManager.WriteConfig("FishBot_rodUpgrade", str(self.rodBtn.isOn))
+		FileManager.WriteConfig("FishBot_instant", str(self.instantBtn.isOn))
 		FileManager.Save()
 
 	def isRodAbleToLevelUp(self):
@@ -311,7 +319,7 @@ class FishingBotDialog(ui.Window):
 	
 	def StartStopDelay_func(self):
 		self.startStopDelay= float(self.StartStopDelaySlider.GetSliderPos())
-		self.startStopNum.SetText(str(round(self.startStopDelay*10, 3)) + ' s')
+		self.startStopNum.SetText(str(int(self.startStopDelay*10)) + ' s')
 
 	def PlaceFireAndGrillFish(self):
 		slot = OpenLib.GetItemByID(self.campFire)
@@ -423,7 +431,14 @@ class FishingBotDialog(ui.Window):
 
 		return True
    
-				
+	def PullRod(self):
+		if(self.enableButton.isOn and self.instantBtn.isOn):
+			chat.AppendChat(3,"[Fishing-Bot] Pulling Rod")
+			eXLib.SendStopFishing(eXLib.SUCCESS_FISHING,app.GetRandom(3,10))
+			self.lastTimeWaitState = OpenLib.GetTime()
+			self.SetState(self.STATE_WAITING)
+			self.isRodDown = False
+
 	def OnUpdate(self):
 		val, self.lastTime = OpenLib.timeSleep(self.lastTime,0.1)
 		if(val and self.enableButton.isOn and OpenLib.IsInGamePhase()):
@@ -441,12 +456,8 @@ class FishingBotDialog(ui.Window):
 					
 			if self.state == self.STATE_FISHING:
 				valFishState, self.lastTimeFishState = OpenLib.timeSleep(self.lastTimeFishState,self.StartStopDelaySlider.GetSliderPos()*10)
-				if valFishState:
-					chat.AppendChat(3,"[Fishing-Bot] Pulling Rod")
-					eXLib.SendStopFishing(eXLib.SUCCESS_FISHING,app.GetRandom(3,10))
-					self.lastTimeWaitState = OpenLib.GetTime()
-					self.SetState(self.STATE_WAITING)
-					self.isRodDown = False
+				if valFishState and not self.instantBtn.isOn:
+					self.PullRod()
 
 			if self.state == self.STATE_GOING_TO_SHOP:
 				#The callback will take care of leaving the state
@@ -485,3 +496,4 @@ def switch_state():
 	instance.switch_state()
 
 instance = FishingBotDialog()
+eXLib.RecvStartFishCallback(_ReadyToPullRod)

@@ -1,8 +1,12 @@
+from OpenBot.Modules.Actions import ActionBot
+from OpenBot.Modules import EnergyBot
 import ui,app,chat,chr,net,player,wndMgr,uiCommon,eXLib
-from OpenBot.Modules import FileManager, UIComponents, ShopSearcher,Telehack, PythonManager, Settings, Levelbot, Spambot, Shopcreator, Inventorymanager, FishingBot
+from OpenBot.Modules import FileManager, UIComponents, ShopSearcher,Telehack, PythonManager, Settings, Levelbot, Spambot, Shopcreator, Inventorymanager, FishingBot, KeyBot
 from OpenBot.Modules import FarmingBot
-from OpenBot.Modules import Radar, Skillbot, ChannelSwitcher
+from OpenBot.Modules import Radar, Skillbot, ChannelSwitcher, AutoDungeon
 from OpenBot.Modules.Radar import Radar
+from OpenBot.Modules.Actions import ActionBot
+
 DEBUG = False
 if DEBUG:
     from OpenBot.Modules import Filter, MiningBot
@@ -16,11 +20,12 @@ class OpenBotHackbarDialog(ui.ScriptWindow):
     comp = UIComponents.Component()
     #buff = Buffbot.BuffDialog()
     spam = Spambot.SpamDialog()
-
-
+    action_bot = ActionBot.instance
+    energy_bot = EnergyBot.instance
     radar = Radar()
     tele = Telehack.TeleportHackDialog()
     python_manager = PythonManager.PythonManagerDialog()
+
 
     def __init__(self):
         self.OpenBotBoard = ui.ThinBoard(layer="TOP_MOST")
@@ -28,7 +33,7 @@ class OpenBotHackbarDialog(ui.ScriptWindow):
         if DEBUG:
             self.OpenBotBoard.SetSize(51, 500)
         else:
-            self.OpenBotBoard.SetSize(51, 435)
+            self.OpenBotBoard.SetSize(51, 550)
         self.OpenBotBoard.AddFlag("float")
         self.OpenBotBoard.AddFlag("movable")
         self.OpenBotBoard.Hide()
@@ -74,7 +79,9 @@ class OpenBotHackbarDialog(ui.ScriptWindow):
         self.RadarButton = self.comp.Button(self.OpenBotBoard, '', 'Radar', 8, 323, self.OnRadar, 'OpenBot/Images/Hackbar/radar_0.tga', 'OpenBot/Images/Hackbar/radar_1.tga', 'OpenBot/Images/Hackbar/radar_0.tga')
         self.SkillbotButton = self.comp.Button(self.OpenBotBoard, '', 'Skillbot', 8, 358, self.OnSkillbot, 'OpenBot/Images/Hackbar/skill_0.tga', 'OpenBot/Images/Hackbar/skill_1.tga', 'OpenBot/Images/Hackbar/skill_0.tga')
         self.FarmbotButton = self.comp.Button(self.OpenBotBoard, '', 'Farmbot', 8, 393, self.OnFarmingBot, 'OpenBot/Images/Hackbar/farm_0.tga', 'OpenBot/Images/Hackbar/farm_1.tga', 'OpenBot/Images/Hackbar/farm_0.tga')
-        #self.ChannelSwitcherButton = self.comp.Button(self.OpenBotBoard, '', 'ChannelSwitcher', 8, 428, self.OnChannelSwitcher, 'OpenBot/Images/Hackbar/ch_switch_0.tga', 'OpenBot/Images/Hackbar/ch_switch_1.tga', 'OpenBot/Images/Hackbar/ch_switch_0.tga')
+        self.AutoDungeonButton = self.comp.Button(self.OpenBotBoard, '', 'AutoDungeon', 8, 428, self.OnAutoDungeon, 'OpenBot/Images/Hackbar/dt_0.tga', 'OpenBot/Images/Hackbar/dt_1.tga', 'OpenBot/Images/Hackbar/dt_0.tga')
+        self.EnergyBotButton = self.comp.Button(self.OpenBotBoard, '', 'EnergyBot', 8, 463, self.OnEnergyBot, 'OpenBot/Images/Hackbar/energy_0.tga', 'OpenBot/Images/Hackbar/energy_1.tga', 'OpenBot/Images/Hackbar/energy_0.tga')
+        self.ActionBotButton = self.comp.Button(self.OpenBotBoard, '', 'ActionBot', 8, 498, self.OnActionBot, 'OpenBot/Images/Hackbar/action_0.tga', 'OpenBot/Images/Hackbar/action_1.tga', 'OpenBot/Images/Hackbar/action_0.tga')
 
         if DEBUG:
             self.AnalyzerButton = self.comp.Button(self.OpenBotBoard, '', 'Packet Analyzer', 8, 358, self.PacketAnalyzer, 'OpenBot/Images/Hackbar/analyzer_0.tga', 'OpenBot/Images/Hackbar/analyzer_1.tga', 'OpenBot/Images/Hackbar/analyzer_0.tga')
@@ -156,11 +163,19 @@ class OpenBotHackbarDialog(ui.ScriptWindow):
     def OnFarmingBot(self):
         FarmingBot.switch_state()
 
+    def OnAutoDungeon(self):
+        AutoDungeon.switch_state()
+
     def OnChannelSwitcher(self):
         ChannelSwitcher.switch_state()
 
     def OnSkillbot(self):
         Skillbot.switch_state()
+
+    def OnEnergyBot(self):
+        self.energy_bot.switch_state()
+    def OnActionBot(self):
+        self.action_bot.switch_state()
 
     def OnRadar(self):
         self.radar.switch_state()
@@ -185,6 +200,7 @@ class OpenBotHackbarDialog(ui.ScriptWindow):
         self.QuestionDialog.SetAcceptEvent(ui.__mem_func__(self.Close))
         self.QuestionDialog.SetCancelEvent(ui.__mem_func__(self.CancelQuestionDialog))
         self.QuestionDialog.Open()
+        
     def Close(self):
         app.Abort()
     def CancelQuestionDialog(self):
@@ -234,3 +250,5 @@ try:
 except:
     pass
 app.Shop = OpenBotHackbarDialog()
+KeyBot.instance.enableButton.SetOn()
+KeyBot.instance.Start()

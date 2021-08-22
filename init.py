@@ -33,8 +33,6 @@ setattr(_net, 'GetMainActorVID', _player.GetMainCharacterIndex)
 setattr(_player, 'SetSingleDIKKeyState', SetSingleDIKKeyState)
 setattr(_player, 'SetAttackKeyState', SetAttackKeyState)
 
-command = "mklink /d " + '"' + eXLib.PATH+"OpenBot" + '"' + " OpenBot"
-os.system(command)
 
 #Set Path
 folder = eXLib.PATH+"OpenBot"

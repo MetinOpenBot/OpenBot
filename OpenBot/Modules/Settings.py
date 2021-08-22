@@ -6,6 +6,7 @@ from FileManager import boolean
 import ChannelSwitcher
 import UIComponents
 
+
 class SettingsDialog(ui.ScriptWindow):
 	TIME_DEAD = 5
 	TIME_POTS = 0.2
@@ -15,6 +16,7 @@ class SettingsDialog(ui.ScriptWindow):
 	def __init__(self):
 		ui.ScriptWindow.__init__(self)
 		self.restartHere = False
+		self.restartInCity = False
 		self.bluePotions = True
 		self.redPotions = True
 		self.speedHack = False
@@ -23,6 +25,7 @@ class SettingsDialog(ui.ScriptWindow):
 		self.minMana = 95
 		self.minHealth = 80
 		self.speedMultiplier = 0.0
+		self.lastTimeDead = OpenLib.GetTime()
 
 		self.pickUp = False
 		self.pickUpRange = 290.0
@@ -30,16 +33,21 @@ class SettingsDialog(ui.ScriptWindow):
 		self.pickFilter = set()
 		self.excludeInFilter = True
 		self.useRangePickup = False
+		self.doNotPickupIfPlayerHere = False
+		self.checkIsWallBetweenPlayerAndItem = False
 
 		self.useOnClickDmg = False
 		self.onClickDmgSpeed = 0.0
 		self.timerDmg = OpenLib.GetTime()
 
 		self.wallHack = False
+		self.canFarmbotExchangeBool = False
+		self.canFarmbotExchangeEnergyBool = False
+		self.canFarmbotSellBool = False
 
 		self.sellItems = set()
 
-
+		self.can_add_waiter = True
 		self.timerPots = 0
 		self.timerDead = 0
 		self.pickUpTimer = 0
@@ -51,7 +59,6 @@ class SettingsDialog(ui.ScriptWindow):
 		self.Board.SetPosition(52, 40)
 		self.Board.SetSize(300, 370) 
 		self.Board.SetTitleName("Settings")
-	#	self.Board.AddFlag("float") 
 		self.Board.AddFlag("movable")
 		self.Board.SetCloseEvent(self.Close)
 		self.Board.Hide()
@@ -72,15 +79,21 @@ class SettingsDialog(ui.ScriptWindow):
 		
 		##GENERAL
 		self.loginBtn = self.comp.OnOffButton(self.generalTab, '\t\t\t\t\t\tAuto Login', '', 20, 160,funcState=self.AutoLoginOnOff,defaultValue=int(self.autoLogin))
-		self.reviveBtn = self.comp.OnOffButton(self.generalTab, '\t\t\t\t\t\tAuto Restart Here', '', 20, 140,funcState=self.ReviveOnOff,defaultValue=int(self.restartHere))
-		self.WallHackBtn = self.comp.OnOffButton(self.generalTab, '', 'WallHack', 200, 140, image='OpenBot/Images/General/wall.tga',funcState=self.WallHackSwich,defaultValue=int(self.wallHack))
+		self.reviveBtn = self.comp.OnOffButton(self.generalTab, '\t\t\t\t\t\tAuto Restart', '', 20, 140,funcState=self.ReviveOnOff,defaultValue=int(self.restartHere))
+		#self.reviveInCityBtn = self.comp.OnOffButton(self.generalTab, '\t\t\t\t\t\t in city?', '', 120, 140,funcState=self.ReviveInCityOnOff,defaultValue=int(self.restartInCity))
+		self.WallHackBtn = self.comp.OnOffButton(self.generalTab, '', 'WallHack', 210, 140, image='OpenBot/Images/General/wall.tga',funcState=self.WallHackSwich,defaultValue=int(self.wallHack))
 		self.antiExpBtn =self.comp.OnOffButton(self.generalTab, '\t\t\t\t\t\tAntiExp', '', 20, 180,funcState=self.startAntiExp,defaultValue=int(self.antiExp))
 		
 		self.redPotButton,self.SlideRedPot,self.redPotLabel = UIComponents.GetSliderButtonLabel(self.generalTab,self.SlideRedMove, '', 'Use Red Potions', 28, 18,image="icon/item/27002.tga",funcState=self.OnRedOnOff,defaultValue=int(self.redPotions),defaultSlider=float(self.minHealth/100.0))
 		self.bluePotButton,self.SlideBluePot,self.bluePotLabel = UIComponents.GetSliderButtonLabel(self.generalTab,self.SlideBlueMove, '', 'Use Blue Potions', 28, 50,image="icon/item/27005.tga",funcState=self.OnBlueOnOff,defaultValue=int(self.bluePotions),defaultSlider=float(self.minMana/100.0))
 		self.speedHackButton,self.SlideSpeedHack,self.speedHackLabel = UIComponents.GetSliderButtonLabel(self.generalTab,self.SlideMovSpeedMove, '', 'Use Speed Boost', 28, 82,image="icon/item/27104.tga",funcState=self.OnSpeedHackOnOff,defaultValue=int(self.speedHack),defaultSlider=float(self.speedMultiplier/10))
-		
-		
+		self.waitTimeDeadSlotBar, self.waitTimeDeadEditLine = self.comp.EditLine(self.generalTab, '', 130, 235, 25, 15, 3)
+		self.waitTimeDeadText = self.comp.TextLine(self.generalTab, 's', 160, 235, self.comp.RGB(255, 255, 255))
+		self.waitTimeDeadText2 = self.comp.TextLine(self.generalTab, 'Time to wait after dead:', 20, 235, self.comp.RGB(255, 255, 255))
+		self.showKeyBindsBtn = self.comp.Button(self.generalTab, 'KeyBinds', 'Show key binds', 190, 235, self.OnShowKeyBindsButton,
+                                             'd:/ymir work/ui/public/Middle_Button_01.sub',
+                                             'd:/ymir work/ui/public/Middle_Button_02.sub',
+                                             'd:/ymir work/ui/public/Middle_Button_03.sub')
 		##PICKUP
 		self.pickupButton,self.SlidePickupSpeed,self.speedPickupLabel = UIComponents.GetSliderButtonLabel(self.pickupTab,self.pickupSpeedSlide, '', 'Enable Pickup', 30, 18,image="OpenBot/Images/General/pickup.tga",funcState=self.OnPickupOnOff,defaultValue=int(self.pickUp),defaultSlider=float(self.pickUpSpeed/3.0))
 		self.rangePickupButton,self.SliderangePickup,self.rangePickupLabel = UIComponents.GetSliderButtonLabel(self.pickupTab,self.pickupRangeSlide, 'Range', 'Enable Range Pickup', 15, 60,funcState=self.OnRangePickupOnOff,offsetX=30,offsetY=4,defaultValue=int(self.useRangePickup),defaultSlider=float(self.pickUpRange/10000.0))
@@ -91,6 +104,8 @@ class SettingsDialog(ui.ScriptWindow):
 		self.PickSearchItemSlotBar, self.PickSearchItemEditLine = self.comp.EditLine(self.pickupTab, '', 85, 270, 110, 15, 20)
 		self.labelFilter = self.comp.TextLine(self.pickupTab, 'Pickup Filter', 115, 90, self.comp.RGB(255, 255, 0))
 		self.PickfilterModeBtn = self.comp.OnOffButton(self.pickupTab, '\t\t\tExclude Items', 'If not selected will only pick items in the list', 190, 130,funcState=self.OnChangePickMode,defaultValue=int(self.excludeInFilter))
+		self.doNotPickupIfPlayerNear = self.comp.OnOffButton(self.pickupTab, '\t\t\tAvoid players', 'If you select this option, pickup will work only when there are not any player', 190, 110,funcState=self.OnDoNotPickupIfPlayerNear,defaultValue=int(self.doNotPickupIfPlayerHere))
+		#self.checkIsWallBetweenPlayerAndItemBtn = self.comp.OnOffButton(self.pickupTab, '\t\t\tNo lags mode', 'If this option is checked, OpenBot will check is wall between player and item', 190, 90,funcState=self.OnDoNotPickupIfPlayerNear,defaultValue=int(self.doNotPickupIfPlayerHere))
 		self.PickbarItems, self.PickfileListBox, self.PickScrollBar = self.comp.ListBoxEx2(self.pickupTab, 15, 117, 140, 150)
 
 
@@ -99,6 +114,9 @@ class SettingsDialog(ui.ScriptWindow):
 		self.ShopbarItems, self.ShopFileListBox, self.ShopScrollBar = self.comp.ListBoxEx2(self.shopTab, 60, 30, 140, 150)
 		self.AddSellItemBtn = self.comp.Button(self.shopTab, 'Add', '', 65, 185, self.OpenSellItemDialog, 'd:/ymir work/ui/public/Middle_Button_01.sub', 'd:/ymir work/ui/public/Middle_Button_02.sub', 'd:/ymir work/ui/public/Middle_Button_03.sub')
 		self.SellRemoveBtn = self.comp.Button(self.shopTab, 'Remove', '', 140, 185, self.UISellRemoveFilterItem, 'd:/ymir work/ui/public/Middle_Button_01.sub', 'd:/ymir work/ui/public/Middle_Button_02.sub', 'd:/ymir work/ui/public/Middle_Button_03.sub')
+		#self.labelFarmbotOptions = self.comp.TextLine(self.shopTab, 'Farmbot Options', 95, 210, self.comp.RGB(255, 255, 0))
+		#self.CanFarmbotExchangeToShop = self.comp.OnOffButton(self.shopTab, '\t\tSell items', '', 60, 225 ,funcState=self.OnCanFarmbotExchangeToShop, defaultValue=self.canFarmbotSellBool)
+		#self.CanFarmbotExchangeToEnergy = self.comp.OnOffButton(self.shopTab, '\t\t\t\t\t\t\t\t\t\t\t\tExchange to energy fragments', '', 60, 245,funcState=self.OnCanFarmbotExchangeToEnergy, defaultValue=self.canFarmbotExchangeEnergyBool)
 		#self.BtnRedBuy = self.comp.OnOffButton(self.generalTab, '', 'Buy Red Pots', 200, 130, image='icon/item/27002.tga',funcState=self.OnRedBuy,defaultValue=int(self.wallHack))
 
 		## CHANNELS
@@ -108,6 +126,8 @@ class SettingsDialog(ui.ScriptWindow):
 		for id in sorted(self.ChannelSwitcher.channels):
 			setattr(self, 'channel_' + str(id), self.ChannelSwitcher.channels[id]['btn'])
 
+
+		self.waitTimeDeadEditLine.SetText(str(FileManager.ReadConfig("timeAfterDead")))
 
 		##Init labels
 		self.UpdatePickFilterList()
@@ -137,6 +157,7 @@ class SettingsDialog(ui.ScriptWindow):
 		self.wallHack = boolean(FileManager.ReadConfig("WallHack"))
 		self.onClickDmgSpeed  = boolean(FileManager.ReadConfig("OnClickDamageSpeed"))
 		self.antiExp = boolean(FileManager.ReadConfig("antiExp"))
+		self.doNotPickupIfPlayerHere = boolean(FileManager.ReadConfig("doNotPickupIfPlayerHere"))
 		for i in FileManager.LoadListFile(FileManager.CONFIG_PICKUP_FILTER):
 			self.addPickFilterItem(int(i))
 		self.sellItems = {int(i) for i in FileManager.LoadListFile(FileManager.CONFIG_SELL_INVENTORY)}
@@ -159,13 +180,28 @@ class SettingsDialog(ui.ScriptWindow):
 		FileManager.WriteConfig("WallHack", str(self.wallHack))
 		FileManager.WriteConfig("OnClickDamageSpeed", str(self.onClickDmgSpeed))
 		FileManager.WriteConfig("antiExp", str(self.antiExp))
+		FileManager.WriteConfig("timeAfterDead", str(self.waitTimeDeadEditLine.GetText()))
+		FileManager.WriteConfig("doNotPickupIfPlayerHere", str(self.doNotPickupIfPlayerHere))
+		
 		#chat.AppendChat(3,str(self.pickUp))
 		FileManager.SaveListFile(FileManager.CONFIG_PICKUP_FILTER,self.pickFilter)
 		FileManager.SaveListFile(FileManager.CONFIG_SELL_INVENTORY,self.sellItems)
 		FileManager.Save()
 
-
 #UI STUFF
+	def OnShowKeyBindsButton(self):
+		from OpenBot.Modules import KeyBot
+		KeyBot.instance.switch_state()
+
+	def OnDoNotPickupIfPlayerNear(self, val):
+		self.doNotPickupIfPlayerHere = val
+
+	def OnCanFarmbotExchangeToShop(self, val):
+		self.canFarmbotSellBool = val
+
+	def OnCanFarmbotExchangeToEnergy(self, val):
+		self.canFarmbotExchangeEnergyBool = val
+
 	def UpdatePickFilterList(self):	
 		searchValue = self.PickSearchItemEditLine.GetText()
 		self.PickfileListBox.RemoveAllItems()
@@ -182,6 +218,8 @@ class SettingsDialog(ui.ScriptWindow):
 			name = item.GetItemName()
 			self.ShopFileListBox.AppendItem(OpenLib.Item(str(filterItem)+" "+name))
 
+	def GetTimeAfterDead(self):
+		return float(self.waitTimeDeadEditLine.GetText())
 
 	def UIAddPickFilterItem(self,item):
 		self.addPickFilterItem(item)
@@ -196,7 +234,6 @@ class SettingsDialog(ui.ScriptWindow):
 		ItemListDialog(self.UIAddPickFilterItem,pos[0]+self.Board.GetWidth(),pos[1])
 		#ItemListDialog(self.AddFilterItem,pos[0],pos[1])
 
-	
 	def OpenSellItemDialog(self):
 		pos = self.Board.GetGlobalPosition()
 		ItemListDialog(self.UIAddSellFilterItem,pos[0]+self.Board.GetWidth(),pos[1])
@@ -207,7 +244,7 @@ class SettingsDialog(ui.ScriptWindow):
 			return
 		item_name = _item.GetText()
 		id = item_name.split(" ",1)
-		self.sellItems.remove(int(id))
+		self.sellItems.remove(int(id[0]))
 		self.UpdateSellFilterList()
 
 	def UIPickRemoveFilterItem(self):
@@ -235,6 +272,9 @@ class SettingsDialog(ui.ScriptWindow):
 
 	def ReviveOnOff(self,val):
 		self.restartHere = val
+	
+	def ReviveInCityOnOff(self, val):
+		self.restartInCity = val
 
 	def AutoLoginOnOff(self,val):
 		self.autoLogin = val
@@ -306,7 +346,7 @@ class SettingsDialog(ui.ScriptWindow):
 			Movement.TeleportStraightLine(x,y,mob_x,mob_y)
 		_class =  OpenLib.GetClass()
 		if _class == OpenLib.SKILL_SET_DAGGER_NINJA:
-			if not player.IsSkillCoolTime(5):
+			if not player.IsSkillCoolTime(5) and player.GetStatus(player.SP) >  OpenLib.GetSkillManaNeed(35,5):
 				eXLib.SendUseSkillPacketBySlot(5,vid)
 			eXLib.SendAddFlyTarget(vid,mob_x,mob_y)
 			eXLib.SendShoot(35)
@@ -334,7 +374,11 @@ class SettingsDialog(ui.ScriptWindow):
 			return
 
 		if self.restartHere and player.GetStatus(player.HP) <= 0:
-			OpenLib.Revive()
+			self.lastTimeDead = OpenLib.GetTime()
+			if not self.restartInCity:
+				OpenLib.Revive()
+			else:
+				OpenLib.Revive(in_city=True)
 		
 		if self.autoLogin and OpenLib.GetCurrentPhase() == OpenLib.PHASE_LOGIN:
 			net.DirectEnter(0,0)
@@ -366,6 +410,11 @@ class SettingsDialog(ui.ScriptWindow):
 		
 	def PickUp(self):
 		if self.pickUp:
+
+			if self.doNotPickupIfPlayerHere:
+				if OpenLib.IsAnyPlayerHere():
+					return
+
 			val, self.pickUpTimer = OpenLib.timeSleep(self.pickUpTimer,self.pickUpSpeed)
 			if not val:
 				return
@@ -383,6 +432,11 @@ class SettingsDialog(ui.ScriptWindow):
 					#return
 					if not self.useRangePickup:
 						return
+					
+					#if self.checkIsWallBetweenPlayerAndItem:
+					#	if eXLib.IsPathBlocked(x, y, itemX, itemY):
+					#		return
+
 					Movement.TeleportStraightLine(x,y,itemX,itemY)
 					eXLib.SendPickupItem(vid)
 					Movement.TeleportStraightLine(itemX,itemY,x,y)
@@ -397,16 +451,20 @@ class SettingsDialog(ui.ScriptWindow):
 		self.antiExp = val
 
 	def antiExpFunc(self):
-		if self.antiExp:
+		from OpenBot.Modules.Actions import ActionBot
+		def _anti_exp():
+			self.can_add_waiter = True
 			status = OpenLib.getAllStatusOfMainActor()
 			exp = status['EXP']
-			if exp > 0:
-				val, self.antiExpTimerSleep = OpenLib.timeSleep(self.antiExpTimerSleep, 3)
-				if val:
-					if exp < 1000000:
-						net.SendGuildOfferPacket(exp)
-					else:
-						net.SendGuildOfferPacket(1000000)
+			if exp > 0 and exp < 1000000:
+				net.SendGuildOfferPacket(exp)
+			else:
+				net.SendGuildOfferPacket(1000000)
+		
+		if self.antiExp and self.can_add_waiter:
+			ActionBot.instance.AddNewWaiter(3, _anti_exp)
+			self.can_add_waiter = False
+
 
 	def OnUpdate(self):
 		self.CheckUsePotions()
@@ -497,7 +555,6 @@ class ItemListDialog(ui.Window):
 	def __RefreshFileList(self):
 		self.PickfileListBox.RemoveAllItems()
 		
-
 def GetIDsItemsToSell():
 	global instance
 	"""
@@ -522,6 +579,14 @@ def GetSlotItemsToSell():
 			slots.add(i)
 	return slots
 
+def GetLastTimeDead():
+	"""
+	Returns the last time the player was dead from OpenLib.GetTime and the amount of time to wait.
+	Returns:
+		tupple[float,float]: Returns the last time the player was dead and the time to wait.
+	"""
+	global instance
+	return (instance.lastTimeDead, instance.GetTimeAfterDead())
 	
 
 #SettingsDialog().Show()

@@ -167,7 +167,7 @@ class TeleportHackDialog(ui.ScriptWindow):
 
 		self.tooltipInfo.Hide()
 
-		if FALSE == self.board.IsIn():
+		if False == self.board.IsIn():
 			return
 
 		(mouseX, mouseY) = wndMgr.GetMousePosition()
@@ -198,7 +198,7 @@ class TeleportHackDialog(ui.ScriptWindow):
 
 	def OnPressEscapeKey(self):
 		self.Hide()
-		return TRUE
+		return True
 		
 MapBuffer = {}		
 def GetCurrentMapSize():

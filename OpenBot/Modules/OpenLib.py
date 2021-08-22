@@ -1,7 +1,7 @@
 _chr = chr
-from OpenBot.Modules.Hooks import Hook
+from OpenBot.Modules.Hooks import Hook, questHook
 import Hooks
-import ui,chr,time,app, net, player,wndMgr,math,snd,eXLib,uiToolTip,item,FileManager,event,chat,OpenLog
+import ui,chr,time,app, net, player,wndMgr,math,snd,eXLib,uiToolTip,item,FileManager,event,chat,OpenLog,skill, m2netm2g
 from datetime import datetime
 #import pack
 
@@ -10,6 +10,7 @@ ATTACK_RANGE = 270
 
 #Types
 NONE_TYPE = -99
+OBJECT_TYPE = 1
 METIN_TYPE = 2
 MONSTER_TYPE = 0
 PLAYER_TYPE = 6
@@ -88,11 +89,15 @@ skillSet_map = {
 #"ICON"
 SKILL_INFORMATION = FileManager.parseSkillDesc()
 
-def Revive():
+def Revive(in_city=False):
 	"""
 	Revive the main instance.
 	"""
-	net.SendCommandPacket(5,1)
+	player.SetAttackKeyState(False)
+	if not in_city:
+		net.SendCommandPacket(m2netm2g.PLAYER_CMD_RESTART, 1)
+	else:
+		net.SendCommandPacket(m2netm2g.PLAYER_CMD_REVIVE, 1)
 
 def ConvertPrice(price_str,item_num=1):
 	"""
@@ -119,7 +124,7 @@ def ConvertPrice(price_str,item_num=1):
 
 	return (wons,rest_yang)
 
-def GetSkillIconPath(id,grade=1):
+def GetSkillIconPath(id,grade=3):
 	"""
 	Returns the icon path of a skill image.
 	Args:
@@ -191,7 +196,7 @@ def skipAnswers(event_answers, hook=False):
 		hook ([boolean]): If true will hook quest answers, in order to not show it on screen.
 	"""
 	if hook:
-		Hook.questHook.HookFunction()
+		questHook.HookFunction()
 	for index,answer in enumerate(event_answers,start=1):
 		event.SelectAnswer(index,answer)
 
@@ -200,12 +205,15 @@ def showAnswers():
 	"""
 	Removes the quest hook, in order for quest answers to be displayed.
 	"""
-	Hook.questHook.UnhookFunction()
+	Hooks.questHook.UnhookFunction()
 
 
 def GetCurrentText(self):
 	return self.textLine.GetText()
 
+
+def GetSkillManaNeed(skill_id,skill_slot):
+	return skill.GetSkillNeedSP(skill_id,player.GetSkillCurrentEfficientPercentage(skill_slot))
 
 def OnSelectItem(self, index, name):
 	self.SetCurrentItem(name)
@@ -215,9 +223,21 @@ def OnSelectItem(self, index, name):
 def GetSelectedIndex(self):
 	return self.listBox.GetSelectedItem()
 
+def IsThisNPC(vid):
+	if chr.GetInstanceType(vid) == OBJECT_TYPE:
+		return True
+	return False
+
 def IsThisPlayer(vid):
 	if chr.GetInstanceType(vid) == PLAYER_TYPE:
 		return True
+	return False
+
+def IsAnyPlayerHere():
+	for vid in eXLib.InstancesList:
+		if net.GetMainActorVID() != vid:
+			if IsThisPlayer(vid):
+				return True
 	return False
 
 def IsThisMetin(vid):
@@ -246,6 +266,7 @@ def IsThisOre(vid):
 		return True
 	return False
 
+
 #Checks if inventory is full by checking empty spaces
 def isInventoryFull():
 	global player
@@ -270,7 +291,26 @@ def isInventoryFull():
 		return True
 	else:
 		return False
+
+def GetNumberOfFreeSlots():
+	global player
+	INV_FULL_MIN_EMPTY = 10
+	MAX_INVENTORY_SIZE = 90
+	numItems = MAX_INVENTORY_SIZE
+	for i in range(0,MAX_INVENTORY_SIZE):
+		curr_id = player.GetItemIndex(i)
+		if curr_id != 0:
+			item.SelectItem(curr_id)
+			s = item.GetItemSize()
+			numItems-=s[0]*s[1]
 	
+	if numItems < INV_FULL_MIN_EMPTY:
+		return 0
+	else:
+		return numItems - INV_FULL_MIN_EMPTY
+
+
+
 def GetItemByType(_id):
 	"""
 	Return the slot index of the first item with the specified type in the inventory.
@@ -414,6 +454,14 @@ def GetCurrentPhase():
 	#return eXLib.GetCurrentPhase()
 	return Hooks.GetCurrentPhase()
 
+def IsMonsterNearby():
+	for vid in eXLib.InstancesList:
+		if vid != player.GetMainCharacterIndex():
+			_type = chr.GetInstanceType(vid)
+			if _type == MONSTER_TYPE or _type == METIN_TYPE:
+				return True
+	return False
+
 def IsInGamePhase():
 	"""
 	Check if is in game phase.
@@ -460,8 +508,35 @@ def getAllStatusOfMainActor():
 
 	return character_status
 
+def GetNearestMonsterVid():
+	(closest_vid,_dist) = (0,999999999)
+	my_pos = player.GetMainCharacterPosition()
+	for vid in eXLib.InstancesList:
+		if not chr.HasInstance(vid):
+			continue
 
-def isPlayerCloseToInstance(vid_target):
+		if eXLib.IsDead(vid):
+			continue
+		
+		_type = chr.GetInstanceType(vid)
+		if MONSTER_TYPE == _type or METIN_TYPE == _type:
+			monst_pos = chr.GetPixelPosition(vid)
+			this_dist = dist(my_pos[0],my_pos[1],monst_pos[0],monst_pos[1])
+
+			if this_dist < _dist:
+				_dist = this_dist
+				closest_vid = vid
+		
+	return closest_vid
+
+def isPathToVID(vid_target):
+	x, y, z = chr.GetPixelPosition(vid_target)
+	my_x, my_y, my_z = chr.GetPixelPosition(net.GetMainActorVID())
+	if eXLib.FindPath(my_x, my_y, x, y):
+		return True
+	return False
+
+def isPlayerCloseToInstance(vid_target, max_dist=150):
 	"""
 	Check if an instance is close to another instance.
 
@@ -474,14 +549,38 @@ def isPlayerCloseToInstance(vid_target):
 	if vid_target not in eXLib.InstancesList:
 		return False
 
-	player_x, player_y, player_z = chr.GetPixelPosition(PLAYER_VID)
+	player_x, player_y, player_z = player.GetMainCharacterPosition()
 	target_x, target_y, target_z = chr.GetPixelPosition(vid_target)
 	distance = dist(target_x, target_y, player_x, player_y)
 
-	if distance < 300:
+	if distance < max_dist:
 		return True
 	
 	return False
+
+def isPlayerCloseToPosition(position_x, position_y, max_dist=150):
+	player_x, player_y, player_z = player.GetMainCharacterPosition()
+	distance = dist(position_x, position_y, player_x, player_y)
+
+	if distance < max_dist:
+		return True
+	
+	return False
+
+def GetInstanceByID(_id):
+	for vid in eXLib.InstancesList:
+		if not chr.HasInstance(vid):
+			continue
+		if eXLib.IsDead(vid):
+			continue
+		mob_x,mob_y,mob_z = chr.GetPixelPosition(vid)
+		if eXLib.IsPositionBlocked(mob_x,mob_y):
+			continue
+		chr.SelectInstance(vid)
+		if chr.GetRace() == _id:
+			return vid
+	return -1
+
 		
 def getClosestInstance(_type,is_unblocked=True):
 	"""
@@ -498,16 +597,18 @@ def getClosestInstance(_type,is_unblocked=True):
 	for vid in eXLib.InstancesList:
 		if not chr.HasInstance(vid):
 			continue
+
 		if is_unblocked:
 			mob_x,mob_y,mob_z = chr.GetPixelPosition(vid)
 			if eXLib.IsPositionBlocked(mob_x,mob_y):
 				continue
+
 		this_distance = player.GetCharacterDistance(vid)
 		if eXLib.IsDead(vid):
 			continue
 
 		type = chr.GetInstanceType(vid)
-		if type in _type or (BOSS_TYPE in type and isBoss(vid)):
+		if type in _type:
 			if this_distance < _dist and not isPlayerCloseToInstance(vid):
 				_dist = this_distance
 				closest_vid = vid
@@ -582,6 +683,26 @@ def GetTime():
 	"""
 	return time.clock()
 
+def GetPlayerEmpireFirstMap():
+	empire_id = net.GetEmpireID()
+	#chat.AppendChat(empire_id)
+	empires_map_names = {
+		1: 'metin2_map_a1',
+		2: 'metin2_map_b1',
+		3: 'metin2_map_c1',
+	}
+	return empires_map_names[empire_id]
+
+def GetPlayerEmpireSecondMap():
+	empire_id = net.GetEmpireID()
+	#chat.AppendChat(empire_id)
+	empires_map_names = {
+		1: 'metin2_map_a3',
+		2: 'metin2_map_b3',
+		3: 'metin2_map_c3',
+	}
+	return empires_map_names[empire_id]	
+
 #Return a tupple, the first value is true or false according if the timer has been reached, and the second value is the current timer
 #if first value is true or the old timer if false
 def timeSleep(last_time,sleepTime):
@@ -639,6 +760,32 @@ def dist(x1,y1,x2,y2):
 	"""
 	return math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
 
+def GetNextChannel():
+	from OpenBot.Modules import ChannelSwitcher
+	current_channel = GetCurrentChannel()
+	if not current_channel:
+		return 0
+	ChannelSwitcher.instance.GetChannels()
+	if current_channel + 1 > len(ChannelSwitcher.instance.channels):
+		current_channel = 1
+	else:
+		current_channel += 1
+	
+	return current_channel
+
+def GetPreviousChannel():
+	from OpenBot.Modules import ChannelSwitcher
+	current_channel = GetCurrentChannel()
+	if not current_channel:
+		return 0
+	ChannelSwitcher.instance.GetChannels()	
+	if current_channel - 1 < 1:
+		current_channel = len(ChannelSwitcher.instance.channels)
+	else:
+		current_channel -= 1
+	
+	return current_channel
+	
 def GetCurrentChannel():
 	"""
 	Returns the current channel based on the string under the minimap.
@@ -671,6 +818,47 @@ def IsWeaponArch():
 	if item.GetItemType() == item.ITEM_TYPE_WEAPON and item.GetItemSubType() == item.WEAPON_BOW:
 		return True
 	return False
+
+def IsWeaponPickaxe():
+	"""
+		Return true if weapon is pickaxe
+	"""
+	idx = player.GetItemIndex(player.EQUIPMENT, item.EQUIPMENT_WEAPON)
+	if idx == 0:
+		return False
+	item.SelectItem(idx)
+	if item.GetItemType() == item.ITEM_TYPE_PICK:
+		return True
+	return False
+
+def SetTimerFunction(time,function):
+	"""
+	Executes a function after a specified period of time in seconds. 
+	"""
+	function_handler.RegisterOnEventExit(time,function)
+
+
+class TimeFunctionHandler(ui.ScriptWindow):
+
+	def __init__(self):
+		ui.ScriptWindow.__init__(self)
+		self.function_list = []
+
+
+	def RegisterOnEventExit(self,time,function):
+		self.function_list.append({"time":GetTime()+time,"function":function})
+
+	def OnUpdate(self):
+		curTime = GetTime()
+		to_del = []
+		for i,func in enumerate(self.function_list):
+			if curTime >= func["time"]:
+				func["function"]()
+				to_del.append(i)
+		
+		for i in to_del:
+			del self.function_list[i]
+
 
 class WaitingDialog(ui.ScriptWindow):
 
@@ -780,4 +968,7 @@ class EterPackOperator(object):
 #LoadDictFile(CONFIG_PSHOP_AUTO_BUY,SEARCH_ITEMS_MAX_PRICE,float)
 FileManager.LoadDictFile(FileManager.CONFIG_BOSSES_ID, BOSS_IDS, int)
 FileManager.LoadDictFile(FileManager.CONFIG_ORES_ID, ORES_IDS, int)
+Hooks._debugHookFunctionArgs(event.SelectAnswer)
+function_handler = TimeFunctionHandler()
+function_handler.Show()
 import Movement

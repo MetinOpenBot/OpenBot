@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <_x202A__x206C__x200C__x200B__x206A__x200E__x202E__x202E__x202A__x206F__x200D__x206D__x202C__x206E__x206D__x202D__x200E__x206F__x202A__x202D__x200F__x206A__x206F__x200F__x206A__x200C__x206D__x200E__x206F__x206B__x206F__x202E__x200D__x206A__x206B__x200F__x200F__x206C__x206F__x200C__x202E_ xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
-  <LastUpdateCheck>2021-07-18T15:31:24.6649398+01:00</LastUpdateCheck>
+  <LastUpdateCheck>2021-08-19T20:17:24.307937+01:00</LastUpdateCheck>
   <Modules>
     <_x202A__x202C__x200D__x200C__x200B__x202D__x200C__x200D__x202A__x202A__x206A__x202C__x200E__x200E__x206A__x206F__x200B__x202D__x202D__x206B__x206A__x202B__x200F__x200C__x206F__x206C__x202D__x206C__x202A__x200C__x200D__x202D__x206E__x200C__x206A__x200E__x202E__x206C__x206C__x206B__x202E_>
       <Enable>true</Enable>
       <Export i:nil="true" />
       <Parameters i:nil="true" />
-      <Path>C:\Users\Zuzanna\Documents\GitHub\OpenBot\eXLib.dll</Path>
+      <Path>C:\Users\Zuzanna\Desktop\PrivateOpenBot\eXLib.dll</Path>
     </_x202A__x202C__x200D__x200C__x200B__x202D__x200C__x200D__x202A__x202A__x206A__x202C__x200E__x200E__x206A__x206F__x200B__x202D__x202D__x206B__x206A__x202B__x200F__x200C__x206F__x206C__x202D__x206C__x202A__x200C__x200D__x202D__x206E__x200C__x206A__x200E__x202E__x206C__x206C__x206B__x202E_>
   </Modules>
   <Options>

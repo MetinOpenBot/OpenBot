@@ -1,6 +1,8 @@
 import Movement
-import ui,OpenLib,NPCInteraction,DmgHacks,player,Settings,chat,OpenLog
+import ui,OpenLib,NPCInteraction,DmgHacks,player,Settings,chat,OpenLog,Settings
 import abc
+from .Actions import ActionRequirementsCheckers
+
 class BotBase(ui.ScriptWindow):
 	""" 
 	Base class for a bot mode.
@@ -18,19 +20,31 @@ class BotBase(ui.ScriptWindow):
 	STATE_WATING = 3
 
 
-	def __init__(self,time_wait=0.1,shopOnFullInv = False):
+	def __init__(self,time_wait=0.1,shopOnFullInv = False,onlyGamePhase=True,waitIsPlayerDead=False):
 		"""Constructor
 
 		Args:
 			time_wait (float, optional): Time between frame calls, in seconds. Defaults to 0.06.
 			shopOnFullInv (bool, optional): If True it will go to shop when inventory full. Defaults to False.
+			onlyGamePhase (bool,optional): The same as SetOnlyGamePhase
+			waitIsPlayerDead (bool,optional): The same as SetWaitPlayerIsDead
 		"""
 		__metaclass__ = abc.ABCMeta
+
+		self.currSchema = None
+		self.currStage = 0
+		self.currAction = 0
+		self.isCurrActionDone = True
 		ui.ScriptWindow.__init__(self)
 		self.Show()
 		self.State = self.STATE_STOPPED
 		self.time_wait = time_wait
 		self.generalTimer = 0
+		self.onlyGamePhase = onlyGamePhase
+		self.waitIsPlayerDead = waitIsPlayerDead
+		self.isPaused = False
+
+
 
 		#Shop - Can be changed using callback by super class
 		self.onInvFullCallback = None #Will call this function before going to shop
@@ -61,6 +75,9 @@ class BotBase(ui.ScriptWindow):
 		OpenLog.DebugPrint("[BotBase] Resuming bot")
 		self.__SetStateBotting()
 
+	def SetOnlyGamePhase(self,onlyGame):
+		self.onlyGamePhase = onlyGame
+
 	def GoToShop(self):
 		if self.onInvFullCallback != None:
 			self.onInvFullCallback()
@@ -72,8 +89,18 @@ class BotBase(ui.ScriptWindow):
 	def DoChecks(self):
 		if self.allowShopOnFullInv and OpenLib.isInventoryFull() and self.CanPause():
 			self.GoToShop()
-			return True		
-		
+			return True
+
+		if self.waitIsPlayerDead:
+			last_time_dead, time_wait = Settings.GetLastTimeDead()
+			if(last_time_dead+time_wait>OpenLib.GetTime()):
+				if(self.CanPause() and not self.isPaused):
+					self.isPaused = True
+					self.Pause()
+				return True
+			if(self.isPaused):
+				self.isPaused = False
+				self.Resume()
 		return False
 	
 
@@ -101,6 +128,23 @@ class BotBase(ui.ScriptWindow):
 		"""
 		self.time_wait = this_time
 
+	def SetOnlyGamePhase(self,onlyGame):
+		"""
+		Sets the frame to be run either only on game phase or on all phases.
+
+		Args:
+			onlyGame ([boolean]): If True, Frame will only be ran in Game phase otherwise will be ran in all phases.
+		"""
+		self.onlyGamePhase = onlyGame
+
+	def SetWaitPlayerIsDead(self,waitAfterDead):
+		"""
+		Sets the frame to not be run a specified time in settings after it died.
+
+		Args:
+			waitAfterDead ([boolean]): If True, Frame will not be ran on the next x seconds defined in Settings.
+		"""
+		self.waitIsPlayerDead = waitAfterDead
 
 	def Start(self):
 		"""
@@ -115,7 +159,67 @@ class BotBase(ui.ScriptWindow):
 		self.StopBot()
 		self.__SetStateStopped()
 		NPCInteraction.StopAction()
-		
+		self.currSchema = None
+		self.currStage = 0
+		self.currAction = 0
+		self.isCurrActionDone = True
+	
+	def CheckRequirementsForCurrSchema(self):
+		for requirement in self.currSchema['requirements'].keys():
+			if requirement == 'lvl':
+				if not ActionRequirementsCheckers.isAboveLVL(self.currSchema['requirements'][requirement]):
+					chat.AppendChat(3, '[BotBase] You have ' + str(player.GetStatus(player.LEVEL)) + ' lvl but you need ' + str(self.currSchema['requirements'][requirement]))
+					return False
+
+			if requirement == 'inInMap':
+				if not ActionRequirementsCheckers.isInMaps(self.currSchema['requirements'][requirement]):
+					chat.AppendChat(3, '[BotBase] You need to be atleast on this maps: ' + str(self.currSchema['requirements'][requirement]))
+					return False
+            
+			if requirement == 'isOnPosition':
+				if not ActionRequirementsCheckers.inOnPosition(self.currSchema['requirements'][requirement]):
+					chat.AppendChat(3, '[BotBase] You need to be on this position: ' + str(self.currSchema['requirements'][requirement]))
+					return False
+        
+		return True
+
+	def SetIsCurrActionDoneTrue(self):
+		self.GoToNextAction()
+		self.isCurrActionDone = True
+
+	def GoToNextAction(self):
+		if self.currSchema != None:
+			if self.currAction + 1 < len(self.currSchema['stages'][self.currStage]['actions']):
+				self.currAction += 1
+			else:
+				if 'options' in self.currSchema['stages'][self.currStage].keys():
+					if 'stage_reapat' in self.currSchema['stages'][self.currStage]['options']:
+						self.currAction = 0
+						return
+				OpenLog.DebugPrint('Stage Complete')
+				self.GoToNextStage()
+
+	def GoToNextStage(self):
+		self.currAction = 0
+		if self.currStage + 1 < len(self.currSchema['stages']):
+			if 'options' in self.currSchema['stages'][self.currStage].keys():
+				if 'stage_reapat' in self.currSchema['stages'][self.currStage]['options']:
+					return
+
+			self.currStage += 1
+		else:
+			if 'options' in self.currSchema['stages'][self.currStage].keys():
+				if 'repeatDungeon' in self.currSchema['stages'][self.currStage]['options']:
+					if self.currSchema['stages'][self.currStage]['options']['repeatDungeon']:
+						self.currSchema['stages'][self.currStage]['options']['CountRepeat'] += 1
+						if self.currSchema['stages'][self.currStage]['options']['CountRepeat'] > self.currSchema['stages'][self.currStage]['options']['HowMuchRepeat']:
+							OpenLog.DebugPrint('Dungeon Complete')
+							self.Stop()
+						else:
+							self.currStage = self.RecognizeStageBot()
+			OpenLog.DebugPrint('Dungeon Complete')
+			self.Stop()			
+			
 ###########################
 ####Abstract Functions######
 ###########################
@@ -152,6 +256,9 @@ class BotBase(ui.ScriptWindow):
 		"""Function called when the bot is stopped.
 		"""
 		return
+	
+	def RecognizeStageBot(self):
+		return 0
 #########################
 
 
@@ -163,7 +270,7 @@ class BotBase(ui.ScriptWindow):
 		if not val:
 			return
 
-		if OpenLib.GetCurrentPhase() != OpenLib.PHASE_GAME:
+		if OpenLib.GetCurrentPhase() != OpenLib.PHASE_GAME and self.onlyGamePhase:
 			return
 
 		if self.State == self.STATE_WATING:

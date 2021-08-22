@@ -55,7 +55,7 @@ class NPCAction:
 			map_path,self.mapName = MapManager.GetClosestMapPathWithNPC(self.race)
 
 		if self.position == None:
-			self.position=MapManager.GetNpcFromMap(self.mapName,self.race)
+			self.position=MapManager.GetNpcFromMap(self.mapName, self.race)
 
 		OpenLog.DebugPrint("[NPC-ACTION] - New NPC Action race "+str(self.race)+" on map " + str(self.mapName) + " at position "+ str(self.position))
 
@@ -64,10 +64,11 @@ class NPCAction:
 
 	def DoAction(self):
 		vid = self.SearchVIDClosest()
+		#OpenLog.DebugPrint(str(vid))
 		if vid:
 			OpenLog.DebugPrint("[NPC-ACTION] - Doing NPC Action")
 			net.SendOnClickPacket(vid)
-			OpenLib.skipAnswers(self.event_answer)
+			OpenLib.skipAnswers(self.event_answer, False)
 			return True
 		return False
 

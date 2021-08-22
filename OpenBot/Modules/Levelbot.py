@@ -41,7 +41,7 @@ class LevelBotDialog(BotBase):
 
 
 	def __init__(self):
-		BotBase.__init__(self,self.TIME_WAIT)
+		BotBase.__init__(self,self.TIME_WAIT,waitIsPlayerDead=True)
 		self.Range = 20000
 		self.startPosition = (0,0)
 		self.goToCenter = False

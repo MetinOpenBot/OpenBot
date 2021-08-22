@@ -1,3 +1,4 @@
+from OpenBot.Modules.OpenLog import DebugPrint
 import eXLib,ui,chr,player,chat,background,app,net
 import OpenLib,MapManager,OpenLog
 
@@ -25,7 +26,7 @@ TIME_STOPPED_ALLOWED = 3
 #Tim after each loop
 TIME_WAIT = 0.2
 
-TIME_WAIT_MAP_CHANGE = 2
+TIME_WAIT_MAP_CHANGE = 5
 
 #Callback
 def _DestinationReachedCallback():
@@ -46,6 +47,7 @@ class MapMovementDialog(ui.ScriptWindow):
         self.generalTimer = 0
         self.callback = None
         self.State = self.STATE_NONE
+        self.can_add_action = True
 
     def SetState(self,state):
         self.State = state
@@ -66,18 +68,51 @@ class MapMovementDialog(ui.ScriptWindow):
 
         self.maxDist = maxDist
         
-        
+    
         self.leftLinkList = listLinks
         self.finalPosition = finalPosition
         self.callback = callback
         self.SetStateMoving()
 
+    def SetCanAddActionTrue(self):
+        self.can_add_action = True
+        
+
     def SetStateMoving(self):
-        self.currLink = self.leftLinkList.pop(0)
-        position = self.currLink.npc_action.GetNpcPosition()
-        OpenLog.DebugPrint("Moving to ("+str(position[0])+","+str(position[1])+")")
-        Movement.GoToPositionAvoidingObjects(position[0],position[1],maxDist=250,callback=None)
-        self.SetState(self.STATE_MOVING)
+        from OpenBot.Modules.Actions import ActionBot, ActionRequirementsCheckers
+        from OpenBot.Modules.Actions.ActionFunctions import ChangeMap
+        DebugPrint('SetStateMoving')
+        DebugPrint('Length leftiLinkLIst' + str(len(self.leftLinkList)))
+        if(len(self.leftLinkList)>0):
+            if self.can_add_action:
+                self.currLink = self.leftLinkList.pop(0)
+                position = self.currLink.npc_action.GetNpcPosition()
+                npc_race = self.currLink.npc_action.race
+                event_answer = self.currLink.npc_action.event_answer
+                map_name = self.currLink.npc_action.mapName
+                map_destination_name = self.currLink.GetDestMapName()
+                DebugPrint('npc_race '+str(npc_race) + ' ' + 'event_answer ' + str(event_answer) + ' ' + 'map_name ' + str(map_name) + ' ' + 'position ' + str(position) + 'map destionation')
+
+                if not map_destination_name:
+                    map_destination_name=map_name
+
+                action_dict = {
+                    'function_args': [position, map_name, npc_race, event_answer, map_destination_name],
+                    'function': ChangeMap,
+                    'callback': self.SetCanAddActionTrue,
+                }
+                self.SetState(self.STATE_MOVING)
+                ActionBot.instance.NewActionReturned(action_dict)
+                self.can_add_action = False
+            #OpenLog.DebugPrint("Moving to ("+str(position[0])+","+str(position[1])+")")
+            #Movement.GoToPositionAvoidingObjects(position[0],position[1],maxDist=250,callback=_DestinationReachedCallback)
+            #self.SetState(self.STATE_MOVING)
+        else:
+            DebugPrint('Last point')
+            OpenLog.DebugPrint("Moving to ("+str(self.finalPosition[0])+","+str(self.finalPosition[1])+")")
+            Movement.GoToPositionAvoidingObjects(self.finalPosition[0],self.finalPosition[1],maxDist=self.maxDist,callback=self.callback)
+            self.callback = None
+            self.SetState(self.STATE_NONE)
 
     
     def SetStateMapChanging(self):
@@ -87,14 +122,11 @@ class MapMovementDialog(ui.ScriptWindow):
     def StateMapChanging(self):
         curr_map = background.GetCurrentMapName()
         if self.currLink.GetDestMapName() != curr_map:
+            DebugPrint('Crossing map')
             self.currLink.CrossMap()
         else:
-            if len(self.leftLinkList):
-                self.SetStateMoving()
-            else:
-                Movement.GoToPositionAvoidingObjects(self.finalPosition[0],self.finalPosition[1],maxDist=self.maxDist,callback=self.callback)
-                self.callback = None
-                self.SetState(self.STATE_NONE)
+            DebugPrint('not crossing map')
+            self.SetStateMoving()
 
     def OnUpdate(self):
         if self.State == self.STATE_NONE or not OpenLib.IsInGamePhase():
@@ -103,9 +135,10 @@ class MapMovementDialog(ui.ScriptWindow):
         if not val:
             return
         if self.State == self.STATE_MOVING:
-            if self.currLink.GetOriginMapName() != background.GetCurrentMapName():
-                self.SetStateMapChanging()
-            return        
+            pass
+            #if self.currLink.GetOriginMapName() != background.GetCurrentMapName():
+                #self.SetStateMapChanging()
+            #return        
         if self.State == self.STATE_MAPCHANGING:
             self.StateMapChanging()
 
@@ -239,7 +272,6 @@ def GoToPositionAvoidingObjects(x,y,maxDist=250,callback=None,mapName=None,mapLi
         callback ([function], optional): Function callback called after reach destination. Defaults to None.
         mapName ([str], optional): The name of the map of the final destination, if is None it will use the current map. Defaults to None.
         mapLinks (list, optional): Reserved.
-
     Returns:
         [object]: Returns None on error.
     """
@@ -249,7 +281,6 @@ def GoToPositionAvoidingObjects(x,y,maxDist=250,callback=None,mapName=None,mapLi
 def GoToPosition(x,y):
     """
     Move to (x,y) position without using pathfinding.
-
     Args:
         x ([float]): x
         y ([float]): y
@@ -270,12 +301,10 @@ def TeleportToPosition(dst_x,dst_y,max_packets=MAX_TELEPORT_PACKETS):
     """
     Teleport to a position by using pathfinding and telporting in multiple small steps.
     max_packets allows to avoid spamming the server and crash by putting a limit on maximum number of packets sent. 
-
     Args:
         dst_x ([float]): Destination X
         dst_y ([float]): Destination Y
         max_packets ([int], optional): Number maximum of positions packets to send. Defaults to MAX_TELEPORT_PACKETS.
-
     Returns:
         [int]: Returns the number of State packets sent.
     """
@@ -315,10 +344,3 @@ def TeleportToPosition(dst_x,dst_y,max_packets=MAX_TELEPORT_PACKETS):
 
 Movement = MovementDialog()
 mapMovement = MapMovementDialog()
-    
-          
-        
-            
-        
-
-        

@@ -1,10 +1,11 @@
-from OpenBot.Modules import ChannelSwitcher, Skillbot, OpenLog
+from OpenBot.Modules.Actions import Action, ActionBot, ActionFunctions, ActionRequirementsCheckers
+from OpenBot.Modules import ChannelSwitcher, OpenLog
 from BotBase import BotBase
 import DmgHacks
 import Movement
 import OpenLib, FileManager, Hooks
 import UIComponents
-import player, ui, chat, chr, net
+import player, ui, chat, chr, net, background
 import eXLib
 
 # STATES
@@ -12,6 +13,7 @@ WAITING_STATE = 0
 WALKING_STATE = 1
 MINING_STATE = 2
 FARMING_STATE = 3
+EXCHANGING_ITEMS_TO_ENERGY = 4
 
 def __PhaseTurnOnFarmbot(phase):
     global farm
@@ -19,32 +21,52 @@ def __PhaseTurnOnFarmbot(phase):
         if farm.enableButton.isOn:
             farm.Start()
 
+def OnDigMotionCallback(main_vid,target_ore,n):
+    global farm
+    if(main_vid != net.GetMainActorVID()):
+        return
+    if farm.enableButton.isOn and farm.showMiningButton.isOn:
+        OpenLog.DebugPrint('Digging is starting')
+        farm.is_currently_digging = True
+        slash_time = n * farm.MINING_SLASH_TIME
+        ActionBot.instance.AddNewWaiter(slash_time, farm.IsCurrentlyDiggingDone)
+
+def returnFuncWithArgs(func, args):
+
+    def x():
+        func(args)
+    
+    return x
+
 class FarmingBot(BotBase):
 
+    MINING_SLASH_TIME = 2.1
+
     def __init__(self):
-        BotBase.__init__(self, 0.1)
+        BotBase.__init__(self, 0.1,waitIsPlayerDead=True)
         self.CURRENT_STATE = WALKING_STATE
-        self.is_walking = True  # if False character is using teleport, otherwise character is walking
         self.current_point = 0  # Current position index
         self.path = []  # Dict of tuples with coordinates [(0, 0), (2, 2)] etc
-        self.dont_use_waithack = False
-        self.always_use_waithack = False
-        self.is_waypoint_reached = False
-        self.channel_switching = True
-        self.can_change_channel = False
-
-        self.lastTimeMine = 0
-        self.lastTimeWaitingState = 0
-        self.timeForWaitingState = 5
-        self.farm_metins = True
-        self.metins_vid_list = []
-        self.selectedMetin = 0
-        self.farm_ores = False
+        eXLib.RegisterDigMotionCallback(OnDigMotionCallback)
+        
+        self.slash_timer = OpenLib.GetTime()
+        self.hasRecivedSlash = False
+        self.lastTimeMine = 0   
         self.ores_vid_list = []
         self.ores_to_mine = []
         self.selectedOre = 0
+        self.is_currently_digging = False
 
+        self.metins_vid_list = []
+        self.selectedMetin = 0
 
+        self.lastTimeWaitingState = 0
+        self.timeForWaitingState = 5
+
+        self.isReadyToSwitchChannel = False
+        self.BuildWindow()
+
+    def BuildWindow(self):
         self.Board = ui.BoardWithTitleBar()
         self.Board.SetSize(240, 300)
         self.Board.SetPosition(52, 40)
@@ -82,20 +104,13 @@ class FarmingBot(BotBase):
                                              OnUpVisual='OpenBot/Images/stop_0.tga',
                                              OnOverVisual='OpenBot/Images/stop_1.tga',
                                              OnDownVisual='OpenBot/Images/stop_2.tga',
-                                             funcState=self._start, defaultValue=False)
+                                             funcState=self.OnEnableSwitchButton, defaultValue=False)
 
-        self.showWalkButton = comp.OnOffButton(self.moving_tab,
-                                              '\t\t\t\t\t\tWalk?',
-                                              'If check, character is walking otherwise is teleporting', 125, 140,  funcState=self.switch_walking,
-                                              defaultValue=self.is_walking)
-        self.showMiningButton = comp.OnOffButton(self.moving_tab,
-                                              '\t\t\t\t\t\tMining?',
-                                              'Do you want to mine?', 125, 160, funcState=self.switch_mining, defaultValue=self.farm_ores)
+        self.showMiningButton = comp.OnOffButton(self.moving_tab, '\t\t\t\t\t\tMining?',
+        'Do you want to mine?', 125, 140, funcState=self.ButtonOnOff, defaultValue=False)
 
-        self.showFarmingMetinButton = comp.OnOffButton(self.moving_tab,
-                                              '\t\t\t\t\t\tMetins?',
-                                              'Do you want farm metins?', 125, 180, funcState=self.switch_farming_metin,
-                                                 defaultValue=self.farm_metins)
+        self.showFarmingMetinButton = comp.OnOffButton(self.moving_tab, '\t\t\t\t\t\tMetins?',
+        'Do you want farm metins?', 125, 160, funcState=self.ButtonOnOff, defaultValue=False)
 
         # Ores tab
         index_y = 0
@@ -127,23 +142,70 @@ class FarmingBot(BotBase):
                                              'd:/ymir work/ui/public/small_Button_02.sub',
                                              'd:/ymir work/ui/public/small_Button_03.sub')
 
-        self.showAlwaysWaithackButton = comp.OnOffButton(self.settings_tab, '\t\t\t\t\t\tAlways use waithack', 'If check, waithack will be turned on even while walking', 20, 80,
+
+
+        self.showChannelSwitchingButton = comp.OnOffButton(self.settings_tab, '\t\t\t\t\tSwitch channels',
+         'If checked, farmbot will change to next channel after complete a path', 20, 80,
+                                                      funcState=self.ButtonOnOff,
+                                                      defaultValue=False)
+
+                
+        self.showAlwaysWaithackButton = comp.OnOffButton(self.settings_tab, '\t\t\t\t\t\t\tAlways use waithack', 'If check, waithack will be turned on even while walking', 20, 100,
                                                          funcState=self.switch_always_use_waithack,
-                                                         defaultValue=self.always_use_waithack)
+                                                         defaultValue=ActionBot.instance.showAlwaysWaithackButton)
 
-        self.showOffWaithackButton = comp.OnOffButton(self.settings_tab, '\t\t\t\t\t\tDont use waithack', 'If checked, farmbot wont use waithack for destroying metin', 20, 105,
+        self.showOffWaithackButton = comp.OnOffButton(self.settings_tab, '\t\t\t\t\t\tDont use waithack', 'If checked, farmbot wont use waithack for destroying metin', 20, 120,
                                                       funcState=self.switch_dont_use_waithack,
-                                                      defaultValue=self.dont_use_waithack)
+                                                      defaultValue=ActionBot.instance.showOffWaithackButton)
 
-        self.showChannelSwitchingButton = comp.OnOffButton(self.settings_tab, '\t\t\t\t\t\tSwitch channels', 'If checked, farmbot will change to next channel after complete a path', 20, 130,
-                                                      funcState=self.switch_channel_switching,
-                                                      defaultValue=self.channel_switching)
+        self.showExchangeTrash = comp.OnOffButton(self.settings_tab, '\t\t\t\t\t\t\t\t\t\t\t\tExchange to energy fragments', 'This option allow farmbot to exchange items listed in settings > shop to energy fragments.', 20, 140,
+                                                funcState=self.ButtonOnOff,
+                                                defaultValue=False)                                                 
 
         self.slot_barWaitingTime, self.edit_lineWaitingTime = \
-            comp.EditLine(self.settings_tab, '5', 20, 150, 40, 20, 25)
+            comp.EditLine(self.settings_tab, '5', 20, 170, 40, 20, 25)
 
-        self.text_lineWaitingTime = comp.TextLine(self.settings_tab, 's. of waiting after moving', 70, 155, comp.RGB(255, 255, 255))
-        self.text_lineWaitingTime1 = comp.TextLine(self.settings_tab, ' or destorying metin',  85, 170, comp.RGB(255, 255, 255))
+        self.text_lineWaitingTime = comp.TextLine(self.settings_tab, 's. of waiting after ', 70, 175, comp.RGB(255, 255, 255))
+        self.text_lineWaitingTime1 = comp.TextLine(self.settings_tab, 'destorying metin',  75, 185, comp.RGB(255, 255, 255))
+
+
+    def switch_always_use_waithack(self, val):
+        ActionBot.instance.showAlwaysWaithackButton = val
+
+    def switch_dont_use_waithack(self, val):
+        ActionBot.instance.showOffWaithackButton = val
+
+
+    def OnEnableSwitchButton(self, val):
+        if val:
+            self.Start()
+        else:
+            self.Stop()
+
+    def ButtonOnOff(self, val):
+        pass
+
+    def IsWalkingDone(self):
+        self.isCurrActionDone = True
+        self.CURRENT_STATE = WALKING_STATE
+        self.next_point()
+
+    def IsDestroyingMetinDone(self):
+        self.isCurrActionDone = True
+        self.selectedMetin = 0
+        self.CURRENT_STATE = WAITING_STATE
+        self.lastTimeWaitingState = OpenLib.GetTime()
+
+    def IsCurrentlyDiggingDone(self):
+        self.is_currently_digging = False
+        self.isCurrActionDone = True
+
+    def IsExchangingItemsToEnergyFragmentsDone(self):
+        self.isCurrActionDone = True
+        self.CURRENT_STATE = WALKING_STATE
+
+    def IsCurrentlyDigging(self):
+        return self.is_currently_digging
 
     def load_path(self):
         path = FileManager.FARMBOT_WAYPOINTS_LISTS + self.edit_line.GetText()
@@ -153,7 +215,9 @@ class FarmingBot(BotBase):
             points = point.split(',')
             x = points[0][1:-1]
             y = points[1][1:-1]
-            self.path.append((float(x), float(y)))
+            name = points[2][2:-2]
+            OpenLog.DebugPrint(str(points))
+            self.path.append((float(x), float(y), str(name)))
         self.update_points_list()
 
     def save_path(self):
@@ -176,30 +240,9 @@ class FarmingBot(BotBase):
 
         return function
 
-    def switch_always_use_waithack(self, val):
-        self.always_use_waithack = val
-        if val:
-            self.dont_use_waithack = False
-            self.showOffWaithackButton.SetOff()
-
-    def switch_channel_switching(self, val):
-        self.channel_switching = val
-
-    def switch_dont_use_waithack(self, val):
-        self.dont_use_waithack = val
-
-    def switch_walking(self, val):
-        self.is_walking = val
-
-    def switch_mining(self, val):
-        self.farm_ores = val
-
-    def switch_farming_metin(self, val):
-        self.farm_metins = val
-
     def add_point(self):
-        (x, y, z) = player.GetMainCharacterPosition()
-        self.path.append((x, y))
+        x, y, z = player.GetMainCharacterPosition()
+        self.path.append((x, y, background.GetCurrentMapName()))
         self.update_points_list()
 
     def remove_selected(self):
@@ -214,45 +257,31 @@ class FarmingBot(BotBase):
     def update_points_list(self):
         self.fileListBox.RemoveAllItems()
         for position in self.path:
-            self.fileListBox.AppendItem(OpenLib.Item(str(position[0]) + ':' + str(position[1])))
+            x, y = int(position[0]), int(position[1])
+            self.fileListBox.AppendItem(OpenLib.Item(str(x) + ':' + str(y) + ':' + position[2]))
 
     def next_point(self):
-        self.is_waypoint_reached = True
-        if self.current_point + 1 >= len(self.path):
-            self.path.reverse()
-            self.current_point = 1
-            if self.channel_switching:
-                self.can_change_channel = True
-        else:
+        if self.current_point + 1 < len(self.path):
             self.current_point += 1
-
-    def go_to_next_position(self):
-        self.Move(self.path[self.current_point][0], self.path[self.current_point][1], callback=self.onWaypointReach)
+        else:
+            self.path.reverse()
+            self.current_point = 0
+            if self.showChannelSwitchingButton.isOn:
+                self.isReadyToSwitchChannel = True
 
     def select_metin(self):
-        if(len(self.metins_vid_list) > 0):
+        if self.metins_vid_list:
             self.selectedMetin = self.metins_vid_list.pop()
 
     def select_ore(self):
-        if(len(self.ores_vid_list) > 0):
+        if self.ores_vid_list:
             self.selectedOre = self.ores_vid_list.pop()
-
-    def onWaypointReach(self):
-        self.next_point()
-
-
-    def _start(self, val):
-        if not val:
-            self.Stop()
-            DmgHacks.Pause()
-        else:
-            self.Start()
-            
 
     def StartBot(self):
         if len(self.path) < 2:
             self.Stop()
             DmgHacks.Pause()
+            self.enableButton.SetOff()
             return
 
     def StopBot(self):
@@ -260,137 +289,38 @@ class FarmingBot(BotBase):
         Movement.StopMovement()
         self.CURRENT_STATE = WALKING_STATE
 
-    def Move(self, x, y, callback=None):
-        if self.is_walking:
-            if callback is None:
-                Movement.GoToPositionAvoidingObjects(x, y)
-            else:
-                Movement.GoToPositionAvoidingObjects(x, y, callback=callback)
-        else:
-            Movement.TeleportToPosition(x, y)
-            if callback is not None:
-                callback()
-            self.lastTimeWaitingState = OpenLib.GetTime()
-            self.CURRENT_STATE = WAITING_STATE
-
-    def MoveToVid(self, vid, callback=None):
-        chr.SelectInstance(vid)
-        x, y, z = chr.GetPixelPosition(vid)
-        self.Move(x, y, callback)
-
     def search_for_farm(self):
-        if self.farm_metins and len(self.metins_vid_list) > 0:
+        if self.showFarmingMetinButton.isOn and len(self.metins_vid_list) > 0:
             self.select_metin()
             self.CURRENT_STATE = FARMING_STATE
-            return FARMING_STATE
 
-        elif self.farm_ores and len(self.ores_vid_list) > 0:
+        elif self.showMiningButton.isOn and len(self.ores_vid_list) > 0:
             self.select_ore()
-            self.MoveToVid(self.selectedOre)
             self.CURRENT_STATE = MINING_STATE
-            return MINING_STATE
-
-        else:
-            return WALKING_STATE
-
-    def Frame(self):
-        if self.can_change_channel:
-            OpenLog.DebugPrint("[Farming-bot] Changing Channel")
-            self.can_change_channel = False
-            self.go_to_next_channel()
             return
-
-        if self.always_use_waithack:
-            DmgHacks.Resume()
         else:
-            DmgHacks.Pause()
-
-        self.checkForMetinsAndOres()
-        if self.CURRENT_STATE == WAITING_STATE:
-            OpenLog.DebugPrint("[Farming-bot] WAITING_STATE")
-            text = self.edit_lineWaitingTime.GetText()
-            if self.is_text_validate(text):
-                self.timeForWaitingState = int(text)
-            val, self.lastTimeWaitingState = OpenLib.timeSleep(self.lastTimeWaitingState, self.timeForWaitingState)
-            if val:
-                self.lastTimeWaitingState = 0
+            if not self.lastTimeWaitingState and not self.CURRENT_STATE == EXCHANGING_ITEMS_TO_ENERGY:
                 self.CURRENT_STATE = WALKING_STATE
-            else:
-                self.search_for_farm()
 
-        if self.CURRENT_STATE == WALKING_STATE:
-            OpenLog.DebugPrint("[Farming-bot] WALKING_STATE")
-            if self.search_for_farm() == WALKING_STATE:
-                self.go_to_next_position()
-                return
 
-        elif self.CURRENT_STATE == MINING_STATE:
-            self.mineOre()
+    def Pause(self):
+        DmgHacks.Pause()
+    
+    def Resume(self):
+        pass
 
-            return
-
-        elif self.CURRENT_STATE == FARMING_STATE:
-            OpenLog.DebugPrint("[Farming-bot] FARMING_STATE")
-            self.farmMetin()
-
-            return
-
-    def mineOre(self):
-
-        # Checking there is any reason to stop mining
-        if not self.is_char_ready_to_mine():
-            #chat.AppendChat(3, 'Stop')
-            return
-
-        val, self.lastTimeMine = OpenLib.timeSleep(self.lastTimeMine, 30)
-        if val:
-            #chat.AppendChat(3, 'SendOnClickPacket')
-            net.SendOnClickPacket(self.selectedOre)
-
-    def farmMetin(self):
-
-        vid_life_status = OpenLib.AttackTarget(self.selectedMetin)
-
-        if vid_life_status == OpenLib.TARGET_IS_DEAD:
-            player.SetAttackKeyState(False)
-            DmgHacks.Pause()
-            self.selectedMetin = 0
-            self.lastTimeWaitingState = OpenLib.GetTime()
-            self.CURRENT_STATE = WAITING_STATE
-
-        elif vid_life_status == OpenLib.ATTACKING_TARGET:
-            if not self.dont_use_waithack:
-                DmgHacks.Resume()
-
-        elif vid_life_status == OpenLib.MOVING_TO_TARGET:
-            if not self.dont_use_waithack:
-                DmgHacks.Resume()
-
-    def checkForMetinsAndOres(self):
-        self.ores_vid_list = []
-        self.metins_vid_list = []
-        for vid in eXLib.InstancesList:
-            if OpenLib.IsThisOre(vid):
-                chr.SelectInstance(vid)
-                if chr.GetRace() in self.ores_to_mine:
-                    self.ores_vid_list.append(vid)
-            elif OpenLib.IsThisMetin(vid) and not eXLib.IsDead(vid):
-                self.metins_vid_list.append(vid)
-
-    def switch_state(self):
-        if self.Board.IsShow():
-            self.Board.Hide()
-        else:
-            self.Board.Show()
-
-    def is_char_ready_to_mine(self):
-        if self.selectedOre not in eXLib.InstancesList:
-            self.selectedOre = 0
-            self.CURRENT_STATE = WALKING_STATE
-            return False
-        if not OpenLib.isPlayerCloseToInstance(self.selectedOre):
-            return False
+    def CanPause(self):
         return True
+
+    def go_to_next_channel(self):
+        action_dict = {
+            'function_args': [OpenLib.GetNextChannel()],
+            'function': ActionFunctions.ChangeChannel,
+            'requirements': {ActionRequirementsCheckers.IS_IN_CHANNEL: [OpenLib.GetNextChannel()]},
+            'on_success': [Action.NEXT_ACTION],
+            'callback': self.SetIsCurrActionDoneTrue,
+        }
+        ActionBot.instance.AddNewAction(action_dict)
 
     def is_text_validate(self, text):
         try:
@@ -403,18 +333,135 @@ class FarmingBot(BotBase):
             return False
         return True
 
-    def go_to_next_channel(self):
-        current_channel = OpenLib.GetCurrentChannel()
-        ChannelSwitcher.instance.GetChannels()
-        if current_channel + 1 > len(ChannelSwitcher.instance.channels):
-            current_channel = 1
+    def switch_state(self):
+        if self.Board.IsShow():
+            self.Board.Hide()
         else:
-            current_channel += 1
+            self.Board.Show()
 
-        chat.AppendChat(3, str(current_channel))
-        ChannelSwitcher.instance.ChangeChannelById(current_channel)
+    def checkForMetinsAndOres(self):
+        self.ores_vid_list = []
+        self.metins_vid_list = []
+        for vid in eXLib.InstancesList:
+            if OpenLib.IsThisOre(vid):
+                chr.SelectInstance(vid)
+                if chr.GetRace() in self.ores_to_mine:
+                    self.ores_vid_list.append(vid)
+            elif OpenLib.IsThisMetin(vid) and not eXLib.IsDead(vid):
+                self.metins_vid_list.append(vid)
+
+    def Frame(self):
+
+        if self.isCurrActionDone:
+            self.checkForMetinsAndOres()
+            self.search_for_farm()
+
+            if self.isReadyToSwitchChannel:
+                self.isReadyToSwitchChannel = False
+                self.isCurrActionDone = False
+                self.go_to_next_channel()
+                return
+
+            if self.CURRENT_STATE == WAITING_STATE:
+
+                OpenLog.DebugPrint("[Farming-bot] WAITING_STATE")
+                text = self.edit_lineWaitingTime.GetText()
+                if self.is_text_validate(text):
+                    self.timeForWaitingState = int(text)
+                val, self.lastTimeWaitingState = OpenLib.timeSleep(self.lastTimeWaitingState, self.timeForWaitingState)
+                if val:
+                    self.lastTimeWaitingState = 0
+                    self.CURRENT_STATE = WALKING_STATE
+                else:
+                    self.search_for_farm()
+
+            if self.CURRENT_STATE == WALKING_STATE:
+                OpenLog.DebugPrint("[Farming-bot] WALKING_STATE")
+                
+                if OpenLib.isInventoryFull():
+                    from OpenBot.Modules import Settings
+                    if self.showExchangeTrash.isOn:
+                        for item in Settings.instance.sellItems:
+                            slot=OpenLib.GetItemByID(item)
+                            if slot > -1:
+                                OpenLog.DebugPrint('changing state to exchaning items')
+                                self.CURRENT_STATE = EXCHANGING_ITEMS_TO_ENERGY
+                                return
+                else:
+                    OpenLog.DebugPrint('inventory is not full')
+                OpenLog.DebugPrint('No trash items')
+
+                interruptors_args = []
+                interruptors = []
+
+                if self.showFarmingMetinButton.isOn:
+                    interruptors_args.append(0)
+                    interruptors.append(ActionRequirementsCheckers.isMetinNearly)
+
+                if self.showMiningButton.isOn:
+                    interruptors_args.append(self.ores_to_mine)
+                    interruptors.append(ActionRequirementsCheckers.isRaceNearly)
+
+                if interruptors:
+                    interrupt_function = lambda: Action.NEXT_ACTION
+                else:
+                    interrupt_function = None
+
+                action_dict = {
+                'function_args': [(self.path[self.current_point][0], self.path[self.current_point][1]), self.path[self.current_point][2]],
+                'function': ActionFunctions.MoveToPosition, 
+                'requirements': {ActionRequirementsCheckers.IS_ON_POSITION: [self.path[self.current_point][0],
+                                                                            self.path[self.current_point][1], 200],
+                                                                             ActionRequirementsCheckers.IS_IN_MAP: [self.path[self.current_point][2]]},
+                'callback': self.IsWalkingDone,
+                'interruptors_args': interruptors_args,
+                'interruptors': interruptors,
+                'interrupt_function': interrupt_function}
+                ActionBot.instance.AddNewAction(action_dict)
+                self.isCurrActionDone = False
+                return
+
+            elif self.CURRENT_STATE == MINING_STATE:
+                OpenLog.DebugPrint("[Farming-bot] MINING_STATE")
+                action_dict = {
+                    'function_args': [self.selectedOre, self.IsCurrentlyDigging],
+                    'requirements': {},
+                    'function': ActionFunctions.MineOre,
+                    'on_success': [Action.NEXT_ACTION],
+                    'on_failed': [Action.NEXT_ACTION]
+                }
+
+                ActionBot.instance.AddNewAction(action_dict)
+                self.isCurrActionDone = False
+                return
+
+            elif self.CURRENT_STATE == FARMING_STATE:
+                OpenLog.DebugPrint("[Farming-bot] FARMING_STATE")
+                action_dict = {'function_args': [0, self.selectedMetin],
+                            'function': ActionFunctions.Destroy,
+                            'requirements': {},
+                            'on_success': [Action.NEXT_ACTION],
+                            'on_failed': [],
+                            'callback': self.IsDestroyingMetinDone
+                            }
+                ActionBot.instance.AddNewAction(action_dict)
+                self.isCurrActionDone = False
+                return
+            
+            elif self.CURRENT_STATE == EXCHANGING_ITEMS_TO_ENERGY:
+                OpenLog.DebugPrint('[Farming-bot] EXCHANGING_STATE')
+                action_dict = {'function_args': [],
+                                'function': ActionFunctions.ExchangeTrashItemsToEnergyFragments,
+                                'on_success': [Action.NEXT_ACTION],
+                                'callback': self.IsExchangingItemsToEnergyFragmentsDone}
+                ActionBot.instance.AddNewAction(action_dict)
+                self.isCurrActionDone = False
+                return
+
+
 
 def switch_state():
+    global farm
     farm.switch_state()
 
 

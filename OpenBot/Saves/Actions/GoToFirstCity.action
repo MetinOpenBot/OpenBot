@@ -1,0 +1,11 @@
+{
+    'name': 'Go to first city',
+    'actions': {
+        0:{
+            'function': 'MoveToPosition',
+            'function_args': [22000, 62500, 'metin2_first_city'],
+            'requirements': {'IS_ON_POSITION': [22000, 63500], 
+                             'IS_IN_MAP' : ['metin2_first_city']}
+        }
+    }
+}

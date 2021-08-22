@@ -1,0 +1,115 @@
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_c1 at position (13700, 12600)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 20009 on map metin2_map_c1 at position (12500, 111800)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 20009 on map metin2_map_c1 at position (12500, 111800)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 9012 on map metin2_map_c1 at position (43200, 68500)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 9012 on map metin2_map_c1 at position (43200, 68500)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 9012 on map metin2_map_c1 at position (43200, 68500)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_c3 at position (90100, 15100)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_c3 at position (91400, 90700)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_c3 at position (53500, 4100)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 20009 on map metin2_map_c3 at position (13600, 89900)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 20009 on map metin2_map_c3 at position (13600, 89900)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_guild_03 at position (42000, 13300)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_b1 at position (87600, 112700)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 20009 on map metin2_map_b1 at position (90800, 8700)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 20009 on map metin2_map_b1 at position (90800, 8700)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 9012 on map metin2_map_b1 at position (51900, 51200)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 9012 on map metin2_map_b1 at position (51900, 51200)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 9012 on map metin2_map_b1 at position (51900, 51200)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_b3 at position (10600, 8800)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_b3 at position (13800, 87900)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_b3 at position (59300, 7100)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 20009 on map metin2_map_b3 at position (77200, 14000)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 20009 on map metin2_map_b3 at position (77200, 14000)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_guild_02 at position (42800, 8800)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_a1 at position (40500, 7300)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 20009 on map metin2_map_a1 at position (7600, 60100)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 20009 on map metin2_map_a1 at position (7600, 60100)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 9012 on map metin2_map_b1 at position (55500, 62500)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 9012 on map metin2_map_b1 at position (55500, 62500)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 9012 on map metin2_map_b1 at position (55500, 62500)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_a3 at position (94800, 80400)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_a3 at position (14500, 82300)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_a3 at position (100200, 56500)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 20009 on map metin2_map_a3 at position (10000, 15000)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 20009 on map metin2_map_a3 at position (10000, 15000)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_guild_01 at position (7400, 3800)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map map_a2 at position (64000, 143600)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map map_a2 at position (13100, 74600)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map map_a2 at position (147200, 7300)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map map_a2 at position (76700, 79200)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map map_n_snowm_01 at position (139200, 15300)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map map_n_snowm_01 at position (15600, 28300)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map map_n_snowm_01 at position (75200, 141500)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map map_n_snowm_01 at position (141300, 145300)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_n_desert_01 at position (139200, 13500)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_n_desert_01 at position (14900, 13500)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_n_desert_01 at position (10900, 142600)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_n_desert_01 at position (101200, 132900)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_n_desert_01 at position (83200, 53100)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_n_desert_01 at position (142500, 147700)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_n_desert_01 at position (147700, 135700)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_milgyo at position (16100, 94300)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_monkeydungeon at position (7300, 12000)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_monkeydungeon at position (7300, 12000)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_monkeydungeon at position (7300, 12000)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_monkeydungeon_02 at position (7300, 12000)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_monkeydungeon_03 at position (7200, 11500)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_n_flame_01 at position (145800, 75100)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_n_flame_01 at position (7600, 6000)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_n_flame_01 at position (10300, 144400)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_spiderdungeon at position (8800, 8200)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_trent at position (5900, 5700)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_trent at position (4500, 44600)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_trent02 at position (70700, 71000)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_WL_01 at position (9200, 8900)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_WL_01 at position (9200, 34900)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_nusluck01 at position (8200, 46700)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_skipia_dungeon_01 at position (137400, 140500)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_skipia_dungeon_02 at position (88100, 72600)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map Metin2_map_CapeDragonHead at position (73200, 9200)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map Metin2_map_CapeDragonHead at position (143000, 12400)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_BayBlackSand at position (37700, 147000)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_Mt_Thunder at position (7300, 145300)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_Mt_Thunder at position (64600, 144900)
+2021-08-22 21:43:44: [NPC-ACTION] - New NPC Action race 0 on map metin2_map_dawnmistwood at position (49400, 15800)
+2021-08-22 21:43:44: [Map-Manager] Map metin2_map_guild_01 has npcs={9012: [(35000, 17500)], 10019: [(7400, 3800)], 5004: [(0, 0)]}
+2021-08-22 21:43:44: [Map-Manager] Map metin2_map_n_flame_01 has npcs={20096: [(5600, 73600)], 20097: [(26800, 85100)], 20098: [(26800, 87100)], 20099: [(26800, 89100)], 40002: [(51500, 79500), (52500, 80500), (53500, 77500), (52500, 78500), (50500, 77500)], 40001: [(53100, 79600)], 40000: [(52800, 79600)], 5004: [(0, 0)], 10061: [(5600, 73600)], 9012: [(12000, 73000)], 10008: [(10300, 144400)], 10010: [(7600, 6000)], 10012: [(145800, 75100)]}
+2021-08-22 21:43:44: [Map-Manager] Map metin2_map_guild_03 has npcs={9012: [(28000, 24000)], 5004: [(0, 0)], 10023: [(42000, 13300)]}
+2021-08-22 21:43:44: NPC-LIST-PARSE: Npc information is not available for map metin2_map_monkeydungeon_02. The bot will not be able to leave this map.
+2021-08-22 21:43:44: [Map-Manager] Map metin2_map_monkeydungeon_02 has npcs=[]
+2021-08-22 21:43:44: NPC-LIST-PARSE: Npc information is not available for map metin2_map_monkeydungeon_03. The bot will not be able to leave this map.
+2021-08-22 21:43:44: [Map-Manager] Map metin2_map_monkeydungeon_03 has npcs=[]
+2021-08-22 21:43:44: NPC-LIST-PARSE: Npc information is not available for map metin2_map_monkeydungeon. The bot will not be able to leave this map.
+2021-08-22 21:43:44: [Map-Manager] Map metin2_map_monkeydungeon has npcs=[]
+2021-08-22 21:43:44: [Map-Manager] Map metin2_map_guild_02 has npcs={9012: [(25000, 24000)], 5004: [(0, 0)], 10021: [(42800, 8800)]}
+2021-08-22 21:43:44: NPC-LIST-PARSE: Npc information is not available for map metin2_map_nusluck01. The bot will not be able to leave this map.
+2021-08-22 21:43:44: [Map-Manager] Map metin2_map_nusluck01 has npcs=[]
+2021-08-22 21:43:44: NPC-LIST-PARSE: Npc information is not available for map metin2_map_dawnmistwood. The bot will not be able to leave this map.
+2021-08-22 21:43:44: [Map-Manager] Map metin2_map_dawnmistwood has npcs=[]
+2021-08-22 21:43:44: [Map-Manager] Map metin2_map_b1 has npcs={20354: [(57100, 55800)], 20011: [(65500, 55300)], 20357: [(61400, 116700)], 20358: [(25000, 110400)], 20359: [(52700, 68800)], 5001: [(0, 0)], 5004: [(0, 0)], 20091: [(60600, 68900)], 10003: [(87600, 112700)], 20093: [(61600, 68100)], 20001: [(61100, 59100)], 20002: [(55400, 59700)], 20003: [(55300, 66300)], 20005: [(70200, 68600)], 20006: [(63400, 62300), (71700, 63300)], 20008: [(58100, 62000)], 1193: [(52600, 68700)], 9002: [(67600, 61700)], 9003: [(59000, 68900)], 9005: [(60900, 59600)], 9006: [(58800, 63300)], 20016: [(59400, 69200)], 9009: [(67500, 53900), (74200, 87900), (20600, 55200), (21800, 67900), (22100, 86500), (23100, 97600), (23400, 107700)], 9010: [(61200, 63900)], 9012: [(51900, 51200)], 20023: [(69200, 57700)], 20009: [(90800, 8700)], 20041: [(65900, 77200)], 20042: [(63300, 65500)], 20087: [(85400, 82700)], 20018: [(67400, 59000)], 20355: [(77200, 68200)], 20320: [(62300, 59400)], 20321: [(62700, 59400)], 20322: [(63100, 59500)], 20323: [(63500, 59500)], 20324: [(64500, 59500)], 20325: [(64900, 59500)], 20326: [(65300, 59500)], 20327: [(65700, 59500)], 12007: [(53300, 59900)], 20349: [(54900, 61000)], 20084: [(89800, 79700)], 20086: [(86400, 82300)], 9001: [(67600, 66200)], 11002: [(63300, 64000)], 11003: [(62300, 61700)], 20010: [(64900, 62700)]}
+2021-08-22 21:43:44: NPC-LIST-PARSE: Npc information is not available for map metin2_map_Mt_Thunder. The bot will not be able to leave this map.
+2021-08-22 21:43:44: [Map-Manager] Map metin2_map_Mt_Thunder has npcs=[]
+2021-08-22 21:43:44: [Map-Manager] Map metin2_map_b3 has npcs={5001: [(0, 0)], 5002: [(0, 0)], 5004: [(0, 0)], 10004: [(10600, 8800)], 20014: [(38300, 40000)], 20093: [(34600, 35700)], 10022: [(13600, 88000)], 9001: [(44800, 38700)], 20010: [(39700, 30200)], 9003: [(38900, 35600)], 20012: [(40600, 41900)], 9005: [(47100, 34700)], 9006: [(41900, 30900)], 20015: [(46600, 32100)], 20016: [(39600, 34400)], 20017: [(37600, 31800)], 9010: [(45400, 37900)], 20019: [(48200, 33000)], 20020: [(40900, 26800)], 20021: [(37600, 37800)], 20022: [(44900, 30300)], 20024: [(48900, 35500)], 9012: [(34500, 35500)], 20364: [(80500, 86500)], 20042: [(62800, 72300)], 10069: [(59300, 7100)], 12007: [(45200, 26600)], 20349: [(44500, 27600)], 20009: [(77200, 14000)], 11002: [(43100, 35700)], 11003: [(41500, 37000)], 9002: [(46100, 37400)]}
+2021-08-22 21:43:44: [Map-Manager] Map map_n_snowm_01 has npcs={20096: [(81000, 63300)], 20097: [(53900, 142400)], 20098: [(15600, 70000)], 20099: [(98500, 13200)], 20359: [(37400, 141100), (146300, 51300), (46700, 503000)], 10028: [(141300, 145300)], 10059: [(81000, 63300)], 5004: [(0, 0)], 9012: [(78000, 62000)], 10007: [(75200, 141500)], 10009: [(15600, 28300)], 10011: [(139200, 15400)]}
+2021-08-22 21:43:44: [Map-Manager] Map metin2_map_spiderdungeon has npcs={20088: [(41200, 39100)], 20362: [(31500, 16100)], 20365: [(6200, 41500)], 10015: [(8800, 8200)]}
+2021-08-22 21:43:44: NPC-LIST-PARSE: Npc information is not available for map Metin2_map_CapeDragonHead. The bot will not be able to leave this map.
+2021-08-22 21:43:44: [Map-Manager] Map Metin2_map_CapeDragonHead has npcs=[]
+2021-08-22 21:43:44: NPC-LIST-PARSE: Npc information is not available for map metin2_map_BayBlackSand. The bot will not be able to leave this map.
+2021-08-22 21:43:44: [Map-Manager] Map metin2_map_BayBlackSand has npcs=[]
+2021-08-22 21:43:44: NPC-LIST-PARSE: Npc information is not available for map map_a2. The bot will not be able to leave this map.
+2021-08-22 21:43:44: [Map-Manager] Map map_a2 has npcs=[]
+2021-08-22 21:43:44: [Map-Manager] Map metin2_map_n_desert_01 has npcs={10016: [(142500, 147700)], 20097: [(42800, 120800)], 20098: [(29600, 32800)], 20099: [(121600, 25900)], 10076: [(83200, 53100)], 5004: [(0, 0)], 10029: [(147700, 135700)], 9012: [(92000, 61000)], 10008: [(10900, 142600)], 10010: [(14900, 13500)], 10012: [(139200, 13500)], 10074: [(101200, 132900)]}
+2021-08-22 21:43:44: [Map-Manager] Map metin2_map_skipia_dungeon_02 has npcs={9003: [(90100, 75600)], 9004: [(91100, 74700)], 9005: [(90800, 75600)], 10094: [(26100, 17500)], 10093: [(25000, 17300)], 9010: [(91100, 75300)], 20091: [(90400, 75000)], 10079: [(88100, 72600)]}
+2021-08-22 21:43:44: [Map-Manager] Map metin2_map_skipia_dungeon_01 has npcs={10080: [(137500, 140500)], 9003: [(7800, 7100)], 9004: [(7200, 8300)], 9005: [(7200, 7100)], 9010: [(7200, 7700)], 11000: [(10600, 6400), (9400, 6400)], 11002: [(9400, 13700), (10700, 13700)], 20091: [(10000, 10000)], 11004: [(13700, 10700), (13700, 9400)], 10078: [(9900, 3300)]}
+2021-08-22 21:43:44: [Map-Manager] Map metin2_map_c3 has npcs={11005: [(42000, 41600)], 5001: [(0, 0)], 5002: [(0, 0)], 5004: [(0, 0)], 20014: [(41100, 33300)], 10006: [(90100, 15100)], 20093: [(47400, 34600)], 10024: [(91400, 90700)], 9001: [(46000, 46700)], 20010: [(53700, 42000)], 9003: [(48400, 38700)], 20012: [(49300, 33500)], 9005: [(39400, 39000)], 9006: [(43300, 37600)], 20015: [(51500, 32200)], 20016: [(49100, 39900)], 20017: [(38400, 45400)], 9010: [(44800, 46700)], 20019: [(36600, 38900)], 20020: [(45100, 33000)], 20021: [(40300, 48200)], 20022: [(37000, 47500)], 20024: [(37200, 36200)], 9012: [(48000, 35500)], 20364: [(53500, 89200)], 20042: [(16700, 22400)], 10071: [(53500, 4100)], 12007: [(52000, 36100)], 20349: [(52700, 37300)], 20009: [(13600, 89900)], 11004: [(44200, 41200)], 9002: [(43500, 46700)]}
+2021-08-22 21:43:44: [Map-Manager] Map metin2_map_c1 has npcs={20354: [(46800, 71400)], 20011: [(42500, 71600)], 20357: [(11400, 96000)], 20358: [(77100, 7800)], 20359: [(28400, 67000)], 5001: [(0, 0)], 5004: [(0, 0)], 20355: [(28600, 64000)], 10005: [(13700, 12600)], 11005: [(36700, 61700)], 20093: [(31800, 65300)], 20001: [(29200, 81200)], 20002: [(34300, 56000)], 20003: [(37800, 57700)], 20005: [(29200, 71800)], 20006: [(37000, 65400), (33600, 77000)], 20008: [(34000, 74700)], 1193: [(28300, 67000)], 9002: [(40300, 58600)], 9003: [(38300, 69300)], 9005: [(31500, 56000)], 9006: [(41700, 67100)], 20016: [(39300, 69200)], 9009: [(71100, 23400), (73200, 39000), (77200, 47200), (76300, 80900), (77300, 90500), (42800, 48000), (38600, 84900), (81900, 31500)], 9010: [(40100, 64400)], 9012: [(43200, 68500)], 20023: [(45400, 53000)], 20084: [(28500, 28500)], 20009: [(12500, 111800)], 20041: [(32300, 61700)], 20042: [(36300, 63700)], 20343: [(44400, 63500)], 20086: [(44700, 92800)], 20018: [(46500, 61200)], 20091: [(38100, 60900)], 12007: [(38300, 74000)], 20087: [(45600, 93600)], 20349: [(39600, 73500)], 20340: [(44400, 62300)], 20341: [(44400, 62700)], 20342: [(44400, 63100)], 9001: [(43000, 60700)], 20344: [(44300, 64400)], 20345: [(44300, 64800)], 20346: [(44300, 65200)], 20347: [(44300, 65600)], 11004: [(38300, 64000)], 20010: [(39200, 63300)]}
+2021-08-22 21:43:44: [Map-Manager] Map metin2_map_a1 has npcs={20354: [(60500, 66300)], 20011: [(71300, 60500)], 20357: [(58200, 34700)], 20358: [(6000, 111800)], 20359: [(69600, 58300)], 5004: [(0, 0)], 10001: [(40500, 7300)], 20355: [(57300, 53100)], 20093: [(67400, 55900)], 20001: [(68000, 60400)], 20002: [(68700, 47500)], 20003: [(69800, 51300)], 20005: [(59700, 51100)], 20006: [(64800, 60000), (58200, 57800)], 20008: [(62300, 63000)], 1193: [(69700, 58300)], 9002: [(59600, 60500)], 9003: [(67800, 56500)], 9005: [(67400, 60700)], 9006: [(63300, 62200)], 20016: [(67200, 55600)], 9009: [(35400, 32700), (32500, 40500), (25100, 87400), (19500, 93700), (30400, 118600), (52500, 114700), (59100, 116600), (68000, 37900), (82100, 29700), (73100, 65900)], 9010: [(62300, 58600)], 20018: [(69500, 65700)], 9012: [(55500, 62500)], 20023: [(62900, 47100)], 20009: [(7600, 60100)], 20041: [(65300, 50800)], 20042: [(63500, 59800)], 20087: [(54500, 41200)], 20300: [(62200, 55600)], 20301: [(62500, 55500)], 20302: [(62900, 55400)], 20303: [(63300, 55300)], 20304: [(64400, 55100)], 20305: [(64700, 55000)], 20306: [(65100, 54900)], 20307: [(65400, 54800)], 12007: [(71400, 56600)], 20349: [(71800, 57700)], 20084: [(89600, 61000)], 20086: [(54500, 39700)], 9001: [(59600, 55700)], 11000: [(64700, 58200)], 11001: [(65700, 61900)], 20091: [(66600, 63600)], 20010: [(64100, 57400)]}
+2021-08-22 21:43:44: [Map-Manager] Map metin2_map_a3 has npcs={5001: [(0, 0)], 5002: [(0, 0)], 5004: [(0, 0)], 10002: [(94800, 80400)], 20014: [(47500, 68400)], 20093: [(49400, 57400)], 10020: [(14500, 82300)], 9001: [(45000, 60800)], 20010: [(51600, 57900)], 9003: [(42200, 60800)], 20012: [(54900, 56200)], 9005: [(43000, 57400)], 9006: [(48700, 66600)], 20015: [(58200, 56100)], 20016: [(42300, 61800)], 20017: [(41500, 63800)], 9010: [(45900, 60800)], 20019: [(56400, 60300)], 20020: [(54100, 62000)], 20021: [(40800, 58100)], 20022: [(41900, 56300)], 20024: [(58300, 58500)], 9012: [(50000, 57500)], 20364: [(48100, 29800)], 20042: [(18000, 60000)], 10067: [(100200, 56500)], 12007: [(55100, 60200)], 20349: [(54800, 58800)], 20009: [(10000, 15000)], 11000: [(45800, 63100)], 11001: [(47800, 63300)], 9002: [(47100, 60800)]}
+2021-08-22 21:43:44: [Map-Manager] Map metin2_map_milgyo has npcs={20096: [(58900, 81700)], 20097: [(82200, 87500)], 20098: [(82200, 89500)], 20099: [(82200, 91500)], 20363: [(55400, 52600)], 10060: [(58900, 81700)], 9012: [(57000, 82000)], 20348: [(53200, 59600)], 10014: [(16100, 94300)]}
+2021-08-22 21:43:44: [Map-Manager] Map metin2_map_trent has npcs={}
+2021-08-22 21:43:44: [Map-Manager] Map metin2_map_WL_01 has npcs={10032: [(9200, 34900)], 9012: [(24500, 58000)], 10030: [(9200, 8900)]}
+2021-08-22 21:43:44: [Map-Manager] Map metin2_map_trent02 has npcs={10025: [(70700, 71000)], 9012: [(67800, 54500)], 2599: [(68800, 53500)]}
+2021-08-22 21:43:44: None
+2021-08-22 21:45:52: PHASE: 5
+2021-08-22 21:45:52: PHASE: 5

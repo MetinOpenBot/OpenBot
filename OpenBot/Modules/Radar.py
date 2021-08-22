@@ -1,7 +1,7 @@
 from BotBase import BotBase
 from UIComponents import Component, TabWindow
 import Movement
-import chat, ui, chr, m2netm2g
+import chat, ui, chr, m2netm2g, background
 import OpenLib
 import eXLib
 import re
@@ -16,6 +16,7 @@ class Radar(BotBase):
         self.showMetins = True
         self.showPlayers = True
         self.showBoss = True
+        self.showNPC = True
 
         self.entities = []
 
@@ -50,7 +51,10 @@ class Radar(BotBase):
                                              OnOverVisual='OpenBot/Images/stop_1.tga',
                                              OnDownVisual='OpenBot/Images/stop_2.tga',
                                              funcState=self._start, defaultValue=False)
-
+        self.showNPCButton = comp.OnOffButton(self.settings_tab,
+                                              '\t\t\t\t\t\tShow npc',
+                                              '', 80, 20, funcState=self.switch_npc_button,
+                                              defaultValue=self.showNPC)
         self.showOreButton = comp.OnOffButton(self.settings_tab,
                                               '\t\t\t\t\t\tShow ore',
                                               '', 80, 40, funcState=self.switch_ore_button,
@@ -68,6 +72,11 @@ class Radar(BotBase):
                                                '\t\t\t\t\t\tShow boss', '', 80, 100,
                                                funcState=self.switch_boss_button,
                                                defaultValue=self.showBoss)
+
+        self.showDebugButton = comp.OnOffButton(self.settings_tab,
+                                               '\t\t\t\t\t\tDebug mode', '', 80, 120,
+                                               funcState=self.switch_debug_button,
+                                               defaultValue=False)                                  
 
 
         x_size = 235
@@ -105,6 +114,8 @@ class Radar(BotBase):
             return '[ BOSS ] '
         elif instance_type == OpenLib.PLAYER_TYPE:
             return '[ PLAYER ] '
+        elif instance_type == OpenLib.OBJECT_TYPE:
+            return '[ NPC ] '
 
     def updateFileListBoxEntities(self):
         self.fileListBoxEntities.RemoveAllItems()
@@ -125,6 +136,9 @@ class Radar(BotBase):
             if entity['name'] == str(name[1]):
                 Movement.TeleportToPosition(entity['x'], entity['y'])
 
+    def switch_npc_button(self, val):
+        self.showNPC = val
+
     def switch_ore_button(self, val):
         self.showOre = val
 
@@ -136,6 +150,9 @@ class Radar(BotBase):
 
     def switch_boss_button(self, val):
         self.showBoss = val
+
+    def switch_debug_button(self, val):
+        return
 
     def _start(self, val):
         if val:
@@ -154,7 +171,7 @@ class Radar(BotBase):
 
     def Frame(self):
         MAIN_CHAR_VID = m2netm2g.GetMainActorVID()
-
+        
         self.all_vids = eXLib.InstancesList
         val, self.lastTimeClearedList = OpenLib.timeSleep(self.lastTimeClearedList, 5)
         if val:
@@ -162,6 +179,10 @@ class Radar(BotBase):
 
         for vid in self.all_vids:
             if MAIN_CHAR_VID != vid:
+                if self.showDebugButton.isOn:
+                    chr.SelectInstance(vid)
+                    chat.AppendChat(3, str(chr.GetInstanceType(vid)) + ' ' + str(chr.GetRace()) + ' ' + str(chr.GetName(vid)) + ' ' + str(chr.GetPixelPosition(vid))   + ' ' + str(vid) )
+
                 if self.IsThisEntityNew(vid):
                     if self.showOre:
                         if OpenLib.IsThisOre(vid):
@@ -175,6 +196,9 @@ class Radar(BotBase):
                     if self.showBoss:
                         if OpenLib.IsThisBoss(vid):
                             self.AddNewEntity(vid, OpenLib.BOSS_TYPE)
+                    if self.showNPC:
+                        if OpenLib.IsThisNPC(vid):
+                            self.AddNewEntity(vid, OpenLib.OBJECT_TYPE)
 
     def clear_lists(self):
         self.fileListBoxEntities.RemoveAllItems()
