@@ -17,10 +17,11 @@ on_success_keys = [NOTHING, NEXT_ACTION, ERROR, DISCARD_PREVIOUS, REQUIREMENTS_N
 
 class Action:
 
-    def __init__(self, function, id=0, callback=None, callback_on_failed=None, interrupt_function=None, name='None', function_args=[],
-     callback_args=[], interruptors_args=[], interrupt_function_args=[], requirements=[], on_success=[], on_failed=[], interruptors=[]):
-        self.id = id
-
+    def __init__(self, function, _id=0, callback=None, callback_on_failed=None, interrupt_function=None, name='None', function_args=[],
+     callback_args=[], interruptors_args=[], interrupt_function_args=[], requirements=[], on_success=[], on_failed=[], interruptors=[], call_only_once=False):
+        self.id = _id
+        self.call_only_once = call_only_once
+        self.called = False
         if name == 'None':
             self.name = function.__name__
         else:
@@ -71,13 +72,29 @@ class Action:
                 else:
                     OpenLog.DebugPrint('There is different length in interruptors_args and interruptors')
 
-        OpenLog.DebugPrint('Executing action function')
-        if self.function_args:
-            action_result = self.function(self.function_args)
-        else:
-            action_result = self.function()
+        if self.call_only_once and not self.called:
+            OpenLog.DebugPrint('Executing action function')
+            if self.function_args:
+                action_result = self.function(self.function_args)
+            else:
+                action_result = self.function()
+            self.called = True
+
+        elif self.call_only_once and self.called:
+            on_success = self.CheckOnSuccesList()
+            requirements_done = self.CheckRequirements()
+            if on_success:
+                if requirements_done:
+                    return on_success
+                return REQUIREMENTS_NOT_DONE
+
+        elif not self.call_only_once:
+            OpenLog.DebugPrint('Executing action function')
+            if self.function_args:
+                action_result = self.function(self.function_args)
+            else:
+                action_result = self.function()
        
-        OpenLog.DebugPrint(str(action_result))
         if type(action_result) == bool:
             if action_result:
                 on_success = self.CheckOnSuccesList()

@@ -82,7 +82,7 @@ class SettingsDialog(ui.ScriptWindow):
 		self.reviveBtn = self.comp.OnOffButton(self.generalTab, '\t\t\t\t\t\tAuto Restart', '', 20, 140,funcState=self.ReviveOnOff,defaultValue=int(self.restartHere))
 		#self.reviveInCityBtn = self.comp.OnOffButton(self.generalTab, '\t\t\t\t\t\t in city?', '', 120, 140,funcState=self.ReviveInCityOnOff,defaultValue=int(self.restartInCity))
 		self.WallHackBtn = self.comp.OnOffButton(self.generalTab, '', 'WallHack', 210, 140, image='OpenBot/Images/General/wall.tga',funcState=self.WallHackSwich,defaultValue=int(self.wallHack))
-		self.antiExpBtn =self.comp.OnOffButton(self.generalTab, '\t\t\t\t\t\tAntiExp', '', 20, 180,funcState=self.startAntiExp,defaultValue=int(self.antiExp))
+		self.antiExpBtn = self.comp.OnOffButton(self.generalTab, '\t\t\t\t\t\tAntiExp', '', 20, 180,funcState=self.startAntiExp,defaultValue=int(self.antiExp))
 		
 		self.redPotButton,self.SlideRedPot,self.redPotLabel = UIComponents.GetSliderButtonLabel(self.generalTab,self.SlideRedMove, '', 'Use Red Potions', 28, 18,image="icon/item/27002.tga",funcState=self.OnRedOnOff,defaultValue=int(self.redPotions),defaultSlider=float(self.minHealth/100.0))
 		self.bluePotButton,self.SlideBluePot,self.bluePotLabel = UIComponents.GetSliderButtonLabel(self.generalTab,self.SlideBlueMove, '', 'Use Blue Potions', 28, 50,image="icon/item/27005.tga",funcState=self.OnBlueOnOff,defaultValue=int(self.bluePotions),defaultSlider=float(self.minMana/100.0))

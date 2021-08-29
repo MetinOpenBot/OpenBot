@@ -275,7 +275,6 @@ def MineOre(args):
     if eXLib.IsDead(selectedOre):
         return Action.NEXT_ACTION
     
-
     can_mine = False
     idx = player.GetItemIndex(player.EQUIPMENT, item.EQUIPMENT_WEAPON)
     if idx != 0:

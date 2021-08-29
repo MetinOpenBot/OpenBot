@@ -1,7 +1,7 @@
 _chr = chr
 from OpenBot.Modules.Hooks import Hook, questHook
 import Hooks
-import ui,chr,time,app, net, player,wndMgr,math,snd,eXLib,uiToolTip,item,FileManager,event,chat,OpenLog,skill, m2netm2g
+import ui,chr,time,app, net, background, player,wndMgr,math,snd,eXLib,uiToolTip,item,FileManager,event,chat,OpenLog,skill, m2netm2g
 from datetime import datetime
 #import pack
 
@@ -145,7 +145,6 @@ def GetClassSkillIDs(_class):
 	startIndex = skillSet_map[_class][1]
 	return [ i for i in range(skillSet_map[_class][1],startIndex+6)]
 
-
 def GetServerInfo(channel):
 	"""
 	Returns the channel info
@@ -166,7 +165,6 @@ def GetServerInfo(channel):
 	         addr_new,
 	         port_new)
 
-
 def GetClass():
 	"""
 	Returns the a distinct number associated with the skillgroup
@@ -184,7 +182,6 @@ def GetClass():
 	
 	return 0
 		
-
 #Skip python select answers
 def skipAnswers(event_answers, hook=False):
 	"""
@@ -200,17 +197,14 @@ def skipAnswers(event_answers, hook=False):
 	for index,answer in enumerate(event_answers,start=1):
 		event.SelectAnswer(index,answer)
 
-
 def showAnswers():
 	"""
 	Removes the quest hook, in order for quest answers to be displayed.
 	"""
 	Hooks.questHook.UnhookFunction()
 
-
 def GetCurrentText(self):
 	return self.textLine.GetText()
-
 
 def GetSkillManaNeed(skill_id,skill_slot):
 	return skill.GetSkillNeedSP(skill_id,player.GetSkillCurrentEfficientPercentage(skill_slot))
@@ -266,7 +260,6 @@ def IsThisOre(vid):
 		return True
 	return False
 
-
 #Checks if inventory is full by checking empty spaces
 def isInventoryFull():
 	global player
@@ -309,8 +302,6 @@ def GetNumberOfFreeSlots():
 	else:
 		return numItems - INV_FULL_MIN_EMPTY
 
-
-
 def GetItemByType(_id):
 	"""
 	Return the slot index of the first item with the specified type in the inventory.
@@ -345,7 +336,6 @@ def UseAnyItemByID(id_list):
 			net.SendItemUsePacket(i)
 			return 1
 	return -1
-
 
 def GetItemByID(_id):
 	"""
@@ -399,7 +389,6 @@ def GetItemsSlotsByID(_id_list):
 			result[id].append(i)
 	return result
 
-
 #Return the angle needed to rotate from x0,y0 to x1,y1
 def GetRotation(x0,y0,x1,y1):
 	"""
@@ -443,7 +432,6 @@ def RotateMainCharacterByVid(vid):
 	x, y, z = chr.GetPixelPosition()
 	RotateMainCharacter(x, y)
 
-
 def GetCurrentPhase():
 	"""
 	Returns the current phase of the game.
@@ -471,7 +459,6 @@ def IsInGamePhase():
 	"""
 	return GetCurrentPhase() == PHASE_GAME
 
-
 def getAllStatusOfMainActor():
 	"""
 	Returns the currents stats of main character.
@@ -480,29 +467,32 @@ def getAllStatusOfMainActor():
 		dict
 
 	"""
+	x, y, z = chr.GetPixelPosition(net.GetMainActorVID())
 	character_status = {
-		'NAME': player.GetName(),
-		'MONEY': player.GetMoney(),
-		'MOVING_SPEED': player.MOVING_SPEED,
-		'RACE': player.GetRace(),
-		'LEVEL': player.LEVEL,
-		'EXP': player.GetEXP(),
-		'NEXT_EXP': player.NEXT_EXP,
+		'Position': [x, y],
+		'CurrentMap': background.GetCurrentMapName(),
+		'Name': player.GetName(),
+		'Level': player.GetStatus(player.LEVEL),
+		'Experience': player.GetEXP(),
+		'MaxExperience': player.GetStatus(player.NEXT_EXP),
+		'FirstEmpireMap': GetPlayerEmpireFirstMap(),
+		'SecondEmpireMap': GetPlayerEmpireSecondMap(),
+		'Money': player.GetMoney(),
+		'MovingSpeed': player.GetStatus(player.MOVING_SPEED),
 		'GUILD_ID': player.GetGuildID(),
-		'GUILD_NAME': player.GetGuildName(),
-		'DEF_BONUS': player.DEF_BONUS,
-		'ATT_BONUS': player.ATT_BONUS,
-		'ATT_POWER': player.ATT_POWER,
-		'ATT_SPEED': player.ATT_SPEED,
-		'STATUS': player.GetStatus(),
-		'MAX_HP': player.MAX_HP,
-		'HP': player.HP,
-		'HP_RECOVERY':  player.HP_RECOVERY,
-		'MAX_SP': player.MAX_SP,
-		'SP': player.SP,
-		'SP_RECOVERY': player.SP_RECOVERY,
-		'STAMINA': player.STAMINA,
-		'STAT': player.STAT
+		'GuildName': player.GetGuildName(),
+		'DefBonus': player.GetStatus(player.DEF_BONUS),
+		'AttBonus': player.GetStatus(player.ATT_BONUS),
+		'AttPower': player.GetStatus(player.ATT_POWER),
+		'AttSpeed': player.GetStatus(player.ATT_SPEED),
+		'MaxHP': player.GetStatus(player.MAX_HP),
+		'HP': player.GetStatus(player.HP),
+		'RecoveryHP': player.GetStatus(player.HP_RECOVERY),
+		'MaxSP': player.GetStatus(player.MAX_SP),
+		'SP': player.GetStatus(player.SP),
+		'RecoverySP': player.GetStatus(player.SP_RECOVERY),
+		'Stamina': player.GetStatus(player.STAMINA),
+		#'STAT': player.GetStatus()player.STAT
 
 	}
 
@@ -580,8 +570,7 @@ def GetInstanceByID(_id):
 		if chr.GetRace() == _id:
 			return vid
 	return -1
-
-		
+	
 def getClosestInstance(_type,is_unblocked=True):
 	"""
 	Get the VID of the closest matching one of the types specified instance from the main player.
@@ -614,7 +603,6 @@ def getClosestInstance(_type,is_unblocked=True):
 				closest_vid = vid
 	
 	return closest_vid
-	
 
 #Retuns -1 if is dead, 0 if attacking target or 1 if moving to target
 def AttackTarget(vid):
@@ -640,7 +628,6 @@ def AttackTarget(vid):
 		Movement.GoToPositionAvoidingObjects(mob_x,mob_y)
 		return MOVING_TO_TARGET
 		
-
 #Return point between 2 points at the specified distance from x1,y1
 #If overflow=False and dist_ is bigger then the distance between the 2 points
 #the function will return x2,y2, otherwise it will return a point beyond x2,y2
@@ -744,7 +731,6 @@ def extractFile(path):
 	with open(file_location, "wb") as myfile:
 		myfile.write(_str)
 
-
 def dist(x1,y1,x2,y2):
 	"""
 	Return distance between 2 points.
@@ -805,7 +791,6 @@ def GetCurrentServer():
 	except:
 		OpenLog.DebugPrint("Exception raised when trying to obtain current channel.")
 		return 0
-
 
 def IsWeaponArch():
 	"""

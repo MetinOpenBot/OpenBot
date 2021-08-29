@@ -32,7 +32,6 @@ def OnDigMotionCallback(main_vid,target_ore,n):
         ActionBot.instance.AddNewWaiter(slash_time, farm.IsCurrentlyDiggingDone)
 
 def returnFuncWithArgs(func, args):
-
     def x():
         func(args)
     
@@ -46,7 +45,7 @@ class FarmingBot(BotBase):
         BotBase.__init__(self, 0.1,waitIsPlayerDead=True)
         self.CURRENT_STATE = WALKING_STATE
         self.current_point = 0  # Current position index
-        self.path = []  # Dict of tuples with coordinates [(0, 0), (2, 2)] etc
+        self.path = []  # list of lists with coordinates [[0, 0, 'mapname'], [2, 2, 'map_name]] etc
         eXLib.RegisterDigMotionCallback(OnDigMotionCallback)
         
         self.slash_timer = OpenLib.GetTime()
@@ -178,7 +177,11 @@ class FarmingBot(BotBase):
 
     def OnEnableSwitchButton(self, val):
         if val:
-            self.Start()
+            if len(self.path) > 1:
+                self.Start()
+            else:
+                chat.AppendChat(3, 'You need add more than 1 waypoint!')
+                self.enableButton.SetOff()
         else:
             self.Stop()
 
@@ -277,13 +280,6 @@ class FarmingBot(BotBase):
         if self.ores_vid_list:
             self.selectedOre = self.ores_vid_list.pop()
 
-    def StartBot(self):
-        if len(self.path) < 2:
-            self.Stop()
-            DmgHacks.Pause()
-            self.enableButton.SetOff()
-            return
-
     def StopBot(self):
         self.current_point = 0
         Movement.StopMovement()
@@ -319,6 +315,7 @@ class FarmingBot(BotBase):
             'requirements': {ActionRequirementsCheckers.IS_IN_CHANNEL: [OpenLib.GetNextChannel()]},
             'on_success': [Action.NEXT_ACTION],
             'callback': self.SetIsCurrActionDoneTrue,
+            #'call_only_once': True,
         }
         ActionBot.instance.AddNewAction(action_dict)
 
@@ -457,8 +454,6 @@ class FarmingBot(BotBase):
                 ActionBot.instance.AddNewAction(action_dict)
                 self.isCurrActionDone = False
                 return
-
-
 
 def switch_state():
     global farm

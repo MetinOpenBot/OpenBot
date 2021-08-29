@@ -8,11 +8,19 @@ IS_NEAR_POSITION = 'IS_NEAR_POSITION'
 IS_ON_POSITION = 'IS_ON_POSITION'
 IS_IN_MAP = 'IS_IN_MAP'
 IS_ABOVE_LVL = 'IS_ABOVE_LVL'
+IS_UNDER_LVL = 'IS_UNDER_LVL'
 IS_NEAR_INSTANCE = 'IS_NEAR_INSTANCE'
 IS_RACE_NEARLY = 'IS_RACE_NEARLY'
 IS_IN_CHANNEL = 'IS_IN_CHANNEL'
+IS_CHAR_READY_TO_MINE = 'IS_CHAR_READY_TO_MINE'
+IS_DEAD = 'IS_DEAD'
+HAS_ITEM = 'HAS_ITEM'
+HAS_ITEM_IN_COUNT = 'HAS_ITEM_IN_COUNT'
 
-req_list = [IS_NEAR_POSITION, IS_ON_POSITION, IS_IN_MAP, IS_ABOVE_LVL, IS_NEAR_INSTANCE, IS_RACE_NEARLY, IS_IN_CHANNEL]
+
+req_list = [IS_NEAR_POSITION, IS_ON_POSITION, IS_IN_MAP, IS_ABOVE_LVL, IS_NEAR_INSTANCE, IS_RACE_NEARLY, IS_IN_CHANNEL, IS_DEAD, HAS_ITEM, HAS_ITEM_IN_COUNT]
+interrupt_list = [IS_NEAR_POSITION, IS_ON_POSITION, IS_IN_MAP, IS_ABOVE_LVL, IS_NEAR_INSTANCE, IS_RACE_NEARLY, IS_IN_CHANNEL, IS_DEAD, HAS_ITEM, HAS_ITEM_IN_COUNT]
+
 
 def isAboveLVL(lvl):
     """
@@ -26,6 +34,11 @@ def isAboveLVL(lvl):
     if player.GetStatus(player.LEVEL) < lvl:
         return False
     return True
+
+def isUnderLVL(lvl):
+     if player.GetStatus(player.LEVEL) > lvl:
+        return False
+    return True   
 
 def isInMaps(maps):
     """
@@ -65,7 +78,7 @@ def isOnPosition(position):
     """
     x, y = position[0], position[1]
     if len(position) < 3:
-        max_dist = 100
+        max_dist = 200
     else:
         max_dist = position[2]
     if OpenLib.isPlayerCloseToPosition(x, y, max_dist):
@@ -111,6 +124,14 @@ def isCharReadyToMine(ore_vid):
 def HasItem(item_id):
     if OpenLib.GetItemByID(item_id) > -1:
         return True
+    return False
+
+def HasItemInCount(item_id, item_count):
+    item_slot = OpenLib.GetItemByID(item_id)
+    if item_slot > -1:
+        if player.GetItemCount(item_slot) >= item_count:
+            return True
+        return False
     return False
 
 def IsDead(vid):
