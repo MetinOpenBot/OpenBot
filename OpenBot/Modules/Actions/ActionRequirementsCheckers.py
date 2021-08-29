@@ -36,7 +36,7 @@ def isAboveLVL(lvl):
     return True
 
 def isUnderLVL(lvl):
-     if player.GetStatus(player.LEVEL) > lvl:
+    if player.GetStatus(player.LEVEL) > lvl:
         return False
     return True   
 
