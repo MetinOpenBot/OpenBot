@@ -115,7 +115,7 @@ class ActionBot(BotBase):
         if 'function' not in action_dict_keys and 'function_args' not in action_dict_keys:
             DebugPrint('Action dict dont have function or function_args!')
             return
-        new_action = Action.Action(id=self.GetNewId,
+        new_action = Action.Action(_id=self.GetNewId,
                             function=action_dict['function'])
 
         for key in action_dict_keys:

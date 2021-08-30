@@ -74,7 +74,6 @@ def isOnPosition(position):
         Checking is main character on current position.
         Args:
             position [x (int), y(int), max_dist(int)](list)
-
     """
     x, y = position[0], position[1]
     if len(position) < 3:
