@@ -121,7 +121,7 @@ class ActionLoader:
                 _interruptors = {
                     'interruptors': loaded_action['interruptors'],
                     'interruptors_args': loaded_action['interruptors_args'],
-                    'interrupt_function': loaded_action['interrupt_function']
+                    'interrupt_function': loaded_action['interrupt_function'],
                     'interrupt_function_args': loaded_action['interrupt_function_args']
                 }
 

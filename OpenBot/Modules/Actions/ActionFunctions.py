@@ -292,8 +292,7 @@ def MineOre(args):
     if not is_curr_mining and can_mine:
         net.SendOnClickPacket(selectedOre)
         DebugPrint('Digging')
-        return Action.NOTHING
-    return Action.NEXT_ACTION
+    return False
     
 def LookForBlacksmithInDeamonTower(args):
     go_above_six_stage = args[0]
