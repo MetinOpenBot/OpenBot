@@ -143,7 +143,7 @@ class ActionLoader:
                 'requirements': requirements,
                 'interruptors': interruptors,
                 'interruptors_args': interruptors_args,
-                'interrupt_function': interrupt_function
+                'interrupt_function': interrupt_function,
                 'interrupt_function_args': interrupt_function_args
             }
             actions.append(action_dict)
