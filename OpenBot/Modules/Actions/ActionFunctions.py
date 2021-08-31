@@ -92,7 +92,7 @@ def Find(args):
 
 def MoveToPosition(args):
     position = args[0]
-    if OpenLib.isPlayerCloseToPosition(position[0], position[1], 200):
+    if OpenLib.isPlayerCloseToPosition(position[0], position[1]):
         return Action.NEXT_ACTION
     if len(args) > 1:
         error = Movement.GoToPositionAvoidingObjects(position[0], position[1], mapName=args[1])
@@ -106,7 +106,7 @@ def MoveToPosition(args):
     return Action.NOTHING
 
 def MoveToVID(args):
-    if eXLib.IsDead(args[0]):
+    if args[0] not in eXLib.InstancesList:
         return Action.NEXT_ACTION
     x, y, z = chr.GetPixelPosition(args[0])
     return MoveToPosition([(x, y)])
@@ -272,7 +272,7 @@ def TalkWithNPC(args):
 def MineOre(args):
     selectedOre = args[0]
     is_curr_mining = args[1]()
-    if eXLib.IsDead(selectedOre):
+    if selectedOre not in eXLib.InstancesList:
         return Action.NEXT_ACTION
     
     can_mine = False
@@ -281,34 +281,19 @@ def MineOre(args):
         item.SelectItem(idx)
         if item.GetItemType() == item.ITEM_TYPE_PICK:
             can_mine = True
-    
-    if not can_mine:
-        pickaxe_slot = OpenLib.GetItemByID(29101)
-        if pickaxe_slot > -1:
-            chat.AppendChat(3, 'pickaxe slot '+str(pickaxe_slot))
-            net.SendItemUsePacket(pickaxe_slot)   
-        else:
-            can_mine = False
 
-    if not can_mine:
-        idx = player.GetItemIndex(player.EQUIPMENT, item.EQUIPMENT_WEAPON)
-        if idx != 0:
-            item.SelectItem(idx)
-            if item.GetItemType() == item.ITEM_TYPE_PICK:
-                can_mine = True
-
-    if not OpenLib.isPlayerCloseToInstance(selectedOre):
+    if not OpenLib.isPlayerCloseToInstance(selectedOre, 200):
         action_dict = {'function_args': [selectedOre],
                         'function': MoveToVID,
-                        'requirements': {ActionRequirementsCheckers.isNearInstance: [selectedOre]},
+                        'requirements': {ActionRequirementsCheckers.isNearInstance: [selectedOre, 200]},
                         'on_success': [Action.NEXT_ACTION]}
         return action_dict
                     
     if not is_curr_mining and can_mine:
         net.SendOnClickPacket(selectedOre)
         DebugPrint('Digging')
-    
-    return False
+        return Action.NOTHING
+    return Action.NEXT_ACTION
     
 def LookForBlacksmithInDeamonTower(args):
     go_above_six_stage = args[0]
