@@ -59,12 +59,7 @@ class ActionLoader:
         for loaded_action in raw_actions_dict['actions']:
             name = None
             function = None
-            interrupt_function = None
             function_args = []
-            interruptors = []
-            interruptors_args = []
-            interrupt_function_args = []
-            
 
             current_action_keys = loaded_action.keys()
 
@@ -105,34 +100,8 @@ class ActionLoader:
                 name = ''
                 DebugPrint('Name is None')
 
-            # Interruptors checking
-            interr_keys_to_check = ['interruptors', 'interruptors_args', 'interrupt_function_args', 'interrupt_function']
-            is_there_one_key = False
-            for key in loaded_action.keys():
-                if key in interr_keys_to_check:
-                    is_there_one_key = True
-                
-                if key not in interr_keys_to_check:
-                    if is_there_one_key:
-                        DebugPrint(str(key) + ' is missing!')
-                        return False
-                    
-            if is_there_one_key:
-                _interruptors = {
-                    'interruptors': loaded_action['interruptors'],
-                    'interruptors_args': loaded_action['interruptors_args'],
-                    'interrupt_function': loaded_action['interrupt_function'],
-                    'interrupt_function_args': loaded_action['interrupt_function_args']
-                }
 
-                cleared_interruptors = self.CheckInterruptors(_interruptors)
-                if cleared_interruptors is None:
-                    return False
-                
-                interruptors = cleared_interruptors['interruptors']
-                interruptors_args = cleared_interruptors['interruptors_args']
-                interrupt_function = cleared_interruptors['interrupt_function']
-                interrupt_function_args = cleared_interruptors['interrupt_function_args']
+            # 
 
 
 
@@ -140,11 +109,7 @@ class ActionLoader:
                 'name': name,
                 'function': function,
                 'function_args': function_args,
-                'requirements': requirements,
-                'interruptors': interruptors,
-                'interruptors_args': interruptors_args,
-                'interrupt_function': interrupt_function,
-                'interrupt_function_args': interrupt_function_args
+                'requirements': requirements
             }
             actions.append(action_dict)
         #DebugPrint(actions)
@@ -326,17 +291,17 @@ class ActionLoader:
                     DebugPrint('Requirement data ' + str(requirements[requirement]) + ' is not int!')
                     return None   
 
-             elif requirement == ActionRequirementsCheckers.IS_DEAD:
+            elif requirement == ActionRequirementsCheckers.IS_DEAD:
                 if type(requirements[requirement]) is not int:
                     DebugPrint('Requirement data ' + str(requirements[requirement]) + ' is not int!')
                     return None      
 
-             elif requirement == ActionRequirementsCheckers.HAS_ITEM:
+            elif requirement == ActionRequirementsCheckers.HAS_ITEM:
                 if type(requirements[requirement]) is not int:
                     DebugPrint('Requirement data ' + str(requirements[requirement]) + ' is not int!')
                     return None  
 
-             elif requirement == ActionRequirementsCheckers.HAS_ITEM_IN_COUNT:
+            elif requirement == ActionRequirementsCheckers.HAS_ITEM_IN_COUNT:
                 if type(requirements[requirement]) is not list:
                     DebugPrint('Requirement data ' + str(requirements[requirement]) + ' is not list!')
                     return None  
@@ -365,8 +330,5 @@ class ActionLoader:
             if failed_key not in Action.on_success_keys:
                 return False
         return True
-
-    def CheckInterruptors(self, interruptors):
-        pass
 
 instance = ActionLoader()

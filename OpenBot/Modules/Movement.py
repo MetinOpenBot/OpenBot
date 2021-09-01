@@ -187,7 +187,10 @@ class MovementDialog(ui.ScriptWindow):
             if(self.state == STATE_FINISH):
                 self.state = STATE_STOPPED
                 return DESTINATION_REACHED
-        return None
+            elif(self.state == STATE_MOVING):
+                return MOVING
+            else:
+                return self.GoToPositionAvoidingObjects(x+1,y-1,maxDist,callback)
             
         
     def GoStraightToPoint(self,x,y):

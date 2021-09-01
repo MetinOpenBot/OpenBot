@@ -128,7 +128,6 @@ class Keybot(BotBase):
         BotBase.__init__(self)
         self.canPress = True
         self.keys = {
-          
             app.DIK_F5: {'function': self.SwitchDmgHack},
             app.DIK_F6: {'function': self.SwitchFarmBot},
             app.DIK_F7: {'function': self.SwitchAutoLogin},

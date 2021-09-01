@@ -52,8 +52,8 @@ def isInMaps(maps):
             return True
     return False
 
-def isNearInstance(vid):
-    return OpenLib.isPlayerCloseToInstance(vid)
+def isNearInstance(vid, max_dist=120):
+    return OpenLib.isPlayerCloseToInstance(vid, max_dist)
 
 def isNearPosition(position):
     """
@@ -64,7 +64,7 @@ def isNearPosition(position):
     """
     x, y = position[0], position[1]
     if len(position) < 3:
-        max_dist = 100
+        max_dist = 150
     else:
         max_dist = position[2]
     return OpenLib.isPlayerCloseToPosition(x, y, max_dist)
@@ -74,6 +74,7 @@ def isOnPosition(position):
         Checking is main character on current position.
         Args:
             position [x (int), y(int), max_dist(int)](list)
+
     """
     x, y = position[0], position[1]
     if len(position) < 3:

@@ -386,6 +386,7 @@ class FarmingBot(BotBase):
                                 return
                 else:
                     OpenLog.DebugPrint('inventory is not full')
+                    
                 OpenLog.DebugPrint('No trash items')
 
                 interruptors_args = []
@@ -408,7 +409,7 @@ class FarmingBot(BotBase):
                 'function_args': [(self.path[self.current_point][0], self.path[self.current_point][1]), self.path[self.current_point][2]],
                 'function': ActionFunctions.MoveToPosition, 
                 'requirements': {ActionRequirementsCheckers.IS_ON_POSITION: [self.path[self.current_point][0],
-                                                                            self.path[self.current_point][1], 150],
+                                                                            self.path[self.current_point][1], 200],
                                                                              ActionRequirementsCheckers.IS_IN_MAP: [self.path[self.current_point][2]]},
                 'callback': self.IsWalkingDone,
                 'interruptors_args': interruptors_args,
