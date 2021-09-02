@@ -92,8 +92,6 @@ def Find(args):
 
 def MoveToPosition(args):
     position = args[0]
-    if OpenLib.isPlayerCloseToPosition(position[0], position[1], 120):
-        return Action.NEXT_ACTION
     if len(args) > 1:
         error = Movement.GoToPositionAvoidingObjects(position[0], position[1], mapName=args[1])
     else:
@@ -103,7 +101,7 @@ def MoveToPosition(args):
         return Action.ERROR
     
     elif error == Movement.MOVING:
-        return Action.NOTHING
+        return True
     
     elif error == Movement.DESTINATION_REACHED:
         return Action.NEXT_ACTION
@@ -306,20 +304,19 @@ def MineOre(args):
 
     x, y, z = chr.GetPixelPosition(selectedOre)
 
-    if not OpenLib.isPlayerCloseToInstance(selectedOre, 140):
+    if not can_mine:
+        return Action.NEXT_ACTION
+
+    if not OpenLib.isPlayerCloseToInstance(selectedOre, 200):
         action_dict = {'function_args': [(x, y)],
                         'function': MoveToPosition,
-                        'requirements': {ActionRequirementsCheckers.isNearInstance: [selectedOre]},
-                        'on_success': [Action.NEXT_ACTION]}
+                        'requirements': {ActionRequirementsCheckers.isNearInstance: [selectedOre]}}
         return action_dict
                     
     if not is_curr_mining and can_mine:
         net.SendOnClickPacket(selectedOre)
         DebugPrint('Digging')
         return False
-    
-    if not can_mine:
-        return Action.NEXT_ACTION
       
 def LookForBlacksmithInDeamonTower(args):
     go_above_six_stage = args[0]

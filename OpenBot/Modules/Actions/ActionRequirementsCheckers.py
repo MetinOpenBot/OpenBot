@@ -52,7 +52,7 @@ def isInMaps(maps):
             return True
     return False
 
-def isNearInstance(vid, max_dist=120):
+def isNearInstance(vid, max_dist=200):
     return OpenLib.isPlayerCloseToInstance(vid, max_dist)
 
 def isNearPosition(position):
