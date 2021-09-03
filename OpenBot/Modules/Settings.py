@@ -454,8 +454,7 @@ class SettingsDialog(ui.ScriptWindow):
 		from OpenBot.Modules.Actions import ActionBot
 		def _anti_exp():
 			self.can_add_waiter = True
-			status = OpenLib.getAllStatusOfMainActor()
-			exp = status['EXP']
+			exp = player.GetEXP()
 			if exp > 0 and exp < 1000000:
 				net.SendGuildOfferPacket(exp)
 			else:
@@ -464,6 +463,7 @@ class SettingsDialog(ui.ScriptWindow):
 		if self.antiExp and self.can_add_waiter:
 			ActionBot.instance.AddNewWaiter(3, _anti_exp)
 			self.can_add_waiter = False
+
 
 
 	def OnUpdate(self):
