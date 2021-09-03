@@ -13,9 +13,9 @@ STATE_STOP = 0
 # STAGES OPTIONS
 STAGE_REPEAT = 'stage_reapat'
 
-def _afterLoadPhase(phase):
+def _afterLoadPhase(phase,phaseWnd):
     global instance
-    if phase == OpenLib.PHASE_LOGIN or OpenLib.PHASE_GAME:
+    if phase == OpenLib.PHASE_LOGIN or phase==OpenLib.PHASE_GAME:
         instance.enableActionBot.SetOn()
         instance.Start()
         for waiter in instance.waiters:
@@ -160,8 +160,8 @@ class ActionBot(BotBase):
         if self.Board.IsShow():
             self.RefreshRenderedWaiters()
 
+        this_time = OpenLib.GetTime()
         for waiter in self.waiters:
-            this_time = OpenLib.GetTime()
             if this_time > waiter['timeToWait'] + waiter['launching_time']:
                 waiter['callback']()
                 self.waiters.remove(waiter)

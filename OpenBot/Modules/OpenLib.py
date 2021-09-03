@@ -745,7 +745,7 @@ def dist(x1,y1,x2,y2):
 		[float]: Returns distance between points.
 	"""
 	return math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
-
+	
 def GetNextChannel():
 	from OpenBot.Modules import ChannelSwitcher
 	current_channel = GetCurrentChannel()

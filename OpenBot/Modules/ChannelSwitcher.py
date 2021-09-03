@@ -1,21 +1,16 @@
-import OpenLib, UIComponents, Hooks, Settings
+import OpenLib, UIComponents, Hooks, Settings, OpenLog
 import serverInfo, background, ui, chat, net, app, introLogin # introLogin gives ServerStateChecker module
 
 
-def __PhaseChangeChannelCallback(phase):
+def __PhaseChangeChannelCallback(phase,phaseWnd):
     global instance
     if instance.currState == STATE_NONE:
         return
     else:
         if phase == OpenLib.PHASE_GAME:
             instance.SetStateNone()
-        elif phase == OpenLib.PHASE_LOGIN:
-            if Settings.instance.autoLogin:
-                return
-            else:
-                net.DirectEnter(0,0)
         elif phase == OpenLib.PHASE_SELECT:
-            instance.ConnectToGame()
+            OpenLib.SetTimerFunction(0.5,phaseWnd.SelectStart)
 
 
 def getCallBackWithArg(func, arg):
@@ -109,7 +104,7 @@ class ChannelSwitcher:
             }
 
     def IsSpecialMap(self):
-        maps = [
+        maps = {
             "season1/metin2_map_oxevent",
             "season2/metin2_map_guild_inside01",
             "season2/metin2_map_empirewar01",
@@ -129,17 +124,17 @@ class ChannelSwitcher:
             "metin2_map_t5",
             "metin2_map_wedding_01",
             "metin2_map_duel"
-        ]
+        }
         if str(background.GetCurrentMapName()) in maps:
             return True
         return False
 
     def ConnectToChannel(self):
-        net.ConnectToAccountServer(self.selectedChannel["ip"], self.selectedChannel["port"], self.selectedChannel["acc_ip"], self.selectedChannel["acc_port"])
-        net.SendSelectCharacterPacket(0)
+        net.Disconnect()
+        net.ConnectTCP(self.selectedChannel["ip"],self.selectedChannel["port"])
 
     def ConnectToGame(self):
-        net.SendSelectCharacterPacket(0)
+        net.SendEnterGamePacket()
 
     def ChangeChannelById(self, id):
         if int(id) not in self.channels:
@@ -170,6 +165,21 @@ class ChannelSwitcher:
 def switch_state():
     instance.switch_state()
 
+def SwitchChannel(val):
+    instance.ChangeChannelById(val)
+
+def GetNextChannel():
+	current_channel = OpenLib.GetCurrentChannel()
+
+	if not current_channel:
+		return 0
+	if current_channel + 1 > len(instance.channels):
+		current_channel = 1
+	else:
+		current_channel += 1
+	
+	return current_channel
 
 instance = ChannelSwitcher()
 Hooks.registerPhaseCallback("channelCallback", __PhaseChangeChannelCallback)
+OpenLog.DumpObject(instance)

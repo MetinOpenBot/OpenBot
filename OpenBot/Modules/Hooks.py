@@ -85,7 +85,7 @@ def phaseIntercept(*args,**kwargs):
 	for callback_id in phaseCallbacks:
 		callback = phaseCallbacks[callback_id]
 		if callable(callback):
-			callback(CURRENT_PHASE)
+			callback(CURRENT_PHASE,args[1])
 	phaseHook.CallOriginalFunction(*args,**kwargs)
 
 def registerPhaseCallback(id,func):

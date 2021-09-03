@@ -8,7 +8,7 @@ from OpenBot.Modules.Actions import ActionBot
 
 
 
-def __PhaseChangeSkillCallback(phase):
+def __PhaseChangeSkillCallback(phase,phaseWnd):
     global instance
     if phase == OpenLib.PHASE_GAME:
         instance.resetSkillsUI()

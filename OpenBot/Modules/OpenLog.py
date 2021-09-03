@@ -12,6 +12,12 @@ def DebugPrint(arg):
 		f.write(str(datetime.now())+": "+arg+"\n")
 	pass
 
+
+def DumpObject(arg):
+	with open(eXLib.PATH+"\\ObjectDump.txt","w") as f:
+		for i in arg.__dict__:
+			f.write(str(i) + "\n")
+
 def handleRequest(id,msg):
     DebugPrint(msg)
 

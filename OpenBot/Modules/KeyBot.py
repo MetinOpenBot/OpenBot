@@ -114,7 +114,7 @@ from OpenBot.Modules.Actions import ActionBot
             app.DIK_Y: {'function': None},
             app.DIK_Z: {'function': None},}
 """
-def _afterLoadPhase(phase):
+def _afterLoadPhase(phase,phaseWnd):
     global instance
     if phase == OpenLib.PHASE_LOGIN or phase == OpenLib.PHASE_GAME:
         instance.enableButton.SetOn()
