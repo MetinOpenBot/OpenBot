@@ -455,10 +455,12 @@ class SettingsDialog(ui.ScriptWindow):
 		def _anti_exp():
 			self.can_add_waiter = True
 			exp = player.GetEXP()
-			if exp > 0 and exp < 1000000:
-				net.SendGuildOfferPacket(exp)
-			else:
+			if exp > 1000000:
 				net.SendGuildOfferPacket(1000000)
+			elif exp < 1000000 and exp > 0:
+				net.SendGuildOfferPacket(exp)
+			elif exp == 0:
+				return
 		
 		if self.antiExp and self.can_add_waiter:
 			ActionBot.instance.AddNewWaiter(3, _anti_exp)
