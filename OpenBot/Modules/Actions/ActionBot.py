@@ -217,7 +217,7 @@ class ActionBot(BotBase):
                 
             elif action_result == Action.ERROR:
                 DebugPrint('Action has some error')
-                #self.GoToNextAction()
+                self.GoToNextAction()
         
         elif isinstance(action_result, Action.Action) or type(action_result) == dict:
             DebugPrint('New action returned')
