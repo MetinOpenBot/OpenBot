@@ -104,7 +104,7 @@ class FishingBotDialog(ui.Window):
 		#Grill button and image
 		item.SelectItem(self.campFire)
 		itemIcon = item.GetIconImageFileName()
-		self.campfireimg = self.comp.ExpandedImage(self.Board, 248, 420, str(itemIcon))
+		self.campfireBtn = self.comp.OnOffButton(self.Board, '', 'Buy and use campfire', 248, 420, image=itemIcon)
 		self.grillFishBtn = self.comp.Button(self.Board, 'Grill Fish', '', 235, 455, self.PlaceFireAndGrillFish, 'd:/ymir work/ui/public/middle_button_01.sub', 'd:/ymir work/ui/public/middle_button_02.sub','d:/ymir work/ui/public/middle_button_03.sub')
 		
 		##HairButton
@@ -177,6 +177,7 @@ class FishingBotDialog(ui.Window):
 		self.buyWormsBtn.SetValue(boolean(FileManager.ReadConfig("FishBot_BuyWorms")))
 		self.rodBtn.SetValue(boolean(FileManager.ReadConfig("FishBot_rodUpgrade")))
 		self.instantBtn.SetValue(boolean(FileManager.ReadConfig("FishBot_instant")))
+		self.campfireBtn.SetValue(boolean(FileManager.ReadConfig("FishBot_campfire")))
 
 
 	def StartStopEvent(self,val):
@@ -202,6 +203,7 @@ class FishingBotDialog(ui.Window):
 		FileManager.WriteConfig("FishBot_BuyWorms", str(self.buyWormsBtn.isOn))
 		FileManager.WriteConfig("FishBot_rodUpgrade", str(self.rodBtn.isOn))
 		FileManager.WriteConfig("FishBot_instant", str(self.instantBtn.isOn))
+		FileManager.WriteConfig("FishBot_campfire", str(self.campfireBtn.isOn))
 		FileManager.Save()
 
 	def isRodAbleToLevelUp(self):
@@ -283,17 +285,19 @@ class FishingBotDialog(ui.Window):
 			for i in range(0,5):
 				to_buy.append(7)
 		
-		if not has_fire:
+		if not has_fire and self.campfireBtn.isOn:
 			to_buy.append(1)
 
 		self.isMoving = True
 
-
+		chat.AppendChat(3,"[Fishing-Bot] Selling slots: "+str(to_sell))
 
 		#GoShop and use campfire
-		NPCInteraction.RequestBusinessNPCAway(to_buy,to_sell,NPCInteraction.GetFishermanShop(),callback=_PlaceFireCallBack)
-		chat.AppendChat(3,"[Fishing-Bot] Selling slots: "+str(to_sell))
-		#NPCInteraction.RequestBusinessNPCAwayRestorePosition(to_buy,to_sell,NPCInteraction.FISHERMAN_SHOP,callback=_PositionRestoreCallback,pos=self.startPosition)
+		if self.campfireBtn.isOn:
+			NPCInteraction.RequestBusinessNPCAway(to_buy,to_sell,NPCInteraction.GetFishermanShop(),callback=_PlaceFireCallBack)
+		else:
+			NPCInteraction.RequestBusinessNPCAwayRestorePosition(to_buy,to_sell,NPCInteraction.GetFishermanShop(),callback=_PositionRestoreCallback,pos=self.startPosition)
+
 		self.SetState(self.STATE_GOING_TO_SHOP)
 
 	def exitFishing(self):		
@@ -432,7 +436,7 @@ class FishingBotDialog(ui.Window):
 		return True
    
 	def PullRod(self):
-		if(self.enableButton.isOn and self.instantBtn.isOn):
+		if(self.enableButton.isOn):
 			chat.AppendChat(3,"[Fishing-Bot] Pulling Rod")
 			eXLib.SendStopFishing(eXLib.SUCCESS_FISHING,app.GetRandom(3,10))
 			self.lastTimeWaitState = OpenLib.GetTime()
@@ -455,8 +459,9 @@ class FishingBotDialog(ui.Window):
 					self.isMoving = False
 					
 			if self.state == self.STATE_FISHING:
-				valFishState, self.lastTimeFishState = OpenLib.timeSleep(self.lastTimeFishState,self.StartStopDelaySlider.GetSliderPos()*10)
+				valFishState, self.lastTimeFishState = OpenLib.timeSleep(self.lastTimeFishState,self.startStopDelay*10)
 				if valFishState and not self.instantBtn.isOn:
+					chat.AppendChat(3,"ABC")
 					self.PullRod()
 
 			if self.state == self.STATE_GOING_TO_SHOP:
