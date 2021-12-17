@@ -1,7 +1,6 @@
-import ui,app,net,player,chr,miniMap,wndMgr,background,math,uiMiniMap,OpenLib,chat,exception,Movement,eXLib
+import ui,app,net,player,chr,miniMap,wndMgr,background,math,uiMiniMap,OpenLib,chat,exception,Movement,eXLib, Data
 
 TeleportHackMode = "Teleport"
-timerrBlock = 0	
 
 class TeleportHackDialog(ui.ScriptWindow):
 
@@ -42,8 +41,8 @@ class TeleportHackDialog(ui.ScriptWindow):
 				self.TeleportToDest(iPosX*100, iPosY*100)
 
 		def TeleportToDest(self, aimx, aimy):
-			global TeleportHackMode,timerrBlock
-			val, timerrBlock = OpenLib.timeSleep(timerrBlock,2) #Avoid multiple calls on same keypress
+			global TeleportHackMode
+			val, Data.time_Telehack_timerBlock = OpenLib.timeSleep(Data.time_Telehack_timerBlock,2) #Avoid multiple calls on same keypress
 			if val == False:
 				return
 			if TeleportHackMode == "Walk":
@@ -124,7 +123,8 @@ class TeleportHackDialog(ui.ScriptWindow):
 		if self.IsShow():
 			self.Hide()
 		else:
-			chat.AppendChat(3,"[Teleport] To move/teleport to a location press shift with the mouse over the location.")
+			chat.AppendChat(7,"[Teleport] To move/teleport to a location press shift with the mouse over the location.")
+			chat.AppendChat(7,"[Teleport] To move/teleport to a location press shift with the mouse over the location.")
 			self.Show()
 
 	def ChangeMode(self):

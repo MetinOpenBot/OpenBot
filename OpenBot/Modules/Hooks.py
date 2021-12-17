@@ -1,4 +1,4 @@
-import game,sys,chat,net
+import game,sys,chat,net, player, item
 import functools
 import OpenLog
 
@@ -9,6 +9,7 @@ Hooking module.
 #The current phase.
 CURRENT_PHASE = 5
 phaseCallbacks = {}
+GAME_WINDOW = 0
 
 class Hook():
 	"""
@@ -78,6 +79,7 @@ def skipFunc(*args):
 	pass 
 
 def phaseIntercept(*args,**kwargs):
+	#printFuncNC(*args,**kwargs)
 	global CURRENT_PHASE
 	if len(args)>1 and args[1] != 0:
 		CURRENT_PHASE = args[0]
@@ -100,10 +102,32 @@ class SkipHook(Hook):
 		Hook.__init__(self,toHookFunc,skipFunc)
 
 
+def GameWindowIntercept(*args,**kwargs):
+	#This is supposed to be run One Time, after this you can access "Current Window attribute from stream."
+	import Hooks, Data, player
+	if args[0] == 0:
+		return
+	#printFuncNC(*args,**kwargs)
+	Data.GameWindow = args[0]
+	Data.obj = Data.uiShortcut()
+	Hooks.GAME_WINDOW = args[0]
+	player.SetGameWindow(*args, **kwargs)
+
+
+def CheckAffectIntercept(*args,**kwargs):
+    import Hooks, chr
+    #printFuncNC(*args,**kwargs)
+    if args[0] == chr.NEW_AFFECT_AUTO_USE:
+            #chat.AppendChat(7,"Returned True for Auto Use")
+            return True
+    else:
+        Hooks.checkAffectHook.CallOriginalFunction(*args, **kwargs)
 
 debugFunc = 0
 questHook = SkipHook(game.GameWindow.OpenQuestWindow)
 phaseHook = Hook(net.SetPhaseWindow,phaseIntercept)
+gameWindowHook = Hook(player.SetGameWindow, GameWindowIntercept)
+checkAffectHook = Hook(item.CheckAffect, CheckAffectIntercept)
 
 def GetQuestHookObject():
 	return questHook
@@ -112,6 +136,10 @@ def GetQuestHookObject():
 def GetCurrentPhase():
 	global CURRENT_PHASE
 	return CURRENT_PHASE
+
+def GetGameWindow():
+	global GAME_WINDOW
+	return GAME_WINDOW
 
 def printFunc(*args,**kwargs):
 	"""
@@ -126,6 +154,18 @@ def printFunc(*args,**kwargs):
 		f.write("\n")
 	debugFunc.CallOriginalFunction(*args,**kwargs)
 
+def printFuncNC(*args,**kwargs):
+	"""
+	Print the arguments of a function to a debug.txt file.(In the game folder)
+	This happens without Calling the Original.
+	"""
+	with open("debug.txt","a") as f:
+		#chat.AppendChat(3,"[DebugHook] Function called arguments:")
+		f.write("[DebugHook] Function called arguments:\n")
+		for i,arg in enumerate(args):
+			f.write("[DebugHook] Arg "+ str(i) + ": "+ str(arg)+"\n")
+			#chat.AppendChat(3,"[DebugHook] Arg "+ str(i) + ": "+ str(arg))
+		f.write("\n")
 
 #Print arguments of a function
 def _debugHookFunctionArgs(func):
@@ -136,5 +176,6 @@ def _debugHookFunctionArgs(func):
 def _debugUnhookFunctionArgs():
 	debugFunc.UnhookFunction()
 
-
 phaseHook.HookFunction()
+gameWindowHook.HookFunction()
+checkAffectHook.HookFunction()

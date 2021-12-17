@@ -12,7 +12,7 @@ CONFIG_MAP_LINKS = eXLib.PATH + 'OpenBot/Saves/map_linker.txt'
 
 CONFIG = eXLib.PATH + 'OpenBot/Saves/config.bot'
 CONFIG_PRICE = eXLib.PATH + 'OpenBot/Saves/priceconfig.bot'
-CONFIG_SKILLBOT = 'OpenBot/Saves/skillbot.bot'
+CONFIG_SKILLBOT = eXLib.PATH + 'OpenBot/Saves/skillbot.bot'
 CONFIG_BOSSES_ID = eXLib.PATH + 'OpenBot/Saves/boss_ids.txt'
 CONFIG_ORES_ID = eXLib.PATH + 'OpenBot/Saves/ores_ids.txt'
 CONFIG_PSHOP_AUTO_BUY = eXLib.PATH + 'OpenBot/Saves/search_items_max_price.txt'

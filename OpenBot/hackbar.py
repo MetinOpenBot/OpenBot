@@ -40,15 +40,15 @@ class OpenBotHackbarDialog(ui.ScriptWindow):
         if DEBUG:
             self.filter = Filter.FilterDialog()
 
-        self.ShowHackbarButton = self.comp.Button(None, '', 'Show Hackbar', wndMgr.GetScreenWidth()-99, 260, self.OpenHackbar, 'OpenBot/Images/Shortcuts/show_0.tga', 'OpenBot/Images/Shortcuts/show_1.tga', 'OpenBot/Images/Shortcuts/show_0.tga')
-        self.HideHackbarButton = self.comp.HideButton(None, '', 'Hide Hackbar', wndMgr.GetScreenWidth()-99, 260, self.OpenHackbar, 'OpenBot/Images/Shortcuts/hide_0.tga', 'OpenBot/Images/Shortcuts/hide_1.tga', 'OpenBot/Images/Shortcuts/hide_0.tga')
-        self.ShortCutButton = self.comp.Button(None, '', 'ShortCuts', wndMgr.GetScreenWidth()-62, 260, self.OpenShortCuts, 'OpenBot/Images/Shortcuts/shortcut_0.tga', 'OpenBot/Images/Shortcuts/shortcut_1.tga', 'OpenBot/Images/Shortcuts/shortcut_0.tga')
+        self.ShowHackbarButton = self.comp.Button(None, '', 'Show Hackbar', wndMgr.GetScreenWidth()-99, 260, self.OpenHackbar, eXLib.PATH + 'OpenBot/Images/Shortcuts/show_0.tga', eXLib.PATH + 'OpenBot/Images/Shortcuts/show_1.tga', eXLib.PATH + 'OpenBot/Images/Shortcuts/show_0.tga')
+        self.HideHackbarButton = self.comp.HideButton(None, '', 'Hide Hackbar', wndMgr.GetScreenWidth()-99, 260, self.OpenHackbar, eXLib.PATH + 'OpenBot/Images/Shortcuts/hide_0.tga', eXLib.PATH + 'OpenBot/Images/Shortcuts/hide_1.tga', eXLib.PATH + 'OpenBot/Images/Shortcuts/hide_0.tga')
+        self.ShortCutButton = self.comp.Button(None, '', 'ShortCuts', wndMgr.GetScreenWidth()-62, 260, self.OpenShortCuts, eXLib.PATH + 'OpenBot/Images/Shortcuts/shortcut_0.tga', eXLib.PATH + 'OpenBot/Images/Shortcuts/shortcut_1.tga', eXLib.PATH + 'OpenBot/Images/Shortcuts/shortcut_0.tga')
 
-        self.GhostButton = self.comp.HideButton(None, '', 'Ghostmod', wndMgr.GetScreenWidth()-115, 310, self.GhostMod, 'OpenBot/Images/Shortcuts/ghost_0.tga', 'OpenBot/Images/Shortcuts/ghost_1.tga', 'OpenBot/Images/Shortcuts/ghost_0.tga')
-        self.TeleportButton = self.comp.HideButton(None, '', 'Teleporthack', wndMgr.GetScreenWidth()-80, 310, self.OpenTeleport, 'OpenBot/Images/Shortcuts/tele_0.tga', 'OpenBot/Images/Shortcuts/tele_1.tga', 'OpenBot/Images/Shortcuts/tele_0.tga')
-        self.CrashButton = self.comp.HideButton(None, '', 'Exit', wndMgr.GetScreenWidth()-45, 310, self.CloseRequest, 'OpenBot/Images/Shortcuts/close_0.tga', 'OpenBot/Images/Shortcuts/close_1.tga', 'OpenBot/Images/Shortcuts/close_0.tga')
-        self.ZoomButton = self.comp.HideButton(None, '', 'Zoom-Hack', wndMgr.GetScreenWidth()-115, 350, self.Zoom, 'OpenBot/Images/Shortcuts/zoom_0.tga', 'OpenBot/Images/Shortcuts/zoom_1.tga', 'OpenBot/Images/Shortcuts/zoom_0.tga')
-        self.NoFogButton = self.comp.HideButton(None, '', 'No-Fog', wndMgr.GetScreenWidth()-80, 350, self.NoFog, 'OpenBot/Images/General/nofog_0.tga', 'OpenBot/Images/General/nofog_1.tga', 'OpenBot/Images/General/nofog_0.tga')
+        self.GhostButton = self.comp.HideButton(None, '', 'Ghostmode', wndMgr.GetScreenWidth()-115, 310, self.GhostMod, eXLib.PATH + 'OpenBot/Images/Shortcuts/ghost_0.tga', eXLib.PATH + 'OpenBot/Images/Shortcuts/ghost_1.tga', eXLib.PATH + 'OpenBot/Images/Shortcuts/ghost_0.tga')
+        self.TeleportButton = self.comp.HideButton(None, '', 'Teleporthack', wndMgr.GetScreenWidth()-80, 310, self.OpenTeleport, eXLib.PATH + 'OpenBot/Images/Shortcuts/tele_0.tga', eXLib.PATH + 'OpenBot/Images/Shortcuts/tele_1.tga', eXLib.PATH + 'OpenBot/Images/Shortcuts/tele_0.tga')
+        self.CrashButton = self.comp.HideButton(None, '', 'Exit', wndMgr.GetScreenWidth()-45, 310, self.CloseRequest, eXLib.PATH + 'OpenBot/Images/Shortcuts/close_0.tga', eXLib.PATH + 'OpenBot/Images/Shortcuts/close_1.tga', eXLib.PATH + 'OpenBot/Images/Shortcuts/close_0.tga')
+        self.ZoomButton = self.comp.HideButton(None, '', 'Zoom-Hack', wndMgr.GetScreenWidth()-115, 350, self.Zoom, eXLib.PATH + 'OpenBot/Images/Shortcuts/zoom_0.tga', eXLib.PATH + 'OpenBot/Images/Shortcuts/zoom_1.tga', eXLib.PATH + 'OpenBot/Images/Shortcuts/zoom_0.tga')
+        self.NoFogButton = self.comp.HideButton(None, '', 'No-Fog', wndMgr.GetScreenWidth()-80, 350, self.NoFog, eXLib.PATH + 'OpenBot/Images/General/nofog_0.tga', eXLib.PATH + 'OpenBot/Images/General/nofog_1.tga', eXLib.PATH + 'OpenBot/Images/General/nofog_0.tga')
 
 
 
@@ -57,37 +57,37 @@ class OpenBotHackbarDialog(ui.ScriptWindow):
         for text in SpamList:
             self.SpamtextCombo.InsertItem(0, text)
         self.SpamtextCombo.Hide()
-        self.SpamTextButton = self.comp.HideButton(None, '', 'Spam-Text', wndMgr.GetScreenWidth()-115, 480, lambda : self.SpamText(), 'OpenBot/Images/Hackbar/spam_0.tga', 'OpenBot/Images/Hackbar/spam_1.tga', 'OpenBot/Images/Hackbar/spam_0.tga')
+        self.SpamTextButton = self.comp.HideButton(None, '', 'Spam-Text', wndMgr.GetScreenWidth()-115, 480, lambda : self.SpamText(), eXLib.PATH + 'OpenBot/Images/Hackbar/spam_0.tga', eXLib.PATH + 'OpenBot/Images/Hackbar/spam_1.tga', eXLib.PATH + 'OpenBot/Images/Hackbar/spam_0.tga')
 
-        self.GoForward = self.comp.HideButton(None, '', '', wndMgr.GetScreenWidth()-230, 0, lambda : self.TeleportInDirection(1), 'OpenBot/Images/Shortcuts/Arrow/tele_up_0.tga', 'OpenBot/Images/Shortcuts/Arrow/tele_up_1.tga', 'OpenBot/Images/Shortcuts/Arrow/tele_up_0.tga')
-        self.GoBack = self.comp.HideButton(None, '', '', wndMgr.GetScreenWidth()-229, 92, lambda : self.TeleportInDirection(2), 'OpenBot/Images/Shortcuts/Arrow/tele_down_0.tga', 'OpenBot/Images/Shortcuts/Arrow/tele_down_1.tga', 'OpenBot/Images/Shortcuts/Arrow/tele_down_0.tga')
-        self.GoRight = self.comp.HideButton(None, '', '', wndMgr.GetScreenWidth()-196, 58, lambda : self.TeleportInDirection(3), 'OpenBot/Images/Shortcuts/Arrow/tele_right_0.tga', 'OpenBot/Images/Shortcuts/Arrow/tele_right_1.tga', 'OpenBot/Images/Shortcuts/Arrow/tele_right_0.tga')
-        self.GoLeft = self.comp.HideButton(None, '', '', wndMgr.GetScreenWidth()-290, 59, lambda : self.TeleportInDirection(4), 'OpenBot/Images/Shortcuts/Arrow/tele_left_0.tga', 'OpenBot/Images/Shortcuts/Arrow/tele_left_1.tga', 'OpenBot/Images/Shortcuts/Arrow/tele_left_0.tga')
+        self.GoForward = self.comp.HideButton(None, '', '', wndMgr.GetScreenWidth()-230, 30, lambda : self.TeleportInDirection(1), eXLib.PATH + 'OpenBot/Images/Shortcuts/Arrow/tele_up_0.tga', eXLib.PATH + 'OpenBot/Images/Shortcuts/Arrow/tele_up_1.tga', eXLib.PATH + 'OpenBot/Images/Shortcuts/Arrow/tele_up_0.tga')
+        self.GoBack = self.comp.HideButton(None, '', '', wndMgr.GetScreenWidth()-229, 92, lambda : self.TeleportInDirection(2), eXLib.PATH + 'OpenBot/Images/Shortcuts/Arrow/tele_down_0.tga', eXLib.PATH + 'OpenBot/Images/Shortcuts/Arrow/tele_down_1.tga', eXLib.PATH + 'OpenBot/Images/Shortcuts/Arrow/tele_down_0.tga')
+        self.GoRight = self.comp.HideButton(None, '', '', wndMgr.GetScreenWidth()-196, 58, lambda : self.TeleportInDirection(3), eXLib.PATH + 'OpenBot/Images/Shortcuts/Arrow/tele_right_0.tga', eXLib.PATH + 'OpenBot/Images/Shortcuts/Arrow/tele_right_1.tga', eXLib.PATH + 'OpenBot/Images/Shortcuts/Arrow/tele_right_0.tga')
+        self.GoLeft = self.comp.HideButton(None, '', '', wndMgr.GetScreenWidth()-290, 59, lambda : self.TeleportInDirection(4), eXLib.PATH + 'OpenBot/Images/Shortcuts/Arrow/tele_left_0.tga', eXLib.PATH + 'OpenBot/Images/Shortcuts/Arrow/tele_left_1.tga', eXLib.PATH + 'OpenBot/Images/Shortcuts/Arrow/tele_left_0.tga')
 
-        self.SettingsButton = self.comp.Button(self.OpenBotBoard, '', 'Settings', 9, 10, self.Generel, 'OpenBot/Images/Hackbar/sett_0.tga', 'OpenBot/Images/Hackbar/sett_1.tga', 'OpenBot/Images/Hackbar/sett_2.tga')
-        self.LevelbotButton = self.comp.Button(self.OpenBotBoard, '', 'Levelbot', 8, 43, self.OnLevelbot, 'OpenBot/Images/Hackbar/sword_0.tga', 'OpenBot/Images/Hackbar/sword_1.tga', 'OpenBot/Images/Hackbar/sword_0.tga')
-        #self.BuffbotButton = self.comp.Button(self.OpenBotBoard, '', 'Buffbot', 8, 78, self.BuffBot, 'OpenBot/Images/Hackbar/buff_0.tga', 'OpenBot/Images/Hackbar/buff_1.tga', 'OpenBot/Images/Hackbar/buff_0.tga')
-        self.SpambotButton = self.comp.Button(self.OpenBotBoard, '', 'Spambot', 8, 253, self.Spambot, 'OpenBot/Images/Hackbar/spam_0.tga', 'OpenBot/Images/Hackbar/spam_1.tga', 'OpenBot/Images/Hackbar/spam_0.tga')
+        self.SettingsButton = self.comp.Button(self.OpenBotBoard, '', 'Settings', 9, 10, self.Generel, eXLib.PATH + 'OpenBot/Images/Hackbar/sett_0.tga', eXLib.PATH + 'OpenBot/Images/Hackbar/sett_1.tga', eXLib.PATH + 'OpenBot/Images/Hackbar/sett_2.tga')
+        self.LevelbotButton = self.comp.Button(self.OpenBotBoard, '', 'Levelbot', 8, 43, self.OnLevelbot, eXLib.PATH + 'OpenBot/Images/Hackbar/sword_0.tga', eXLib.PATH + 'OpenBot/Images/Hackbar/sword_1.tga', eXLib.PATH + 'OpenBot/Images/Hackbar/sword_0.tga')
+        #self.BuffbotButton = self.comp.Button(self.OpenBotBoard, '', 'Buffbot', 8, 78, self.BuffBot, eXLib.PATH + 'OpenBot/Images/Hackbar/buff_0.tga', eXLib.PATH + 'OpenBot/Images/Hackbar/buff_1.tga', eXLib.PATH + 'OpenBot/Images/Hackbar/buff_0.tga')
+        self.SpambotButton = self.comp.Button(self.OpenBotBoard, '', 'Spambot', 8, 253, self.Spambot, eXLib.PATH + 'OpenBot/Images/Hackbar/spam_0.tga', eXLib.PATH + 'OpenBot/Images/Hackbar/spam_1.tga', eXLib.PATH + 'OpenBot/Images/Hackbar/spam_0.tga')
         if DEBUG:
-            self.MiningBotButton = self.comp.Button(self.OpenBotBoard, '', 'MiningBot', 8, 323, self.MiningBot, 'OpenBot/Images/Hackbar/ore_slot_0.tga', 'OpenBot/Images/Hackbar/ore_slot_1.tga', 'OpenBot/Images/Hackbar/ore_slot_0.tga')
-        self.SearchBotButton = self.comp.Button(self.OpenBotBoard, '', 'SearchBot', 10, 113, self.SearchBot, 'OpenBot/Images/Hackbar/search_0.tga', 'OpenBot/Images/Hackbar/search_1.tga', 'OpenBot/Images/Hackbar/search_0.tga')
-        self.ShopCreatorButton = self.comp.Button(self.OpenBotBoard, '', 'Shopbot', 8, 148, self.ShopCreator, 'OpenBot/Images/Hackbar/shop_0.tga', 'OpenBot/Images/Hackbar/shop_1.tga', 'OpenBot/Images/Hackbar/shop_0.tga')
-        self.FishingBotButton = self.comp.Button(self.OpenBotBoard, '', 'FishingBot', 8, 78, self.FishingBot, 'OpenBot/Images/Hackbar/fishing_0.tga', 'OpenBot/Images/Hackbar/fishing_1.tga', 'OpenBot/Images/Hackbar/fishing_0.tga')
-        self.TeleButton = self.comp.Button(self.OpenBotBoard, '', 'Teleport', 10, 218, self.TeleportHack, 'OpenBot/Images/Hackbar/teleport_0.tga', 'OpenBot/Images/Hackbar/teleport_1.tga', 'OpenBot/Images/Hackbar/teleport_0.tga')
-        self.InventoryButton = self.comp.Button(self.OpenBotBoard, '', 'Manager', 10, 183, self.InventoryManager, 'OpenBot/Images/Hackbar/inventory_0.tga', 'OpenBot/Images/Hackbar/inventory_1.tga', 'OpenBot/Images/Hackbar/inventory_0.tga')
-        self.RunPythonButton = self.comp.Button(self.OpenBotBoard, '', 'Run-Python', 10, 288, self.RunPython, 'OpenBot/Images/Shortcuts/loadpy_0.tga', 'OpenBot/Images/Shortcuts/loadpy_1.tga', 'OpenBot/Images/Shortcuts/loadpy_0.tga')
-        self.RadarButton = self.comp.Button(self.OpenBotBoard, '', 'Radar', 8, 323, self.OnRadar, 'OpenBot/Images/Hackbar/radar_0.tga', 'OpenBot/Images/Hackbar/radar_1.tga', 'OpenBot/Images/Hackbar/radar_0.tga')
-        self.SkillbotButton = self.comp.Button(self.OpenBotBoard, '', 'Skillbot', 8, 358, self.OnSkillbot, 'OpenBot/Images/Hackbar/skill_0.tga', 'OpenBot/Images/Hackbar/skill_1.tga', 'OpenBot/Images/Hackbar/skill_0.tga')
-        self.FarmbotButton = self.comp.Button(self.OpenBotBoard, '', 'Farmbot', 8, 393, self.OnFarmingBot, 'OpenBot/Images/Hackbar/farm_0.tga', 'OpenBot/Images/Hackbar/farm_1.tga', 'OpenBot/Images/Hackbar/farm_0.tga')
-        self.AutoDungeonButton = self.comp.Button(self.OpenBotBoard, '', 'AutoDungeon', 8, 428, self.OnAutoDungeon, 'OpenBot/Images/Hackbar/dt_0.tga', 'OpenBot/Images/Hackbar/dt_1.tga', 'OpenBot/Images/Hackbar/dt_0.tga')
-        self.EnergyBotButton = self.comp.Button(self.OpenBotBoard, '', 'EnergyBot', 8, 463, self.OnEnergyBot, 'OpenBot/Images/Hackbar/energy_0.tga', 'OpenBot/Images/Hackbar/energy_1.tga', 'OpenBot/Images/Hackbar/energy_0.tga')
-        self.ActionBotButton = self.comp.Button(self.OpenBotBoard, '', 'ActionBot', 8, 498, self.OnActionBot, 'OpenBot/Images/Hackbar/action_0.tga', 'OpenBot/Images/Hackbar/action_1.tga', 'OpenBot/Images/Hackbar/action_0.tga')
+            self.MiningBotButton = self.comp.Button(self.OpenBotBoard, '', 'MiningBot', 8, 323, self.MiningBot, eXLib.PATH + 'OpenBot/Images/Hackbar/ore_slot_0.tga', eXLib.PATH + 'OpenBot/Images/Hackbar/ore_slot_1.tga', eXLib.PATH + 'OpenBot/Images/Hackbar/ore_slot_0.tga')
+        self.SearchBotButton = self.comp.Button(self.OpenBotBoard, '', 'SearchBot', 10, 113, self.SearchBot, eXLib.PATH + 'OpenBot/Images/Hackbar/search_0.tga', eXLib.PATH + 'OpenBot/Images/Hackbar/search_1.tga', eXLib.PATH + 'OpenBot/Images/Hackbar/search_0.tga')
+        self.ShopCreatorButton = self.comp.Button(self.OpenBotBoard, '', 'Shopbot', 8, 148, self.ShopCreator, eXLib.PATH + 'OpenBot/Images/Hackbar/shop_0.tga', eXLib.PATH + 'OpenBot/Images/Hackbar/shop_1.tga', eXLib.PATH + 'OpenBot/Images/Hackbar/shop_0.tga')
+        self.FishingBotButton = self.comp.Button(self.OpenBotBoard, '', 'FishingBot', 8, 78, self.FishingBot, eXLib.PATH + 'OpenBot/Images/Hackbar/fishing_0.tga', eXLib.PATH + 'OpenBot/Images/Hackbar/fishing_1.tga', eXLib.PATH + 'OpenBot/Images/Hackbar/fishing_0.tga')
+        self.TeleButton = self.comp.Button(self.OpenBotBoard, '', 'Teleport', 10, 218, self.TeleportHack, eXLib.PATH + 'OpenBot/Images/Hackbar/teleport_0.tga', eXLib.PATH + 'OpenBot/Images/Hackbar/teleport_1.tga', eXLib.PATH + 'OpenBot/Images/Hackbar/teleport_0.tga')
+        self.InventoryButton = self.comp.Button(self.OpenBotBoard, '', 'Manager', 10, 183, self.InventoryManager, eXLib.PATH + 'OpenBot/Images/Hackbar/inventory_0.tga', eXLib.PATH + 'OpenBot/Images/Hackbar/inventory_1.tga', eXLib.PATH + 'OpenBot/Images/Hackbar/inventory_0.tga')
+        self.RunPythonButton = self.comp.Button(self.OpenBotBoard, '', 'Run-Python', 10, 288, self.RunPython, eXLib.PATH + 'OpenBot/Images/Shortcuts/loadpy_0.tga', eXLib.PATH + 'OpenBot/Images/Shortcuts/loadpy_1.tga', eXLib.PATH + 'OpenBot/Images/Shortcuts/loadpy_0.tga')
+        self.RadarButton = self.comp.Button(self.OpenBotBoard, '', 'Radar', 8, 323, self.OnRadar, eXLib.PATH + 'OpenBot/Images/Hackbar/radar_0.tga', eXLib.PATH + 'OpenBot/Images/Hackbar/radar_1.tga', eXLib.PATH + 'OpenBot/Images/Hackbar/radar_0.tga')
+        self.SkillbotButton = self.comp.Button(self.OpenBotBoard, '', 'Skillbot', 8, 358, self.OnSkillbot, eXLib.PATH + 'OpenBot/Images/Hackbar/skill_0.tga', eXLib.PATH + 'OpenBot/Images/Hackbar/skill_1.tga', eXLib.PATH + 'OpenBot/Images/Hackbar/skill_0.tga')
+        self.FarmbotButton = self.comp.Button(self.OpenBotBoard, '', 'Farmbot', 8, 393, self.OnFarmingBot, eXLib.PATH + 'OpenBot/Images/Hackbar/farm_0.tga', eXLib.PATH + 'OpenBot/Images/Hackbar/farm_1.tga', eXLib.PATH + 'OpenBot/Images/Hackbar/farm_0.tga')
+        self.AutoDungeonButton = self.comp.Button(self.OpenBotBoard, '', 'AutoDungeon', 8, 428, self.OnAutoDungeon, eXLib.PATH + 'OpenBot/Images/Hackbar/dt_0.tga', eXLib.PATH + 'OpenBot/Images/Hackbar/dt_1.tga', eXLib.PATH + 'OpenBot/Images/Hackbar/dt_0.tga')
+        self.EnergyBotButton = self.comp.Button(self.OpenBotBoard, '', 'EnergyBot', 8, 463, self.OnEnergyBot, eXLib.PATH + 'OpenBot/Images/Hackbar/energy_0.tga', eXLib.PATH + 'OpenBot/Images/Hackbar/energy_1.tga', eXLib.PATH + 'OpenBot/Images/Hackbar/energy_0.tga')
+        self.ActionBotButton = self.comp.Button(self.OpenBotBoard, '', 'ActionBot', 8, 498, self.OnActionBot, eXLib.PATH + 'OpenBot/Images/Hackbar/action_0.tga', eXLib.PATH + 'OpenBot/Images/Hackbar/action_1.tga', eXLib.PATH + 'OpenBot/Images/Hackbar/action_0.tga')
 
         if DEBUG:
-            self.AnalyzerButton = self.comp.Button(self.OpenBotBoard, '', 'Packet Analyzer', 8, 358, self.PacketAnalyzer, 'OpenBot/Images/Hackbar/analyzer_0.tga', 'OpenBot/Images/Hackbar/analyzer_1.tga', 'OpenBot/Images/Hackbar/analyzer_0.tga')
+            self.AnalyzerButton = self.comp.Button(self.OpenBotBoard, '', 'Packet Analyzer', 8, 358, self.PacketAnalyzer, eXLib.PATH + 'OpenBot/Images/Hackbar/analyzer_0.tga', eXLib.PATH + 'OpenBot/Images/Hackbar/analyzer_1.tga', eXLib.PATH + 'OpenBot/Images/Hackbar/analyzer_0.tga')
         else:
             self.CopyrightLabel = self.comp.TextLine(self.OpenBotBoard, '', 3, 320, self.comp.RGB(255, 255, 0))
-        #self.InfoButton = self.comp.Button(self.OpenBotBoard, '', 'Info', 10, 500, self.Info, 'OpenBot/Images/Hackbar/info_0.tga', 'OpenBot/Images/Hackbar/info_1.tga', 'OpenBot/Images/Hackbar/info_0.tga')
+        #self.InfoButton = self.comp.Button(self.OpenBotBoard, '', 'Info', 10, 500, self.Info, eXLib.PATH + 'OpenBot/Images/Hackbar/info_0.tga', eXLib.PATH + 'OpenBot/Images/Hackbar/info_1.tga', eXLib.PATH + 'OpenBot/Images/Hackbar/info_0.tga')
     def OpenHackbar(self):
         if self.Hackbar:
             self.Hackbar = 0

@@ -1,6 +1,6 @@
-import UIComponents
+import UIComponents, Data
 from BotBase import BotBase
-import ui, player, app, chat
+import ui, player, app, chat, eXLib
 import OpenLib, FileManager, OpenLog, Hooks
 from OpenBot.Modules.Actions import ActionBot
 """
@@ -120,8 +120,6 @@ def _afterLoadPhase(phase,phaseWnd):
         instance.enableButton.SetOn()
         instance.Start()
 
-timerrBlock = 0
-
 class Keybot(BotBase):
 
     def __init__(self):
@@ -146,12 +144,12 @@ class Keybot(BotBase):
         self.Board.Hide()
         self.comp = UIComponents.Component()
         self.enableButton = self.comp.OnOffButton(self.Board, '', '', 15, 40,
-                                                  OffUpVisual='OpenBot/Images/start_0.tga',
-                                                  OffOverVisual='OpenBot/Images/start_1.tga',
-                                                  OffDownVisual='OpenBot/Images/start_2.tga',
-                                                  OnUpVisual='OpenBot/Images/stop_0.tga',
-                                                  OnOverVisual='OpenBot/Images/stop_1.tga',
-                                                  OnDownVisual='OpenBot/Images/stop_2.tga',
+                                                  OffUpVisual=eXLib.PATH + 'OpenBot/Images/start_0.tga',
+                                                  OffOverVisual=eXLib.PATH + 'OpenBot/Images/start_1.tga',
+                                                  OffDownVisual=eXLib.PATH + 'OpenBot/Images/start_2.tga',
+                                                  OnUpVisual=eXLib.PATH + 'OpenBot/Images/stop_0.tga',
+                                                  OnOverVisual=eXLib.PATH + 'OpenBot/Images/stop_1.tga',
+                                                  OnDownVisual=eXLib.PATH + 'OpenBot/Images/stop_2.tga',
                                                   funcState=self._start, defaultValue=False)
 
         self.text_line1 = self.comp.TextLine(self.Board, 'F5 to switch WaitHack', 70, 30, self.comp.RGB(255, 255, 255))
@@ -175,8 +173,8 @@ class Keybot(BotBase):
                         self.keys[key]['function']()
                         self.canPress = False
         else:
-            global timerrBlock
-            val, timerrBlock = OpenLib.timeSleep(timerrBlock,2) #Avoid multiple calls on same keypress
+            
+            val, Data.time_KeyBot_timerBlock = OpenLib.timeSleep(Data.time_KeyBot_timerBlock,2) #Avoid multiple calls on same keypress
             if val:
                 self.canPress = True
     

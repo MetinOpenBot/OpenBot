@@ -1,5 +1,5 @@
 import ui,app,chat,chr,net,player,item,skill,time,game,shop,chrmgr,OpenLib,eXLib
-import background,constInfo,miniMap,wndMgr,math,uiCommon,grp,FileManager,UIComponents,Movement,OpenLog, Hooks
+import background,constInfo,miniMap,wndMgr,math,uiCommon,grp,FileManager,UIComponents,Movement,OpenLog, Hooks, Data
 import DmgHacks as Dmg
 import ChannelSwitcher
 from FileManager import boolean
@@ -40,7 +40,7 @@ class SettingsDialog(ui.ScriptWindow):
 
 		self.useOnClickDmg = False
 		self.onClickDmgSpeed = 0.0
-		self.timerDmg = OpenLib.GetTime()
+		Data.time_Settings_timerDmg = OpenLib.GetTime()
 
 		self.wallHack = False
 		self.canFarmbotExchangeBool = False
@@ -50,9 +50,9 @@ class SettingsDialog(ui.ScriptWindow):
 		self.sellItems = set()
 
 		self.can_add_waiter = True
-		self.timerPots = 0
-		self.timerDead = 0
-		self.pickUpTimer = 0
+		Data.time_Settings_timerPots = 0
+		Data.time_Settings_timerDead = 0
+		Data.time_Settings_pickUpTimer = 0
 		self.LoadSettings()
 		self.BuildWindow()
 	
@@ -74,16 +74,16 @@ class SettingsDialog(ui.ScriptWindow):
 		self.shopTab = self.TabWidget.GetTab(3)
 		self.channelsTab = self.TabWidget.GetTab(4)
 
-		self.DmgMenuButton = self.comp.Button(self.attackTab, '', 'Damage Hacks', 120, 150, self.OpenDmgMenu,  'OpenBot/Images/General/dmg_0.tga', 'OpenBot/Images/General/dmg_1.tga', 'OpenBot/Images/General/dmg_0.tga')
-  		self.OneHandedButton = self.comp.Button(self.attackTab, '', 'One-Handed', 40, 150, self.SetOneHand, 'OpenBot/Images/General/onehand_0.tga', 'OpenBot/Images/General/onehand_1.tga', 'OpenBot/Images/General/onehand_0.tga')
-		self.TwoHandedButton = self.comp.Button(self.attackTab, '', 'Two-Handed', 200, 150, self.SetTwoHand, 'OpenBot/Images/General/twohand_0.tga', 'OpenBot/Images/General/twohand_1.tga', 'OpenBot/Images/General/twohand_0.tga')
-		self.dmgButton,self.dmgSlider,self.dmgLabel = UIComponents.GetSliderButtonLabel(self.attackTab,self.OnDmgSpeedMove, '', 'Dmg on selected target (defaults to cloud damage on dagger ninja)', 28, 18,image='OpenBot/Images/General/monster_1.tga',funcState=self.OnDmgOnOff,defaultValue=int(self.useOnClickDmg),defaultSlider=float(self.onClickDmgSpeed))
+		self.DmgMenuButton = self.comp.Button(self.attackTab, '', 'Damage Hacks', 120, 150, self.OpenDmgMenu,  eXLib.PATH + 'OpenBot/Images/General/dmg_0.tga', eXLib.PATH + 'OpenBot/Images/General/dmg_1.tga', eXLib.PATH + 'OpenBot/Images/General/dmg_0.tga')
+		self.OneHandedButton = self.comp.Button(self.attackTab, '', 'One-Handed', 40, 150, self.SetOneHand, eXLib.PATH + 'OpenBot/Images/General/onehand_0.tga', eXLib.PATH + 'OpenBot/Images/General/onehand_1.tga', eXLib.PATH + 'OpenBot/Images/General/onehand_0.tga')
+		self.TwoHandedButton = self.comp.Button(self.attackTab, '', 'Two-Handed', 200, 150, self.SetTwoHand, eXLib.PATH + 'OpenBot/Images/General/twohand_0.tga', eXLib.PATH + 'OpenBot/Images/General/twohand_1.tga', eXLib.PATH + 'OpenBot/Images/General/twohand_0.tga')
+		self.dmgButton,self.dmgSlider,self.dmgLabel = UIComponents.GetSliderButtonLabel(self.attackTab,self.OnDmgSpeedMove, '', 'Dmg on selected target (defaults to cloud damage on dagger ninja)', 28, 18,image=eXLib.PATH + 'OpenBot/Images/General/monster_1.tga',funcState=self.OnDmgOnOff,defaultValue=int(self.useOnClickDmg),defaultSlider=float(self.onClickDmgSpeed))
 		
 		##GENERAL
 		self.loginBtn = self.comp.OnOffButton(self.generalTab, '\t\t\t\t\t\tAuto Login', '', 20, 160,funcState=self.AutoLoginOnOff,defaultValue=int(self.autoLogin))
 		self.reviveBtn = self.comp.OnOffButton(self.generalTab, '\t\t\t\t\t\tAuto Restart', '', 20, 140,funcState=self.ReviveOnOff,defaultValue=int(self.restartHere))
 		#self.reviveInCityBtn = self.comp.OnOffButton(self.generalTab, '\t\t\t\t\t\t in city?', '', 120, 140,funcState=self.ReviveInCityOnOff,defaultValue=int(self.restartInCity))
-		self.WallHackBtn = self.comp.OnOffButton(self.generalTab, '', 'WallHack', 210, 140, image='OpenBot/Images/General/wall.tga',funcState=self.WallHackSwich,defaultValue=int(self.wallHack))
+		self.WallHackBtn = self.comp.OnOffButton(self.generalTab, '', 'WallHack', 210, 140, image=eXLib.PATH + 'OpenBot/Images/General/wall.tga',funcState=self.WallHackSwich,defaultValue=int(self.wallHack))
 		self.antiExpBtn = self.comp.OnOffButton(self.generalTab, '\t\t\t\t\t\tAntiExp', '', 20, 180,funcState=self.startAntiExp,defaultValue=int(self.antiExp))
 		
 		self.redPotButton,self.SlideRedPot,self.redPotLabel = UIComponents.GetSliderButtonLabel(self.generalTab,self.SlideRedMove, '', 'Use Red Potions', 28, 18,image="icon/item/27002.tga",funcState=self.OnRedOnOff,defaultValue=int(self.redPotions),defaultSlider=float(self.minHealth/100.0))
@@ -97,7 +97,7 @@ class SettingsDialog(ui.ScriptWindow):
                                              'd:/ymir work/ui/public/Middle_Button_02.sub',
                                              'd:/ymir work/ui/public/Middle_Button_03.sub')
 		##PICKUP
-		self.pickupButton,self.SlidePickupSpeed,self.speedPickupLabel = UIComponents.GetSliderButtonLabel(self.pickupTab,self.pickupSpeedSlide, '', 'Enable Pickup', 30, 18,image="OpenBot/Images/General/pickup.tga",funcState=self.OnPickupOnOff,defaultValue=int(self.pickUp),defaultSlider=float(self.pickUpSpeed/3.0))
+		self.pickupButton,self.SlidePickupSpeed,self.speedPickupLabel = UIComponents.GetSliderButtonLabel(self.pickupTab,self.pickupSpeedSlide, '', 'Enable Pickup', 30, 18,image= eXLib.PATH + "OpenBot/Images/General/pickup.tga",funcState=self.OnPickupOnOff,defaultValue=int(self.pickUp),defaultSlider=float(self.pickUpSpeed/3.0))
 		self.rangePickupButton,self.SliderangePickup,self.rangePickupLabel = UIComponents.GetSliderButtonLabel(self.pickupTab,self.pickupRangeSlide, 'Range', 'Enable Range Pickup', 15, 60,funcState=self.OnRangePickupOnOff,offsetX=30,offsetY=4,defaultValue=int(self.useRangePickup),defaultSlider=float(self.pickUpRange/10000.0))
 		self.ItemValueText = self.comp.TextLine(self.pickupTab, 'Search Item:', 15, 270, self.comp.RGB(255, 255, 255))
 		self.SearchPickItemButton = self.comp.Button(self.pickupTab, 'Search', '', 210, 268,  self.UpdatePickFilterList, 'd:/ymir work/ui/public/small_Button_01.sub', 'd:/ymir work/ui/public/small_Button_02.sub', 'd:/ymir work/ui/public/small_Button_03.sub')
@@ -366,9 +366,9 @@ class SettingsDialog(ui.ScriptWindow):
 		Dmg.switch_state()
 	
 	def UseOnClickDamage(self):
-		if not self.useOnClickDmg or OpenLib.GetClass() != OpenLib.SKILL_SET_DAGGER_NINJA:
+		if not self.useOnClickDmg:
 			return
-		val, self.timerDmg = OpenLib.timeSleep(self.timerDmg,self.onClickDmgSpeed)
+		val, Data.time_Settings_timerDmg = OpenLib.timeSleep(Data.time_Settings_timerDmg,self.onClickDmgSpeed)
 		if not val:
 			return
 		vid = player.GetTargetVID()
@@ -386,10 +386,18 @@ class SettingsDialog(ui.ScriptWindow):
 			Movement.TeleportStraightLine(x,y,mob_x,mob_y)
 		_class =  OpenLib.GetClass()
 		if _class == OpenLib.SKILL_SET_DAGGER_NINJA:
-			if not player.IsSkillCoolTime(5) and player.GetStatus(player.SP) >  OpenLib.GetSkillManaNeed(35,5):
-				eXLib.SendUseSkillPacketBySlot(5,vid)
+			if not player.IsSkillCoolTime(5):
+				if player.GetStatus(player.SP) >  OpenLib.GetSkillManaNeed(35,5):
+					eXLib.SendUseSkillPacketBySlot(5,vid)
+				else:
+					if player.GetStatus(player.SP)+player.GetStatus(player.SP_RECOVERY) <  OpenLib.GetSkillManaNeed(35,5):
+						val, Data.time_Settings_timerPots = OpenLib.timeSleep(Data.time_Settings_timerPots,self.TIME_POTS)
+						if val:
+							OpenLib.UseAnyItemByID(self.BLUE_POTIONS_IDS)	
+					return
 			eXLib.SendAddFlyTarget(vid,mob_x,mob_y)
 			eXLib.SendShoot(35)
+			eXLib.SendAttackPacket(vid,0)
 		else:
 			eXLib.SendAttackPacket(vid,0)
 
@@ -399,7 +407,7 @@ class SettingsDialog(ui.ScriptWindow):
 
 	# General
 	def CheckUsePotions(self):
-		val, self.timerPots = OpenLib.timeSleep(self.timerPots,self.TIME_POTS)
+		val, Data.time_Settings_timerPots = OpenLib.timeSleep(Data.time_Settings_timerPots,self.TIME_POTS)
 		if val:
 			if self.redPotions and (float(player.GetStatus(player.HP)) / (float(player.GetStatus(player.MAX_HP))) * 100) < int(self.minHealth):
 				OpenLib.UseAnyItemByID(self.RED_POTIONS_IDS)
@@ -408,7 +416,7 @@ class SettingsDialog(ui.ScriptWindow):
 				OpenLib.UseAnyItemByID(self.BLUE_POTIONS_IDS)
 
 	def checkReviveAndLogin(self):
-		val, self.timerDead = OpenLib.timeSleep(self.timerDead,self.TIME_DEAD)
+		val, Data.time_Settings_timerDead = OpenLib.timeSleep(Data.time_Settings_timerDead,self.TIME_DEAD)
 
 		if not val:
 			return
@@ -455,7 +463,7 @@ class SettingsDialog(ui.ScriptWindow):
 				if OpenLib.IsAnyPlayerHere():
 					return
 
-			val, self.pickUpTimer = OpenLib.timeSleep(self.pickUpTimer,self.pickUpSpeed)
+			val, Data.time_Settings_pickUpTimer = OpenLib.timeSleep(Data.time_Settings_pickUpTimer,self.pickUpSpeed)
 			if not val:
 				return
 			if OpenLib.GetCurrentPhase() != OpenLib.PHASE_GAME:

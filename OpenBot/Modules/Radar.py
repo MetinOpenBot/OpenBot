@@ -1,6 +1,6 @@
 from BotBase import BotBase
 from UIComponents import Component, TabWindow
-import Movement
+import Movement, Data
 import chat, ui, chr, m2netm2g, background
 import OpenLib
 import eXLib
@@ -21,7 +21,7 @@ class Radar(BotBase):
         self.entities = []
 
         self.lastTime = 0
-        self.lastTimeClearedList = 0
+        Data.time_Radar_lastTimeClearedList = 0
         self.BuildWindow()
 
     def BuildWindow(self):
@@ -44,12 +44,12 @@ class Radar(BotBase):
 
         # Settings Tab
         self.enableButton = comp.OnOffButton(self.settings_tab, '', '', 15, 40,
-                                             OffUpVisual='OpenBot/Images/start_0.tga',
-                                             OffOverVisual='OpenBot/Images/start_1.tga',
-                                             OffDownVisual='OpenBot/Images/start_2.tga',
-                                             OnUpVisual='OpenBot/Images/stop_0.tga',
-                                             OnOverVisual='OpenBot/Images/stop_1.tga',
-                                             OnDownVisual='OpenBot/Images/stop_2.tga',
+                                             OffUpVisual=eXLib.PATH + 'OpenBot/Images/start_0.tga',
+                                             OffOverVisual=eXLib.PATH + 'OpenBot/Images/start_1.tga',
+                                             OffDownVisual=eXLib.PATH + 'OpenBot/Images/start_2.tga',
+                                             OnUpVisual=eXLib.PATH + 'OpenBot/Images/stop_0.tga',
+                                             OnOverVisual=eXLib.PATH + 'OpenBot/Images/stop_1.tga',
+                                             OnDownVisual=eXLib.PATH + 'OpenBot/Images/stop_2.tga',
                                              funcState=self._start, defaultValue=False)
         self.showNPCButton = comp.OnOffButton(self.settings_tab,
                                               '\t\t\t\t\t\tShow npc',
@@ -173,10 +173,9 @@ class Radar(BotBase):
         MAIN_CHAR_VID = m2netm2g.GetMainActorVID()
         
         self.all_vids = eXLib.InstancesList
-        val, self.lastTimeClearedList = OpenLib.timeSleep(self.lastTimeClearedList, 5)
+        val, Data.time_Radar_lastTimeClearedList = OpenLib.timeSleep(Data.time_Radar_lastTimeClearedList, 5)
         if val:
             self.clear_lists()
-
         for vid in self.all_vids:
             if MAIN_CHAR_VID != vid:
                 if self.showDebugButton.isOn:

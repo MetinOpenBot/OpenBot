@@ -1,5 +1,5 @@
 import Movement
-import ui,OpenLib,NPCInteraction,DmgHacks,player,Settings,chat,OpenLog,Settings
+import ui,OpenLib,NPCInteraction,DmgHacks,player,Settings,chat,OpenLog,Settings, Data
 import abc
 from .Actions import ActionRequirementsCheckers
 
@@ -39,7 +39,8 @@ class BotBase(ui.ScriptWindow):
 		self.Show()
 		self.State = self.STATE_STOPPED
 		self.time_wait = time_wait
-		self.generalTimer = 0
+		Data.time_BotBase_generalTimers[self.__class__.__name__] = 0
+		self.timer = Data.time_BotBase_generalTimers[self.__class__.__name__]
 		self.onlyGamePhase = onlyGamePhase
 		self.waitIsPlayerDead = waitIsPlayerDead
 		self.isPaused = False
@@ -229,6 +230,8 @@ class BotBase(ui.ScriptWindow):
 		The delay between calls can be changed by calling ChangeTimeDelay or on constructor.
 		This function is not called when the bot is stopped and MUST be redifined in the super class.
 		"""
+		#chat.AppendChat(7, "Wrong Frame is running! ")
+		#chat.AppendChat(7, "Self Obj: " + str(self))
 		pass
 
 	def CanPause(self):
@@ -265,16 +268,13 @@ class BotBase(ui.ScriptWindow):
 	def OnUpdate(self):
 		if self.STATE_STOPPED == self.State:
 			return
-
-		val, self.generalTimer = OpenLib.timeSleep(self.generalTimer,self.time_wait)
+		val, self.timer = OpenLib.timeSleep(self.timer,self.time_wait)
 		if not val:
 			return
-
 		if OpenLib.GetCurrentPhase() != OpenLib.PHASE_GAME and self.onlyGamePhase:
 			return
 
 		if self.State == self.STATE_WATING:
 			return
-
-		if not self.DoChecks():		
+		if not self.DoChecks():
 			self.Frame()

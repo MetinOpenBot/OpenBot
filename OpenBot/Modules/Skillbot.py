@@ -2,7 +2,7 @@ import UIComponents
 from BotBase import BotBase
 import ui, chat, player, net, m2netm2g
 import OpenLib, eXLib, FileManager
-import Hooks
+import Hooks, Data
 from OpenBot.Modules.Actions import ActionBot
 
 
@@ -47,7 +47,7 @@ class Skillbot(BotBase):
 
     def __init__(self):
         BotBase.__init__(self)
-        self.startUpWaitTime = 0
+        Data.time_Skillbot_startUpWaitTime = 0
         self.shouldWait = False
         self.startUpWait = False
         self.mode = False
@@ -69,12 +69,12 @@ class Skillbot(BotBase):
         self.Board.Hide()
 
         self.enableButton = self.comp.OnOffButton(self.Board, '', '', 15, 40,
-                                                  OffUpVisual='OpenBot/Images/start_0.tga',
-                                                  OffOverVisual='OpenBot/Images/start_1.tga',
-                                                  OffDownVisual='OpenBot/Images/start_2.tga',
-                                                  OnUpVisual='OpenBot/Images/stop_0.tga',
-                                                  OnOverVisual='OpenBot/Images/stop_1.tga',
-                                                  OnDownVisual='OpenBot/Images/stop_2.tga',
+                                                  OffUpVisual=eXLib.PATH + 'OpenBot/Images/start_0.tga',
+                                                  OffOverVisual=eXLib.PATH + 'OpenBot/Images/start_1.tga',
+                                                  OffDownVisual=eXLib.PATH + 'OpenBot/Images/start_2.tga',
+                                                  OnUpVisual=eXLib.PATH + 'OpenBot/Images/stop_0.tga',
+                                                  OnOverVisual=eXLib.PATH + 'OpenBot/Images/stop_1.tga',
+                                                  OnDownVisual=eXLib.PATH + 'OpenBot/Images/stop_2.tga',
                                                   funcState=self._start, defaultValue=self.isOn)
         
 
@@ -207,7 +207,7 @@ class Skillbot(BotBase):
                 self.startUpWait = False
                 return
 
-            val, self.startUpWaitTime = OpenLib.timeSleep(self.startUpWaitTime, time_to_wait)
+            val, Data.time_Skillbot_startUpWaitTime = OpenLib.timeSleep(Data.time_Skillbot_startUpWaitTime, time_to_wait)
             if val:
                 self.startUpWait = False
 

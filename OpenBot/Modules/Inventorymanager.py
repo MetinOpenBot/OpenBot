@@ -1,4 +1,4 @@
-import ui,chat,net,player,item,shop,FileManager,OpenLog
+import ui,chat,net,player,item,shop,FileManager,OpenLog, Data
 import uiCommon,OpenLib,math,UIComponents
 
 
@@ -44,7 +44,7 @@ class InventoryDialog(ui.ScriptWindow):
 		for Mode in UppModes:
 			self.ModeCombo.InsertItem(0, Mode)
 		self.UpgradeEditline.SetNumberMode()
-		self.lastTime = 0
+		Data.time_InventoryManager_lasttime = 0
 
 		self.toSellSlots = []
 		self.toDropSlots = []
@@ -82,8 +82,9 @@ class InventoryDialog(ui.ScriptWindow):
 				
 	def Upgrade(self):
 		ItemIndex = self.ListBoxItems.GetSelectedItem()
+		SelectedIndex = None
 		if ItemIndex:
-			pass
+			SelectedIndex = self.ListBoxItems.GetItemIndex(ItemIndex)
 		else:
 			chat.AppendChat(7, "[Inv-Manager] No Item selected!")
 			return
@@ -114,6 +115,8 @@ class InventoryDialog(ui.ScriptWindow):
 					self.UpgradeItem(1, j, int(count))
 		elif self.ModeCombo.GetCurrentText() == 'Metal':
 			self.UpgradeItem(5,int(SelectedItem[0]), int(count))
+		if SelectedIndex != None:
+			self.ListBoxItems.SelectIndex(SelectedIndex)
 	
 	def UpgradeItem(self, Mode, Slot, Count):
 		self.BannedSlotIndex = []
@@ -267,7 +270,7 @@ class InventoryDialog(ui.ScriptWindow):
 		OpenLog.DebugPrint("[SORT] - Number of actions to be processed: "+str(len(self.toSortMoveActions)))
 
 	def OnUpdate(self):
-		val, self.lastTime = OpenLib.timeSleep(self.lastTime,self.TIME_WAIT)
+		val, Data.time_InventoryManager_lasttime = OpenLib.timeSleep(Data.time_InventoryManager_lasttime,self.TIME_WAIT)
 		if val:
 			if len(self.toDropSlots) > 0:
 				slot = self.toDropSlots.pop(0)

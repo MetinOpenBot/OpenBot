@@ -3,7 +3,7 @@ from OpenBot.Modules import ChannelSwitcher, OpenLog
 from BotBase import BotBase
 import DmgHacks
 import Movement
-import OpenLib, FileManager, Hooks
+import OpenLib, FileManager, Hooks, Data
 import UIComponents
 import player, ui, chat, chr, net, background
 import eXLib
@@ -59,7 +59,7 @@ class FarmingBot(BotBase):
         self.metins_vid_list = []
         self.selectedMetin = 0
 
-        self.lastTimeWaitingState = 0
+        Data.time_FarmingBot_lastTimeWaitingState = 0
         self.timeForWaitingState = 5
 
         self.isReadyToSwitchChannel = False
@@ -97,12 +97,12 @@ class FarmingBot(BotBase):
                                              'd:/ymir work/ui/public/small_Button_03.sub')
 
         self.enableButton = comp.OnOffButton(self.moving_tab, '', 'Start', 70, 140,
-                                             OffUpVisual='OpenBot/Images/start_0.tga',
-                                             OffOverVisual='OpenBot/Images/start_1.tga',
-                                             OffDownVisual='OpenBot/Images/start_2.tga',
-                                             OnUpVisual='OpenBot/Images/stop_0.tga',
-                                             OnOverVisual='OpenBot/Images/stop_1.tga',
-                                             OnDownVisual='OpenBot/Images/stop_2.tga',
+                                             OffUpVisual=eXLib.PATH + 'OpenBot/Images/start_0.tga',
+                                             OffOverVisual=eXLib.PATH + 'OpenBot/Images/start_1.tga',
+                                             OffDownVisual=eXLib.PATH + 'OpenBot/Images/start_2.tga',
+                                             OnUpVisual=eXLib.PATH + 'OpenBot/Images/stop_0.tga',
+                                             OnOverVisual=eXLib.PATH + 'OpenBot/Images/stop_1.tga',
+                                             OnDownVisual=eXLib.PATH + 'OpenBot/Images/stop_2.tga',
                                              funcState=self.OnEnableSwitchButton, defaultValue=False)
 
         self.showMiningButton = comp.OnOffButton(self.moving_tab, '\t\t\t\t\t\tMining?',
@@ -197,7 +197,7 @@ class FarmingBot(BotBase):
         self.isCurrActionDone = True
         self.selectedMetin = 0
         self.CURRENT_STATE = WAITING_STATE
-        self.lastTimeWaitingState = OpenLib.GetTime()
+        Data.time_FarmingBot_lastTimeWaitingState = OpenLib.GetTime()
 
     def IsCurrentlyDiggingDone(self):
         self.is_currently_digging = False
@@ -298,7 +298,7 @@ class FarmingBot(BotBase):
             self.CURRENT_STATE = MINING_STATE
             return
         else:
-            if not self.lastTimeWaitingState and not self.CURRENT_STATE == EXCHANGING_ITEMS_TO_ENERGY:
+            if not Data.time_FarmingBot_lastTimeWaitingState and not self.CURRENT_STATE == EXCHANGING_ITEMS_TO_ENERGY:
                 self.CURRENT_STATE = WALKING_STATE
 
 
@@ -368,9 +368,9 @@ class FarmingBot(BotBase):
                 text = self.edit_lineWaitingTime.GetText()
                 if self.is_text_validate(text):
                     self.timeForWaitingState = int(text)
-                val, self.lastTimeWaitingState = OpenLib.timeSleep(self.lastTimeWaitingState, self.timeForWaitingState)
+                val, Data.time_FarmingBot_lastTimeWaitingState = OpenLib.timeSleep(Data.time_FarmingBot_lastTimeWaitingState, self.timeForWaitingState)
                 if val:
-                    self.lastTimeWaitingState = 0
+                    Data.time_FarmingBot_lastTimeWaitingState = 0
                     self.CURRENT_STATE = WALKING_STATE
                 else:
                     self.search_for_farm()

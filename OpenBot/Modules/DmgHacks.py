@@ -1,6 +1,7 @@
-import eXLib,ui,net,chr,player,chat,item,skill
-import OpenLib,FileManager,Movement,UIComponents
+import eXLib,ui,net,chr,player,chat,item,skill, time
+import OpenLib,FileManager,Movement,UIComponents, Settings, Data
 from FileManager import boolean
+import OpenThreads
 
 
 CLOUD_SKILL_STATE_WAITING = 0
@@ -11,7 +12,9 @@ CLOUD_SKILL_STATE_USED = 2
 class DmgHacksInstance(ui.Window):
 	def __init__(self):
 		ui.Window.__init__(self)
+		self.threadInstance = OpenThreads.threadInstance
 		self.BuildWindow()
+		
 
 	def __del__(self):
 		ui.Window.__del__(self)
@@ -27,8 +30,8 @@ class DmgHacksInstance(ui.Window):
 		self.Board.Hide()
 		self.comp = UIComponents.Component()
 
-		self.enableButton = self.comp.OnOffButton(self.Board, '', '', 130, 210, OffUpVisual='OpenBot/Images/start_0.tga', OffOverVisual='OpenBot/Images/start_1.tga', OffDownVisual='OpenBot/Images/start_2.tga',OnUpVisual='OpenBot/Images/stop_0.tga', OnOverVisual='OpenBot/Images/stop_1.tga', OnDownVisual='OpenBot/Images/stop_2.tga',funcState=self.OnOffBtnState )
-  		self.playerClose = self.comp.OnOffButton(self.Board, '', '', 130, 50)
+		self.enableButton = self.comp.OnOffButton(self.Board, '', '', 130, 210, OffUpVisual=eXLib.PATH + 'OpenBot/Images/start_0.tga', OffOverVisual=eXLib.PATH + 'OpenBot/Images/start_1.tga', OffDownVisual=eXLib.PATH + 'OpenBot/Images/start_2.tga',OnUpVisual=eXLib.PATH + 'OpenBot/Images/stop_0.tga', OnOverVisual=eXLib.PATH + 'OpenBot/Images/stop_1.tga', OnDownVisual=eXLib.PATH + 'OpenBot/Images/stop_2.tga',funcState=self.OnOffBtnState )
+		self.playerClose = self.comp.OnOffButton(self.Board, '', '', 130, 50)
 		self.wallBtn = self.comp.OnOffButton(self.Board, '\t\t\t\tCheck is wall', 'Dont attack mobs with wall in between', 170, 30)
 		self.cloudBtn = self.comp.OnOffButton(self.Board, '\t\t\t\tCloud exploit', 'Only on dagger ninja', 170, 50)
 		self.attackPlayerBtn = self.comp.OnOffButton(self.Board, '\t\t\t\tAttack players', '', 170, 70)
@@ -38,7 +41,7 @@ class DmgHacksInstance(ui.Window):
 		self.SpeedLabel = self.comp.TextLine(self.Board, 'Speed', 13, 136, self.comp.RGB(255, 255, 255))
 		self.MonsterLabel = self.comp.TextLine(self.Board, 'Monsters', 13, 170, self.comp.RGB(255, 255, 255))
 		self.PlayerLabel = self.comp.TextLine(self.Board, 'Stop when player close', 12, 51, self.comp.RGB(255, 255, 255))
-  		self.rangeNum = self.comp.TextLine(self.Board, '100', 254, 102, self.comp.RGB(255, 255, 255))
+		self.rangeNum = self.comp.TextLine(self.Board, '100', 254, 102, self.comp.RGB(255, 255, 255))
 		self.speedNum = self.comp.TextLine(self.Board, '100 ms', 254, 136, self.comp.RGB(255, 255, 255))
 		self.monsterNum = self.comp.TextLine(self.Board, '100', 254, 170, self.comp.RGB(255, 255, 255))
 		self.RangeSlider = self.comp.SliderBar(self.Board, 0.0, self.Range_func, 73, 104)
@@ -50,7 +53,9 @@ class DmgHacksInstance(ui.Window):
 
 		self.range = 0
 		self.speed = 0
-		self.lastTime = 0
+		Data.time_DmgHacks_lasttime = 0
+		Data.time_DmgHacks_lastcloud = 0
+		Data.time_DmgHacks_lastpotion = 0
 		self.maxMonster = 0
 		self.cloudSkillState = CLOUD_SKILL_STATE_READY
 		self.Speed_func()
@@ -90,9 +95,12 @@ class DmgHacksInstance(ui.Window):
 
 	def OnOffBtnState(self,val):
 		if(val):
+
 			eXLib.BlockAttackPackets()
+			#self.threadInstance.createLoopedThread(self.waithackThreadMethod,(),0,False,False,False,'waithack')
 		else:
 			eXLib.UnblockAttackPackets()
+			#self.threadInstance.stopThread('waithack')
 	
 	
 	def OpenWindow(self):
@@ -141,19 +149,26 @@ class DmgHacksInstance(ui.Window):
 		for vid in lst:
 			mob_x, mob_y, mob_z = chr.GetPixelPosition(vid)
 			if OpenLib.dist(x,y,mob_x,mob_y) < OpenLib.ATTACK_MAX_DIST_NO_TELEPORT:
-				if not player.IsSkillCoolTime(5) and player.GetStatus(player.SP) >  OpenLib.GetSkillManaNeed(35,5):
-					if self.cloudSkillState == CLOUD_SKILL_STATE_READY:
-						eXLib.SendUseSkillPacketBySlot(5,vid)
-						self.cloudSkillState = CLOUD_SKILL_STATE_USED
-					elif self.cloudSkillState == CLOUD_SKILL_STATE_WAITING:
-						return 999999999
+				if not player.IsSkillCoolTime(5):
+					#chat.AppendChat(7, "No Cooldown. Checking mana. ")
+					if player.GetStatus(player.SP) >  OpenLib.GetSkillManaNeed(35,5):
+						#chat.AppendChat(7, "Enough Mana -Attempting Cast!")
+						val, Data.time_DmgHacks_lastcloud = OpenLib.timeSleep(Data.time_DmgHacks_lastcloud,5)
+						if val:
+							eXLib.SendUseSkillPacketBySlot(5,vid)
+							#chat.AppendChat(7, "Casted!")
 					else:
-						OpenLib.SetTimerFunction(1,self.__sendUseSkill)
-						self.cloudSkillState = CLOUD_SKILL_STATE_WAITING
+						#chat.AppendChat(7, "Not Enough Mana to cast.")
+						#chat.AppendChat(7, "Attempting Potion Drinking.")
+						val, Data.time_DmgHacks_lastpotion = OpenLib.timeSleep(Data.time_DmgHacks_lastpotion,5)
+						if val:
+							OpenLib.UseAnyItemByID(Settings.instance.BLUE_POTIONS_IDS)
+							#chat.AppendChat(7, "Potion used.")
 						return 99999999
 				x,y,z = chr.GetPixelPosition(vid)
 				eXLib.SendAddFlyTarget(vid,x,y)
 				eXLib.SendShoot(35)
+				eXLib.SendAttackPacket(vid,0)
 				lst.remove(vid)
 				vid_hits+=1
 
@@ -161,20 +176,26 @@ class DmgHacksInstance(ui.Window):
     
 				
 	def OnUpdate(self):
-		val, self.lastTime = OpenLib.timeSleep(self.lastTime,self.speed)
-		if(val and self.enableButton.isOn and not eXLib.IsDead(net.GetMainActorVID())):
-			if OpenLib.GetCurrentPhase() != OpenLib.PHASE_GAME:
-				return
+		val, Data.time_DmgHacks_lasttime = OpenLib.timeSleep(Data.time_DmgHacks_lasttime,self.speed)
+		if not val:
+			return
+		if not IsOn():
+			return
+		if OpenLib.GetCurrentPhase() != OpenLib.PHASE_GAME:
+			return
+
+		main_vid = net.GetMainActorVID()
+		if not eXLib.IsDead(main_vid):
 			isArch = OpenLib.IsWeaponArch()
-			main_vid = net.GetMainActorVID()
 			x,y,z = chr.GetPixelPosition(main_vid)
 			self.lastPos = (x,y)
 			lst = list()
 
-   			for vid in eXLib.InstancesList:
+			inst_list = eXLib.InstancesList.copy()
+			#inst_list.remove(main_vid)
+			for vid in inst_list:
 				if vid == main_vid:
-					continue
-
+					continue #tmp 
 				if not chr.HasInstance(vid):
 					continue
 

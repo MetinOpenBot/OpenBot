@@ -1,5 +1,6 @@
+from OpenBot.Modules import OpenThreads
 import eXLib,ui,net,chr,player,chat,item,app
-import OpenLib,NPCInteraction,FileManager,Movement,UIComponents,Settings
+import OpenLib,NPCInteraction,FileManager,Movement,UIComponents,Settings, Data
 from FileManager import boolean
 
 def _PositionRestoreCallback():
@@ -9,9 +10,6 @@ def _PositionRestoreCallback():
 def _PlaceFireCallBack():
 	chat.AppendChat(3,"[Fishing-bot] Setting CampFire.")
 	instance.PlaceFireAndGrillFish()
-
-def _ReadyToPullRod():
-	instance.PullRod()
 
 GOLD_RING = 50002
 GOLD_PIECE = 80008
@@ -65,6 +63,7 @@ class FishingBotDialog(ui.Window):
 		self.isRodDown = False
 		self.startPosition = (0,0)
 		self.isMoving = False
+		self.OpenThread = OpenThreads.threadInstance
 
 		self.BuildWindow()
 
@@ -82,12 +81,12 @@ class FishingBotDialog(ui.Window):
 		self.Board.Hide()
 		self.comp = UIComponents.Component()
 
-		self.enableButton = self.comp.OnOffButton(self.Board, '', '', 165, 435, OffUpVisual='OpenBot/Images/start_0.tga', OffOverVisual='OpenBot/Images/start_1.tga', OffDownVisual='OpenBot/Images/start_2.tga',OnUpVisual='OpenBot/Images/stop_0.tga', OnOverVisual='OpenBot/Images/stop_1.tga', OnDownVisual='OpenBot/Images/stop_2.tga',funcState= self.StartStopEvent, defaultValue=False)
+		self.enableButton = self.comp.OnOffButton(self.Board, '', '', 165, 435, OffUpVisual=eXLib.PATH + 'OpenBot/Images/start_0.tga', OffOverVisual=eXLib.PATH + 'OpenBot/Images/start_1.tga', OffDownVisual=eXLib.PATH + 'OpenBot/Images/start_2.tga',OnUpVisual=eXLib.PATH + 'OpenBot/Images/stop_0.tga', OnOverVisual=eXLib.PATH + 'OpenBot/Images/stop_1.tga', OnDownVisual=eXLib.PATH + 'OpenBot/Images/stop_2.tga',funcState= self.StartStopEvent, defaultValue=False)
 		
   		#self.useFishBait = self.comp.OnOffButton(self.Board, '   Use fish as bait', '', 140, 380)
 		
 
-  		self.waitNum = self.comp.TextLine(self.Board, '100', 330, 347, self.comp.RGB(255, 255, 255))
+		self.waitNum = self.comp.TextLine(self.Board, '100', 330, 347, self.comp.RGB(255, 255, 255))
 		#self.serverNum = self.comp.TextLine(self.Board, '100', 330, 367, self.comp.RGB(255, 255, 255))
 		self.startStopNum = self.comp.TextLine(self.Board, '100', 330, 387, self.comp.RGB(255, 255, 255))
 
@@ -99,7 +98,7 @@ class FishingBotDialog(ui.Window):
 		#self.ServerDelaySlider = self.comp.SliderBar(self.Board, 0.0, self.ServerDelay_func, 140, 370)
 		self.StartStopDelaySlider = self.comp.SliderBar(self.Board, 0.0, self.StartStopDelay_func, 140, 390)
 
-		self.instantBtn = self.comp.OnOffButton(self.Board, '', 'Instant fishing, it will ignore the delay', 345, 387)
+		self.instantBtn = self.comp.OnOffButton(self.Board, '', 'Instant fishing, it will ignore the delay', 345, 387, funcState=self.switch_instant_fish)
 
 		#Grill button and image
 		item.SelectItem(self.campFire)
@@ -156,11 +155,11 @@ class FishingBotDialog(ui.Window):
 
 		self.loadSettings()
 		
-		self.lastTime = 0
-		self.lastTimeFishState = 0
-		self.lastTimeWaitState = 0
-		self.lastTimeImprove = 0
-		self.lastTimeFire = 0
+		Data.time_FishingBot_lasttime = 0
+		Data.time_FishingBot_lastTimeFishState = 0
+		Data.time_FishingBot_lastTimeWaitState = 0
+		Data.time_FishingBot_lastTimeImprove = 0
+		Data.time_FishingBot_lastTimeFire = 0
 
 		self.WaitDelay_func()
 		#self.ServerDelay_func()
@@ -182,13 +181,17 @@ class FishingBotDialog(ui.Window):
 
 	def StartStopEvent(self,val):
 		if not val:
+			#self.OpenThread.stopThread('fishingThread')
 			NPCInteraction.StopAction()
 			self.exitFishing()
 		else:
 			self.startPosition = player.GetMainCharacterPosition()
 			#eXLib.BlockFishingPackets()
 			chat.AppendChat(3,"[Fishing-bot] ATTENTION, you should only have one rod in you inventory!")
+			chat.AppendChat(7,"|cffffffff[All |cffffc700 Hail |cffffc7F0The |cff00ff00Legendary |cff000000 Fisher |cff111111from |cff999999N|cff222222y|cff888888o|cff333333x|cffffffff]")
+
 			self.startFishing()
+			#self.OpenThread.createLoopedThread(self.fishingThreadMethod,(),False,False,False,'fishingThread')
 
 	def saveSettings(self):
 		for fish_id in self.catches.keys():
@@ -439,29 +442,36 @@ class FishingBotDialog(ui.Window):
 		if(self.enableButton.isOn):
 			chat.AppendChat(3,"[Fishing-Bot] Pulling Rod")
 			eXLib.SendStopFishing(eXLib.SUCCESS_FISHING,app.GetRandom(3,10))
-			self.lastTimeWaitState = OpenLib.GetTime()
+			Data.time_FishingBot_lastTimeWaitState = OpenLib.GetTime()
 			self.SetState(self.STATE_WAITING)
 			self.isRodDown = False
 
+	def switch_instant_fish(self, state_bool):
+		if not state_bool:
+			eXLib.RecvStartFishCallback(0)
+		else:
+			eXLib.RecvStartFishCallback(self.PullRod)
+
+	
 	def OnUpdate(self):
-		val, self.lastTime = OpenLib.timeSleep(self.lastTime,0.1)
+		val, Data.time_FishingBot_lasttime = OpenLib.timeSleep(Data.time_FishingBot_lasttime,0.1)
 		if(val and self.enableButton.isOn and OpenLib.IsInGamePhase()):
 			if self.state == self.STATE_WAITING:
-				valWaitState, self.lastTimeWaitState = OpenLib.timeSleep(self.lastTimeWaitState,self.WaitDelaySlider.GetSliderPos()*10)
+				valWaitState, Data.time_FishingBot_lastTimeWaitState = OpenLib.timeSleep(Data.time_FishingBot_lastTimeWaitState,self.WaitDelaySlider.GetSliderPos()*10)
 				if valWaitState:
 					if self.CheckInv() == False:
 						return
 					eXLib.SendStartFishing(2)
 					chat.AppendChat(3,"[Fishing-Bot] Using bait, and start fishing")
 					self.SetState(self.STATE_FISHING)
-					self.lastTimeFishState = OpenLib.GetTime()
+					Data.time_FishingBot_lastTimeFishState = OpenLib.GetTime()
 					self.isRodDown = True
 					self.isMoving = False
 					
 			if self.state == self.STATE_FISHING:
-				valFishState, self.lastTimeFishState = OpenLib.timeSleep(self.lastTimeFishState,self.startStopDelay*10)
+				valFishState, Data.time_FishingBot_lastTimeFishState = OpenLib.timeSleep(Data.time_FishingBot_lastTimeFishState,self.startStopDelay*10)
 				if valFishState and not self.instantBtn.isOn:
-					chat.AppendChat(3,"ABC")
+					chat.AppendChat(3,"Pulling Rod with delay")
 					self.PullRod()
 
 			if self.state == self.STATE_GOING_TO_SHOP:
@@ -469,14 +479,14 @@ class FishingBotDialog(ui.Window):
 				pass
 			
 			if self.state == self.STATE_IMPROVING_ROD:
-				val, self.lastTimeImprove = OpenLib.timeSleep(self.lastTimeImprove,0.5)
+				val, Data.time_FishingBot_lastTimeImprove = OpenLib.timeSleep(Data.time_FishingBot_lastTimeImprove,0.5)
 				if not val:
 					return
 
 				self.LevelUpRod()
 
 		if self.state == self.STATE_PLACE_FIRE:
-			val, self.lastTimeFire = OpenLib.timeSleep(self.lastTimeFire,0.2)
+			val, Data.time_FishingBot_lastTimeFire = OpenLib.timeSleep(Data.time_FishingBot_lastTimeFire,0.2)
 			if not val:
 				return
 			for vid in eXLib.InstancesList:
@@ -501,4 +511,3 @@ def switch_state():
 	instance.switch_state()
 
 instance = FishingBotDialog()
-eXLib.RecvStartFishCallback(_ReadyToPullRod)

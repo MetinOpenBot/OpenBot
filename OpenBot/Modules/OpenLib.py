@@ -151,14 +151,14 @@ def GetServerInfo(channel):
 	"""
 	import serverInfo
 	for serverNum in serverInfo.REGION_DICT[0].keys():
-	    if serverInfo.REGION_DICT[0][serverNum]['name'] == net.GetServerInfo().split(',')[0]:
-	        serverName = serverInfo.REGION_DICT[0][serverNum]['name']
-	        channelName = serverInfo.REGION_DICT[0][serverNum]['channel'][channel]['name']
-	        account_addr_new = serverInfo.REGION_AUTH_SERVER_DICT[0][serverNum]['ip']
-	        account_port_new = serverInfo.REGION_AUTH_SERVER_DICT[0][serverNum]['port']
-	        addr_new = serverInfo.REGION_DICT[0][serverNum]['channel'][channel]['ip']
-	        port_new = serverInfo.REGION_DICT[0][serverNum]['channel'][channel]['tcp_port']
-	        return (serverName,
+		if serverInfo.REGION_DICT[0][serverNum]['name'] == net.GetServerInfo().split(',')[0]:
+			serverName = serverInfo.REGION_DICT[0][serverNum]['name']
+			channelName = serverInfo.REGION_DICT[0][serverNum]['channel'][channel]['name']
+			account_addr_new = serverInfo.REGION_AUTH_SERVER_DICT[0][serverNum]['ip']
+			account_port_new = serverInfo.REGION_AUTH_SERVER_DICT[0][serverNum]['port']
+			addr_new = serverInfo.REGION_DICT[0][serverNum]['channel'][channel]['ip']
+			port_new = serverInfo.REGION_DICT[0][serverNum]['channel'][channel]['tcp_port']
+			return (serverName,
 	         channelName,
 	         account_addr_new,
 	         account_port_new,
@@ -668,7 +668,7 @@ def GetTime():
 	Returns:
 		[float]: Return the time.
 	"""
-	return time.clock()
+	return app.GetTime()
 
 def GetPlayerEmpireFirstMap():
 	empire_id = net.GetEmpireID()

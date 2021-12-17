@@ -9,9 +9,19 @@ def DebugPrint(arg):
 		arg ([str]): Information to log.
 	"""
 	with open(eXLib.PATH+"\\Log.txt","a") as f:
-		f.write(str(datetime.now())+": "+arg+"\n")
+		f.write(str(datetime.now())+": "+str(arg)+"\n")
 	pass
 
+def DebugPrintNT(arg):
+	"""
+	Log's information to Log.txt file. This will Not print time.
+
+	Args:
+		arg ([str]): Information to log.
+	"""
+	with open(eXLib.PATH+"\\Log.txt","a") as f:
+		f.write(str(arg)+"\n")
+	pass
 
 def DumpObject(arg):
 	with open(eXLib.PATH+"\\ObjectDump.txt","w") as f:
