@@ -4,7 +4,7 @@ from OpenBot.Modules.BotBase import BotBase
 from OpenBot.Modules.OpenLog import DebugPrint
 from OpenBot.Modules import OpenLib, UIComponents
 from OpenBot.Modules import Hooks
-import ui, chat
+import ui, chat, eXLib
 
 # STATES
 STATE_CANCELING = -1
@@ -58,12 +58,12 @@ class ActionBot(BotBase):
         self.settings_tab = self.TabWidget.GetTab(1)
 
         self.enableActionBot = comp.OnOffButton(self.general, '', '', 170, 135,
-                                                    OffUpVisual='OpenBot/Images/start_0.tga',
-                                                    OffOverVisual='OpenBot/Images/start_1.tga',
-                                                    OffDownVisual='OpenBot/Images/start_2.tga',
-                                                    OnUpVisual='OpenBot/Images/stop_0.tga',
-                                                    OnOverVisual='OpenBot/Images/stop_1.tga',
-                                                    OnDownVisual='OpenBot/Images/stop_2.tga',
+                                                    OffUpVisual=eXLib.PATH + 'OpenBot/Images/start_0.tga',
+                                                    OffOverVisual=eXLib.PATH + 'OpenBot/Images/start_1.tga',
+                                                    OffDownVisual=eXLib.PATH + 'OpenBot/Images/start_2.tga',
+                                                    OnUpVisual=eXLib.PATH + 'OpenBot/Images/stop_0.tga',
+                                                    OnOverVisual=eXLib.PATH + 'OpenBot/Images/stop_1.tga',
+                                                    OnDownVisual=eXLib.PATH + 'OpenBot/Images/stop_2.tga',
                                                     funcState=self.OnEnableSwitchButton, defaultValue=False)
         
         self.ClearButton = comp.Button(self.general, 'Clear', '', 20, 135, self.OnClearButton,

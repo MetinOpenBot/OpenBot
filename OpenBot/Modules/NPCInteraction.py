@@ -1,5 +1,5 @@
 import eXLib,ui,net,chr,player,chat,shop,event,background
-import OpenLib, Movement, Hooks, MapManager, OpenLog
+import OpenLib, Movement, Hooks, MapManager, OpenLog, Data
 
 
 
@@ -131,18 +131,18 @@ class NPCInteractionDialog(ui.ScriptWindow):
 	def __init__(self):
 		ui.ScriptWindow.__init__(self)
 		self.Show()
-		self.lastTime = 0
+		Data.time_NPCInteraction_lastTime = 0
 		self.buyItems_list =list()
 		self.sellItems_list =list()
 		self.giveItems_list =list()
 		self.ableToBuy = True
 		self.State = STATE_NONE
 		self.vid = 0
-		self.lastTimeBuy = 0
+		Data.time_NPCInteraction_lastTimeBuy = 0
 		self.callback = None
 		self.npcAction = 0
-		self.lastTimeSell = 0
-		self.lastTimeGive = 0
+		Data.time_NPCInteraction_lastTimeSell = 0
+		Data.time_NPCInteraction_lastTimeGive = 0
 		
 
 
@@ -197,7 +197,7 @@ class NPCInteractionDialog(ui.ScriptWindow):
 
 
 	def OnUpdate(self):
-		val, self.lastTime = OpenLib.timeSleep(self.lastTime,TIME_WAIT)
+		val, Data.time_NPCInteraction_lastTime = OpenLib.timeSleep(Data.time_NPCInteraction_lastTime,TIME_WAIT)
 		if not val or self.State == STATE_NONE or not OpenLib.IsInGamePhase():
 			return
 		if self.State == STATE_WAITING_OPEN_SHOP:
@@ -209,7 +209,7 @@ class NPCInteractionDialog(ui.ScriptWindow):
 			
 
 		if self.State == STATE_SELLING:
-			val, self.lastTimeSell = OpenLib.timeSleep(self.lastTimeSell,TIME_SELL)
+			val, Data.time_NPCInteraction_lastTimeSell = OpenLib.timeSleep(Data.time_NPCInteraction_lastTimeSell,TIME_SELL)
 			if val:
 				if len(self.sellItems_list) == 0:
 					self.State = STATE_BUYING
@@ -220,7 +220,7 @@ class NPCInteractionDialog(ui.ScriptWindow):
 			return
 
 		if self.State == STATE_BUYING:
-			val, self.lastTimeBuy = OpenLib.timeSleep(self.lastTimeBuy,TIME_BUY)
+			val, Data.time_NPCInteraction_lastTimeBuy = OpenLib.timeSleep(Data.time_NPCInteraction_lastTimeBuy,TIME_BUY)
 			if(val):
 				if len(self.buyItems_list) == 0:
 					self.State = STATE_FINISH_SHOPPING
@@ -235,7 +235,7 @@ class NPCInteractionDialog(ui.ScriptWindow):
 			return
 
 		if self.State == STATE_GIVING_ITEMS:
-			val, self.lastTimeGive = OpenLib.timeSleep(self.lastTimeGive,TIME_GIVE_ITEM)
+			val, Data.time_NPCInteraction_lastTimeGive = OpenLib.timeSleep(Data.time_NPCInteraction_lastTimeGive,TIME_GIVE_ITEM)
 			if not val:
 				return
 			if len(self.giveItems_list) == 0:

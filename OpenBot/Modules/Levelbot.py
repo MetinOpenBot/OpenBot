@@ -74,7 +74,7 @@ class LevelBotDialog(BotBase):
 		self.goToCenterBtn = comp.OnOffButton(self.Board, '\t\t\tGo to center', "Go to center when no moobs near", 170, 80,funcState=self.OnGoToCenter,defaultValue=int(self.goToCenter))
 		self.goToShopBtn = comp.OnOffButton(self.Board, '\t\tGo to shop', "Go to shop when inventory full", 20, 115,funcState=self.SetShopOnInvFull,defaultValue=int(self.allowShopOnFullInv))
 		
-		self.EnableButton = comp.OnOffButton(self.Board, '', '', 0,323,OffUpVisual='OpenBot/Images/start_0.tga', OffOverVisual='OpenBot/Images/start_1.tga', OffDownVisual='OpenBot/Images/start_2.tga',OnUpVisual='OpenBot/Images/stop_0.tga', OnOverVisual='OpenBot/Images/stop_1.tga', OnDownVisual='OpenBot/Images/stop_2.tga',funcState=self.OnStartStop)
+		self.EnableButton = comp.OnOffButton(self.Board, '', '', 0,323,OffUpVisual=eXLib.PATH + 'OpenBot/Images/start_0.tga', OffOverVisual=eXLib.PATH + 'OpenBot/Images/start_1.tga', OffDownVisual=eXLib.PATH + 'OpenBot/Images/start_2.tga',OnUpVisual=eXLib.PATH + 'OpenBot/Images/stop_0.tga', OnOverVisual=eXLib.PATH + 'OpenBot/Images/stop_1.tga', OnDownVisual=eXLib.PATH + 'OpenBot/Images/stop_2.tga',funcState=self.OnStartStop)
 		self.EnableButton.SetWindowHorizontalAlignCenter()
 
 		#Location stuff

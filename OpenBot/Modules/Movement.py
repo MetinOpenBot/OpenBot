@@ -1,6 +1,6 @@
 from OpenBot.Modules.OpenLog import DebugPrint
 import eXLib,ui,chr,player,chat,background,app,net
-import OpenLib,MapManager,OpenLog
+import OpenLib,MapManager,OpenLog, Data
 
 
 
@@ -44,7 +44,7 @@ class MapMovementDialog(ui.ScriptWindow):
         self.Show()
         self.leftLinkList = []
         self.currLink = 0
-        self.generalTimer = 0
+        Data.time_Movement_generalTimer = 0
         self.callback = None
         self.State = self.STATE_NONE
         self.can_add_action = True
@@ -131,7 +131,7 @@ class MapMovementDialog(ui.ScriptWindow):
     def OnUpdate(self):
         if self.State == self.STATE_NONE or not OpenLib.IsInGamePhase():
             return
-        val, self.generalTimer = OpenLib.timeSleep(self.generalTimer,TIME_WAIT_MAP_CHANGE)
+        val, Data.time_Movement_generalTimer = OpenLib.timeSleep(Data.time_Movement_generalTimer,TIME_WAIT_MAP_CHANGE)
         if not val:
             return
         if self.State == self.STATE_MOVING:
@@ -150,11 +150,11 @@ class MovementDialog(ui.ScriptWindow):
         self.currDestinationX = 0
         self.currDestinationY = 0
         self.state = STATE_STOPPED
-        self.stoppedTimer = OpenLib.GetTime()
+        Data.time_Movement_stoppedTimer = OpenLib.GetTime()
         self.lastPlayerPos = (0,0)
         self.maxDistanceToDest = 50
         #self.lastMoveX,lastMoveY = (0,0)
-        self.generalTimer = 0
+        Data.time_Movement_generalTimer = 0
         
     def Stop(self):
         self.state = STATE_STOPPED
@@ -176,7 +176,7 @@ class MovementDialog(ui.ScriptWindow):
                 self.currDestinationX = x
                 self.currDestinationY = y
                 self.state = STATE_MOVING
-                self.stoppedTimer = OpenLib.GetTime()
+                Data.time_Movement_stoppedTimer = OpenLib.GetTime()
                 return MOVING
             else:
                 self.state = STATE_STOPPED
@@ -198,7 +198,7 @@ class MovementDialog(ui.ScriptWindow):
         chr.MoveToDestPosition(player.GetMainCharacterIndex(),x, y)
         
     def OnUpdate(self):
-        val, self.generalTimer = OpenLib.timeSleep(self.generalTimer,TIME_WAIT)
+        val, Data.time_Movement_generalTimer = OpenLib.timeSleep(Data.time_Movement_generalTimer,TIME_WAIT)
         if not val or not OpenLib.IsInGamePhase():
             return
 
@@ -226,7 +226,7 @@ class MovementDialog(ui.ScriptWindow):
                 next_x,next_y = self.path[0]
         
         if self.lastPlayerPos == (my_x,my_y):
-            val, self.stoppedTimer = OpenLib.timeSleep(self.stoppedTimer,TIME_STOPPED_ALLOWED)
+            val, Data.time_Movement_stoppedTimer = OpenLib.timeSleep(Data.time_Movement_stoppedTimer,TIME_STOPPED_ALLOWED)
             if val:
                 #If is stuck
                 self.path = eXLib.FindPath(my_x,my_y,self.currDestinationX,self.currDestinationY)

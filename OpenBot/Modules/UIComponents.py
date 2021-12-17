@@ -1,4 +1,4 @@
-import ui,wndMgr
+import ui,wndMgr, eXLib
 
 def RGB(r, g, b):
 	return (r*255, g*255, b*255)
@@ -115,7 +115,7 @@ class Component:
 		return button
 
 	
-	def OnOffButton(self,parent,buttonName, tooltipText,x,y,image=None,OffUpVisual='OpenBot/Images/off_0.tga', OffOverVisual='OpenBot/Images/off_1.tga', OffDownVisual='OpenBot/Images/off_2.tga',OnUpVisual='OpenBot/Images/on_0.tga', OnOverVisual='OpenBot/Images/on_1.tga', OnDownVisual='OpenBot/Images/on_2.tga',xImgOffset = 15,yImgOffset = 15,funcState=None,defaultValue=0):
+	def OnOffButton(self,parent,buttonName, tooltipText,x,y,image=None,OffUpVisual=eXLib.PATH + 'OpenBot/Images/off_0.tga', OffOverVisual=eXLib.PATH + 'OpenBot/Images/off_1.tga', OffDownVisual=eXLib.PATH + 'OpenBot/Images/off_2.tga',OnUpVisual=eXLib.PATH + 'OpenBot/Images/on_0.tga', OnOverVisual=eXLib.PATH + 'OpenBot/Images/on_1.tga', OnDownVisual=eXLib.PATH + 'OpenBot/Images/on_2.tga',xImgOffset = 15,yImgOffset = 15,funcState=None,defaultValue=0):
 		if image != None:
 			image = self.ExpandedImage(parent,x,y,image)
 			x += xImgOffset

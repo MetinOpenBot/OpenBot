@@ -97,7 +97,7 @@ class SearchDialog(ui.ScriptWindow):
 		#self.Board.Show()
 
 		self.comp = UIComponents.Component()
-		self.SearchButton = self.comp.OnOffButton(self.Board, '', '', relativeCenterX(-20),relativeEndY(55),funcState=self.EnableButtonClicked, OffUpVisual='OpenBot/Images/start_0.tga', OffOverVisual='OpenBot/Images/start_1.tga', OffDownVisual='OpenBot/Images/start_2.tga',OnUpVisual='OpenBot/Images/stop_0.tga', OnOverVisual='OpenBot/Images/stop_1.tga', OnDownVisual='OpenBot/Images/stop_2.tga' )
+		self.SearchButton = self.comp.OnOffButton(self.Board, '', '', relativeCenterX(-20),relativeEndY(55),funcState=self.EnableButtonClicked, OffUpVisual=eXLib.PATH + 'OpenBot/Images/start_0.tga', OffOverVisual=eXLib.PATH + 'OpenBot/Images/start_1.tga', OffDownVisual=eXLib.PATH + 'OpenBot/Images/start_2.tga',OnUpVisual=eXLib.PATH + 'OpenBot/Images/stop_0.tga', OnOverVisual=eXLib.PATH + 'OpenBot/Images/stop_1.tga', OnDownVisual=eXLib.PATH + 'OpenBot/Images/stop_2.tga' )
 		self.SearchButton.SetOff()
 		#self.SearchButton = self.comp.ToggleButton(self.Board,'Search Shops','',relativeCenterX(-48),relativeEndY(45),self.StopSearch,self.StartSearch,'d:/ymir work/ui/public/large_button_01.sub', 'd:/ymir work/ui/public/large_button_02.sub', 'd:/ymir work/ui/public/large_button_03.sub')
   

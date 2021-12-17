@@ -3,7 +3,7 @@ from OpenBot.Modules.Settings import ItemListDialog
 from OpenBot.Modules.Actions import Action, ActionFunctions, ActionRequirementsCheckers, ActionBot
 from BotBase import BotBase
 import UIComponents, OpenLib
-import ui, player, background, chat, item
+import ui, player, background, chat, item, eXLib
 
 #
 #DT Blacksmith 20074
@@ -183,12 +183,12 @@ class AutoDungeon(BotBase):
                                         'd:/ymir work/ui/public/small_Button_03.sub')
 
         self.enableDeamonTower = comp.OnOffButton(self.deamon_tower_tab, '', '', 165, 110,
-                                                    OffUpVisual='OpenBot/Images/start_0.tga',
-                                                    OffOverVisual='OpenBot/Images/start_1.tga',
-                                                    OffDownVisual='OpenBot/Images/start_2.tga',
-                                                    OnUpVisual='OpenBot/Images/stop_0.tga',
-                                                    OnOverVisual='OpenBot/Images/stop_1.tga',
-                                                    OnDownVisual='OpenBot/Images/stop_2.tga',
+                                                    OffUpVisual=eXLib.PATH + 'OpenBot/Images/start_0.tga',
+                                                    OffOverVisual=eXLib.PATH + 'OpenBot/Images/start_1.tga',
+                                                    OffDownVisual=eXLib.PATH + 'OpenBot/Images/start_2.tga',
+                                                    OnUpVisual=eXLib.PATH + 'OpenBot/Images/stop_0.tga',
+                                                    OnOverVisual=eXLib.PATH + 'OpenBot/Images/stop_1.tga',
+                                                    OnDownVisual=eXLib.PATH + 'OpenBot/Images/stop_2.tga',
                                                     funcState=self.switch_launch_auto_dungeon, defaultValue=False)
 
         self.showRepeatDungeon = comp.OnOffButton(self.settings_tab, '\t\t\t\t\t\tRepeat dungeon', '', 20, 10, funcState=self.switch_next_channel_if_there_is_another_player, defaultValue=self.options['NextChannelIfThereIsAnotherPlayer'])

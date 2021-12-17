@@ -1,4 +1,4 @@
-import ui,chat,chr,player,time
+import ui,chat,chr,player,time, eXLib
 import OpenLib,FileManager,UIComponents
 
 class BuffDialog(ui.ScriptWindow):
@@ -27,16 +27,16 @@ class BuffDialog(ui.ScriptWindow):
 		self.ReflektImage = self.comp.ExpandedImage(self.Board, 130, 65, str("d:/ymir work/ui/skill/shaman/boho_02.sub"))
 		self.Close = self.comp.Button(self.Board, '', 'Close', 177, 7, self.Hide_UI, 'd:/ymir work/ui/public/close_button_01.sub', 'd:/ymir work/ui/public/close_button_02.sub', 'd:/ymir work/ui/public/close_button_03.sub')
 		self.DelaySlide = self.comp.SliderBar(self.Board, 0.2, self.SlideFunc, 13, 140)
-		self.BuffOff = self.comp.HideButton(self.Board, '', '', 84, 180, self.SetBuffStatus, 'OpenBot/Images/start_0.tga', 'OpenBot/Images/start_1.tga', 'OpenBot/Images/start_2.tga')
-		self.BuffOn = self.comp.HideButton(self.Board, '', '', 84, 180, self.SetBuffStatus, 'OpenBot/Images/stop_0.tga', 'OpenBot/Images/stop_1.tga', 'OpenBot/Images/stop_2.tga')
-		self.SegenOn = self.comp.HideButton(self.Board, '', '', 55, 80, self.BuffSegen, 'OpenBot/Images/on_0.tga', 'OpenBot/Images/on_1.tga', 'OpenBot/mages/on_2.tga')
-		self.SegenOff = self.comp.HideButton(self.Board, '', '', 55, 80, self.BuffSegen, 'OpenBot/Images/off_0.tga', 'OpenBot/Images/off_1.tga', 'OpenBot/Images/off_2.tga')
-		self.HDDOn = self.comp.HideButton(self.Board, '', '', 100, 80, self.BuffHDD, 'OpenBot/Images/on_0.tga', 'OpenBot/Images/on_1.tga', 'OpenBot/mages/on_2.tga')
-		self.HDDOff = self.comp.HideButton(self.Board, '', '', 100, 80, self.BuffHDD, 'OpenBot/Images/off_0.tga', 'OpenBot/Images/off_1.tga', 'OpenBot/Images/off_2.tga')
-		self.ReflektOn = self.comp.HideButton(self.Board, '', '', 147, 80, self.BuffReflekt, 'OpenBot/Images/on_0.tga', 'OpenBot/Images/on_1.tga', 'OpenBot/mages/on_2.tga')
-		self.ReflektOff = self.comp.HideButton(self.Board, '', '', 147, 80, self.BuffReflekt, 'OpenBot/Images/off_0.tga', 'OpenBot/Images/off_1.tga', 'OpenBot/Images/off_2.tga')
-		self.FollowOn = self.comp.HideButton(self.Board, '', '', 135, 110, self.SetFollow, 'OpenBot/Images/on_0.tga', 'OpenBot/Images/on_1.tga', 'OpenBot/mages/on_2.tga')
-		self.FollowOff = self.comp.HideButton(self.Board, '', '', 135, 110, self.SetFollow, 'OpenBot/Images/off_0.tga', 'OpenBot/Images/off_1.tga', 'OpenBot/Images/off_2.tga')
+		self.BuffOff = self.comp.HideButton(self.Board, '', '', 84, 180, self.SetBuffStatus, eXLib.PATH + 'OpenBot/Images/start_0.tga', eXLib.PATH + 'OpenBot/Images/start_1.tga', eXLib.PATH + 'OpenBot/Images/start_2.tga')
+		self.BuffOn = self.comp.HideButton(self.Board, '', '', 84, 180, self.SetBuffStatus, eXLib.PATH + 'OpenBot/Images/stop_0.tga', eXLib.PATH + 'OpenBot/Images/stop_1.tga', eXLib.PATH + 'OpenBot/Images/stop_2.tga')
+		self.SegenOn = self.comp.HideButton(self.Board, '', '', 55, 80, self.BuffSegen, eXLib.PATH + 'OpenBot/Images/on_0.tga', eXLib.PATH + 'OpenBot/Images/on_1.tga', 'OpenBot/mages/on_2.tga')
+		self.SegenOff = self.comp.HideButton(self.Board, '', '', 55, 80, self.BuffSegen, eXLib.PATH + 'OpenBot/Images/off_0.tga', eXLib.PATH + 'OpenBot/Images/off_1.tga', eXLib.PATH + 'OpenBot/Images/off_2.tga')
+		self.HDDOn = self.comp.HideButton(self.Board, '', '', 100, 80, self.BuffHDD, eXLib.PATH + 'OpenBot/Images/on_0.tga', eXLib.PATH + 'OpenBot/Images/on_1.tga', 'OpenBot/mages/on_2.tga')
+		self.HDDOff = self.comp.HideButton(self.Board, '', '', 100, 80, self.BuffHDD, eXLib.PATH + 'OpenBot/Images/off_0.tga', eXLib.PATH + 'OpenBot/Images/off_1.tga', eXLib.PATH + 'OpenBot/Images/off_2.tga')
+		self.ReflektOn = self.comp.HideButton(self.Board, '', '', 147, 80, self.BuffReflekt, eXLib.PATH + 'OpenBot/Images/on_0.tga', eXLib.PATH + 'OpenBot/Images/on_1.tga', 'OpenBot/mages/on_2.tga')
+		self.ReflektOff = self.comp.HideButton(self.Board, '', '', 147, 80, self.BuffReflekt, eXLib.PATH + 'OpenBot/Images/off_0.tga', eXLib.PATH + 'OpenBot/Images/off_1.tga', eXLib.PATH + 'OpenBot/Images/off_2.tga')
+		self.FollowOn = self.comp.HideButton(self.Board, '', '', 135, 110, self.SetFollow, eXLib.PATH + 'OpenBot/Images/on_0.tga', eXLib.PATH + 'OpenBot/Images/on_1.tga', 'OpenBot/mages/on_2.tga')
+		self.FollowOff = self.comp.HideButton(self.Board, '', '', 135, 110, self.SetFollow, eXLib.PATH + 'OpenBot/Images/off_0.tga', eXLib.PATH + 'OpenBot/Images/off_1.tga', eXLib.PATH + 'OpenBot/Images/off_2.tga')
 		
 		self.BuffStatus = int(FileManager.ReadConfig("BuffStatus"))
 		self.BuffDelay = int(FileManager.ReadConfig("BuffDelay"))
