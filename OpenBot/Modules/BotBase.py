@@ -40,7 +40,8 @@ class BotBase(ui.ScriptWindow):
 		self.State = self.STATE_STOPPED
 		self.time_wait = time_wait
 		Data.time_BotBase_generalTimers[self.__class__.__name__] = 0
-		self.timer = Data.time_BotBase_generalTimers[self.__class__.__name__]
+		self.timer = Data.time_BotBase_generalTimers
+		self.name = self.__class__.__name__
 		self.onlyGamePhase = onlyGamePhase
 		self.waitIsPlayerDead = waitIsPlayerDead
 		self.isPaused = False
@@ -268,7 +269,7 @@ class BotBase(ui.ScriptWindow):
 	def OnUpdate(self):
 		if self.STATE_STOPPED == self.State:
 			return
-		val, self.timer = OpenLib.timeSleep(self.timer,self.time_wait)
+		val, self.timer[self.name] = OpenLib.timeSleep(self.timer[self.name],self.time_wait)
 		if not val:
 			return
 		if OpenLib.GetCurrentPhase() != OpenLib.PHASE_GAME and self.onlyGamePhase:
@@ -277,4 +278,6 @@ class BotBase(ui.ScriptWindow):
 		if self.State == self.STATE_WATING:
 			return
 		if not self.DoChecks():
+			#chat.AppendChat(7,str(self.timer[self.name])+" Self.Timer from " + self.name) #Debug
+			#chat.AppendChat(7,str(Data.time_BotBase_generalTimers[self.name])+ " Data.Timer from " + self.name)
 			self.Frame()
