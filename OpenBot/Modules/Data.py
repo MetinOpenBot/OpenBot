@@ -71,6 +71,8 @@ class uiShortcut(ui.ScriptWindow):
     def aquireStream(args):
         import Data, time, chat
         
+        time.sleep(2)
+
         while Data.GameWindow == 0:
             time.sleep(1)
         

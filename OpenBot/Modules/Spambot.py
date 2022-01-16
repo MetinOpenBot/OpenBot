@@ -1,4 +1,4 @@
-import ui,app,chat,chr,net,player,item,skill,time,game,shop,chrmgr
+import ui,app,chat,chr,net,player,item,skill,time,game,shop,chrmgr, eXLib
 import background,constInfo,wndMgr,math,uiCommon,grp,dbg,OpenLib,FileManager,UIComponents
 
 class SpamDialog(ui.ScriptWindow):
@@ -20,8 +20,8 @@ class SpamDialog(ui.ScriptWindow):
 		#self.Close = self.comp.Button(self.Board, '', 'Close', 175, 7, self.Hide_UI, 'd:/ymir work/ui/public/close_button_01.sub', 'd:/ymir work/ui/public/close_button_02.sub', 'd:/ymir work/ui/public/close_button_03.sub')
 		self.ChatTypeButton = self.comp.Button(self.Board, 'Global', 'Chattype', 17, 113, self.SetType, 'd:/ymir work/ui/public/small_button_01.sub', 'd:/ymir work/ui/public/small_button_02.sub','d:/ymir work/ui/public/small_button_03.sub')
 		self.SaveTextButton = self.comp.Button(self.Board, 'Save', '', 139, 113, self.SaveTextContent, 'd:/ymir work/ui/public/small_button_01.sub', 'd:/ymir work/ui/public/small_button_02.sub','d:/ymir work/ui/public/small_button_03.sub')
-		self.SpamOn = self.comp.HideButton(self.Board, '', '', 80, 190, self.SetSpamStatus, 'OpenBot\Images\start_0.tga', 'OpenBot\Images\start_1.tga', 'OpenBot\Images\start_2.tga')
-		self.SpamOff = self.comp.HideButton(self.Board, '', '', 75, 190, self.SetSpamStatus, 'OpenBot\Images\stop_0.tga', 'OpenBot\Images\stop_1.tga', 'OpenBot\Images\stop_2.tga')
+		self.SpamOn = self.comp.HideButton(self.Board, '', '', 80, 190, self.SetSpamStatus, eXLib.PATH + 'OpenBot/Images/start_0.tga', eXLib.PATH + 'OpenBot/Images/start_1.tga', 'OpenBot/Images/start_2.tga')
+		self.SpamOff = self.comp.HideButton(self.Board, '', '', 75, 190, self.SetSpamStatus, eXLib.PATH + 'OpenBot/Images/stop_0.tga',  eXLib.PATH + 'OpenBot/Images/stop_1.tga', 'OpenBot/Images/stop_2.tga')
 		self.Slotbar, self.SpamText = self.comp.EditLine(self.Board, '', 23, 35, 150, 70, 145)
 		self.SpamCombo = self.comp.ComboBoxFunc(self.Board, '<choose>', 69, 115, 60, self.GetTextContent)
 		
@@ -71,13 +71,13 @@ class SpamDialog(ui.ScriptWindow):
 	def SetSpamStatus(self):
 		if self.SpamStatus == 0:
 			self.SpamStatus = 1
-			chat.AppendChat(7, '[Spamer] Spam-Bot started')	
+			chat.AppendChat(7, '[Spammer] Spam-Bot started')	
 			self.SpamOff.Show()
 			self.SpamOn.Hide()
 			self.StartSpam()
 		else: 
 			self.SpamStatus = 0
-			chat.AppendChat(7, '[Spamer] Spam-Bot stoped')	
+			chat.AppendChat(7, '[Spammer] Spam-Bot stopped')	
 			self.SpamOn.Show()
 			self.SpamOff.Hide()	
 			self.StopSpam()
