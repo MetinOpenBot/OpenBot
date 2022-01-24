@@ -1,6 +1,6 @@
 from OpenBot.Modules.Actions import ActionBot
 from OpenBot.Modules import EnergyBot
-import ui,app,chat,chr,net,player,wndMgr,uiCommon,eXLib
+import ui,app,chat,chr,net,player,wndMgr,uiCommon,eXLib, Data
 from OpenBot.Modules import FileManager, UIComponents, ShopSearcher,Telehack, PythonManager, Settings, Levelbot, Spambot, Shopcreator, Inventorymanager, FishingBot, KeyBot
 from OpenBot.Modules import FarmingBot
 from OpenBot.Modules import Radar, Skillbot, ChannelSwitcher, AutoDungeon

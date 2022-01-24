@@ -373,7 +373,7 @@ class SettingsDialog(ui.ScriptWindow):
 			return
 		vid = player.GetTargetVID()
 		x,y,z = player.GetMainCharacterPosition()
-		if vid == 0 or vid == net.GetMainActorVID() or eXLib.IsDead(vid):
+		if vid == 0 or vid == Data.mainVID or eXLib.IsDead(vid):
 			return
 		typ = chr.GetInstanceType(vid)
 		#if typ != OpenLib.MONSTER_TYPE and typ != OpenLib.METIN_TYPE:
@@ -423,6 +423,10 @@ class SettingsDialog(ui.ScriptWindow):
 
 		if self.restartHere and player.GetStatus(player.HP) <= 0:
 			self.lastTimeDead = OpenLib.GetTime()
+			#adding 5 seconds to timers to prevent dying again after death. 
+			Data.time_Settings_timerDmg += 5
+			Data.time_DmgHacks_lasttime += 5
+			
 			if not self.restartInCity:
 				OpenLib.Revive()
 			else:

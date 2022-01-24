@@ -1,5 +1,5 @@
 from OpenBot.Modules.NPCInteraction import NPCAction
-import eXLib,OpenLib,os,net,FileManager,player,chat,background,NPCInteraction,OpenLog
+import eXLib,OpenLib,os,net,FileManager,player,chat,background,NPCInteraction,OpenLog, Data
 
 
 
@@ -131,7 +131,7 @@ class Map:
 
 		#Check if city 1
 		dest_map = buffer[-1].GetDestMapName()
-		own_empire = net.GetEmpireID()
+		own_empire = Data.empireID
 		if dest_map in CDD_1_KINDOMS and CDD_1_KINDOMS[dest_map] != own_empire:
 			for mapName,kingId in CDD_1_KINDOMS.iteritems():
 				if kingId == own_empire: 

@@ -184,7 +184,7 @@ class DmgHacksInstance(ui.Window):
 		if OpenLib.GetCurrentPhase() != OpenLib.PHASE_GAME:
 			return
 
-		main_vid = net.GetMainActorVID()
+		main_vid = Data.mainVID
 		if not eXLib.IsDead(main_vid):
 			isArch = OpenLib.IsWeaponArch()
 			x,y,z = chr.GetPixelPosition(main_vid)
@@ -192,10 +192,8 @@ class DmgHacksInstance(ui.Window):
 			lst = list()
 
 			inst_list = eXLib.InstancesList.copy()
-			#inst_list.remove(main_vid)
+			inst_list.pop(main_vid,0) # removing main vid from list, default 0 to ignore errors if not in list.
 			for vid in inst_list:
-				if vid == main_vid:
-					continue #tmp 
 				if not chr.HasInstance(vid):
 					continue
 

@@ -326,7 +326,7 @@ def TeleportToPosition(dst_x,dst_y,max_packets=MAX_TELEPORT_PACKETS):
         counter_,pos = TeleportStraightLine(curr_x,curr_y,dest_last_x, dest_last_y,max_packets-counter)
         counter += counter_
         if counter >= max_packets:
-            chr.SelectInstance(net.GetMainActorVID())
+            chr.SelectInstance(Data.mainVID)
             chr.SetPixelPosition(pos[0],pos[1])
             #chat.AppendChat(3,str(counter) + " packets sent.")
             time.sleep(TELEPORT_WAIT_TIME)
@@ -338,7 +338,7 @@ def TeleportToPosition(dst_x,dst_y,max_packets=MAX_TELEPORT_PACKETS):
     counter += counter_
     #chat.AppendChat(3,str(counter) + " packets sent.")
     
-    chr.SelectInstance(net.GetMainActorVID())
+    chr.SelectInstance(Data.mainVID)
     chr.SetPixelPosition(pos[0],pos[1])
     #Reload mobs
     eXLib.SendStatePacket(pos[0]-100,pos[1]-100,0.0,1,0)

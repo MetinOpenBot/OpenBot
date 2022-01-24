@@ -181,10 +181,10 @@ class Skillbot(BotBase):
                         if not player.IsMountingHorse():
                             # chat.AppendChat(3, "[Skill-Bot] Using skill at slot "+str(skill['slot']))
                             
-                                eXLib.SendUseSkillPacket(skill['id'], net.GetMainActorVID())
+                                eXLib.SendUseSkillPacket(skill['id'], Data.mainVID)
                         else:
                             net.SendCommandPacket(m2netm2g.PLAYER_CMD_RIDE_DOWN)
-                            eXLib.SendUseSkillPacket(skill['id'], net.GetMainActorVID())
+                            eXLib.SendUseSkillPacket(skill['id'], Data.mainVID)
                             net.SendCommandPacket(m2netm2g.PLAYER_CMD_RIDE)
                         skill['is_turned_on'] = True
                         ActionBot.instance.AddNewWaiter(int(waiter_time), self.addCallbackToWaiter(skill))

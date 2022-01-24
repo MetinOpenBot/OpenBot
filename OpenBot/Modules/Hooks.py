@@ -109,7 +109,7 @@ def GameWindowIntercept(*args,**kwargs):
 		return
 	#printFuncNC(*args,**kwargs)
 	Data.GameWindow = args[0]
-	Data.obj = Data.uiShortcut()
+	Data.obj = Data.uiShortcut() #The Constructor resets player.SetGameWindow to original method thus removing the hook. 
 	Hooks.GAME_WINDOW = args[0]
 	player.SetGameWindow(*args, **kwargs)
 

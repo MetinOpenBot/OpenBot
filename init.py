@@ -41,3 +41,4 @@ command = 'mklink /d OpenBot "' + folder +'"'
 sys.path.append(os.path.join(eXLib.PATH))
 sys.path.append(os.path.join(eXLib.PATH,'OpenBot'))
 sys.path.append(os.path.join(eXLib.PATH,'OpenBot', 'lib'))
+sys.path.append(os.path.join(eXLib.PATH,'OpenBot', 'Modules'))

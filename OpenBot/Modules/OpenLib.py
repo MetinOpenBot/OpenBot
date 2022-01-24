@@ -1,6 +1,6 @@
 _chr = chr
 from OpenBot.Modules.Hooks import Hook, questHook
-import Hooks
+import Hooks, Data
 import ui,chr,time,app, net, background, player,wndMgr,math,snd,eXLib,uiToolTip,item,FileManager,event,chat,OpenLog,skill, m2netm2g
 from datetime import datetime
 #import pack
@@ -149,9 +149,9 @@ def GetServerInfo(channel):
 	"""
 	Returns the channel info
 	"""
-	import serverInfo
+	import serverInfo, Data
 	for serverNum in serverInfo.REGION_DICT[0].keys():
-		if serverInfo.REGION_DICT[0][serverNum]['name'] == net.GetServerInfo().split(',')[0]:
+		if serverInfo.REGION_DICT[0][serverNum]['name'] == Data.serverInfo.split(',')[0]:
 			serverName = serverInfo.REGION_DICT[0][serverNum]['name']
 			channelName = serverInfo.REGION_DICT[0][serverNum]['channel'][channel]['name']
 			account_addr_new = serverInfo.REGION_AUTH_SERVER_DICT[0][serverNum]['ip']
@@ -173,8 +173,8 @@ def GetClass():
 	Returns:
 		[(int,int)]: Returns a distinct number ofr each skill group or SKILL_SET_NONE if player has no skillset. 
 	"""
-	race = net.GetMainActorRace()
-	group = net.GetMainActorSkillGroup()
+	race = Data.mainRace
+	group = Data.mainSkillGroup
 
 	race = race % 4
 	if(group!= 0):
@@ -229,7 +229,7 @@ def IsThisPlayer(vid):
 
 def IsAnyPlayerHere():
 	for vid in eXLib.InstancesList:
-		if net.GetMainActorVID() != vid:
+		if Data.mainVID != vid:
 			if IsThisPlayer(vid):
 				return True
 	return False
@@ -467,7 +467,7 @@ def getAllStatusOfMainActor():
 		dict
 
 	"""
-	x, y, z = chr.GetPixelPosition(net.GetMainActorVID())
+	x, y, z = chr.GetPixelPosition(Data.mainVID)
 	character_status = {
 		'Position': [x, y],
 		'CurrentMap': background.GetCurrentMapName(),
@@ -521,7 +521,7 @@ def GetNearestMonsterVid():
 
 def isPathToVID(vid_target):
 	x, y, z = chr.GetPixelPosition(vid_target)
-	my_x, my_y, my_z = chr.GetPixelPosition(net.GetMainActorVID())
+	my_x, my_y, my_z = chr.GetPixelPosition(Data.mainVID)
 	if eXLib.FindPath(my_x, my_y, x, y):
 		return True
 	return False
@@ -671,7 +671,7 @@ def GetTime():
 	return app.GetTime()
 
 def GetPlayerEmpireFirstMap():
-	empire_id = net.GetEmpireID()
+	empire_id = Data.empireID
 	#chat.AppendChat(empire_id)
 	empires_map_names = {
 		1: 'metin2_map_a1',
@@ -681,7 +681,7 @@ def GetPlayerEmpireFirstMap():
 	return empires_map_names[empire_id]
 
 def GetPlayerEmpireSecondMap():
-	empire_id = net.GetEmpireID()
+	empire_id = Data.empireID
 	#chat.AppendChat(empire_id)
 	empires_map_names = {
 		1: 'metin2_map_a3',
@@ -780,14 +780,14 @@ def GetCurrentChannel():
 		[int]: Returns the channel, or 0 in case of an exception raised.
 	"""
 	try:
-		return int(net.GetServerInfo().split(',')[1][3:])
+		return int(Data.serverInfo.split(',')[1][3:])
 	except:
 		OpenLog.DebugPrint("Exception raised when trying to obtain current channel.")
 		return 0
 
 def GetCurrentServer():
 	try:
-		return net.GetServerInfo().split(',')[0]
+		return Data.serverInfo.split(',')[0]
 	except:
 		OpenLog.DebugPrint("Exception raised when trying to obtain current channel.")
 		return 0

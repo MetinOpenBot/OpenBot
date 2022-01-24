@@ -23,7 +23,7 @@ def __PhaseTurnOnFarmbot(phase,phaseWnd):
 
 def OnDigMotionCallback(main_vid,target_ore,n):
     global farm
-    if(main_vid != net.GetMainActorVID()):
+    if(main_vid != Data.mainVID):
         return
     if farm.enableButton.isOn and farm.showMiningButton.isOn:
         OpenLog.DebugPrint('Digging is starting')
@@ -67,7 +67,7 @@ class FarmingBot(BotBase):
 
     def BuildWindow(self):
         self.Board = ui.BoardWithTitleBar()
-        self.Board.SetSize(240, 300)
+        self.Board.SetSize(360, 300)
         self.Board.SetPosition(52, 40)
         self.Board.AddFlag('movable')
         self.Board.SetTitleName('FarmBot')
@@ -75,7 +75,7 @@ class FarmingBot(BotBase):
         self.Board.Hide()
 
         comp = UIComponents.Component()
-        self.TabWidget = UIComponents.TabWindow(10, 30, 220, 260, self.Board,
+        self.TabWidget = UIComponents.TabWindow(10, 30, 340, 260, self.Board,
                                                 ['Moving', 'Mining', 'Settings'])
         self.moving_tab = self.TabWidget.GetTab(0)
         self.minings_tab = self.TabWidget.GetTab(1)
