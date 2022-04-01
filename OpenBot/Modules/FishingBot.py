@@ -210,12 +210,12 @@ class FishingBotDialog(ui.Window):
 		FileManager.Save()
 
 	def isRodAbleToLevelUp(self):
-		idx = player.GetItemIndex(player.EQUIPMENT,item.EQUIPMENT_WEAPON)
+		idx = player.GetItemIndex(2,item.EQUIPMENT_WEAPON)
 		if(idx == 0):
 			return False	
 		item.SelectItem(idx)
 
-		currPoints = player.GetItemMetinSocket(player.EQUIPMENT,item.EQUIPMENT_WEAPON,0)
+		currPoints = player.GetItemMetinSocket(2,item.EQUIPMENT_WEAPON,0)
 		maxPoints = item.GetValue(2)
 
 		if currPoints == maxPoints and item.GetItemType() == item.ITEM_TYPE_ROD:
@@ -234,10 +234,10 @@ class FishingBotDialog(ui.Window):
 			return
 		
 		#Unequip weapon if it is a rod
-		val = OpenLib.isItemTypeOnSlot(item.ITEM_TYPE_ROD,player.EQUIPMENT,item.EQUIPMENT_WEAPON)
+		val = OpenLib.isItemTypeOnSlot(item.ITEM_TYPE_ROD,2,item.EQUIPMENT_WEAPON)
 		if val:
 			chat.AppendChat(3,"[Fishing-Bot] Removing fishing rod from main weapon")
-			net.SendItemUsePacket(player.EQUIPMENT,item.EQUIPMENT_WEAPON)
+			net.SendItemUsePacket(2,item.EQUIPMENT_WEAPON)
 			return
 		
 		
@@ -404,7 +404,7 @@ class FishingBotDialog(ui.Window):
 			return False
 
 		#Check if rod is available
-		val = OpenLib.isItemTypeOnSlot(item.ITEM_TYPE_ROD,player.EQUIPMENT,item.EQUIPMENT_WEAPON)
+		val = OpenLib.isItemTypeOnSlot(item.ITEM_TYPE_ROD,2,item.EQUIPMENT_WEAPON)
 		if val == 0:
 			slot = OpenLib.GetItemByType(item.ITEM_TYPE_ROD)
 			if slot == -1:

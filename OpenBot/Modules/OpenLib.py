@@ -352,7 +352,7 @@ def GetItemByID(_id):
 			return i
 	return -1
 
-def isItemTypeOnSlot(_type,invType = player.EQUIPMENT,slot=item.EQUIPMENT_WEAPON):
+def isItemTypeOnSlot(_type,invType = 2,slot=item.EQUIPMENT_WEAPON):
 	"""
 	Check if a specified item type exists in a specified slot.
 
@@ -796,7 +796,7 @@ def IsWeaponArch():
 	"""
 	Return true if weapon is arch
 	"""
-	idx = player.GetItemIndex(player.EQUIPMENT, item.EQUIPMENT_WEAPON)
+	idx = player.GetItemIndex(2, item.EQUIPMENT_WEAPON)
 	if idx == 0:
 		return False
 	item.SelectItem(idx)
@@ -808,7 +808,7 @@ def IsWeaponPickaxe():
 	"""
 		Return true if weapon is pickaxe
 	"""
-	idx = player.GetItemIndex(player.EQUIPMENT, item.EQUIPMENT_WEAPON)
+	idx = player.GetItemIndex(2, item.EQUIPMENT_WEAPON)
 	if idx == 0:
 		return False
 	item.SelectItem(idx)
